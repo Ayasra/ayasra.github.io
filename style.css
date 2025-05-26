@@ -1,0 +1,89 @@
+body {
+    font-family: 'Arial', sans-serif; /* A common, clean sans-serif font */
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* Light gray background */
+    color: #333; /* Dark gray text for good contrast */
+}
+
+.container {
+    width: 80%;
+    max-width: 700px; /* Max width for better readability on larger screens */
+    margin: 40px auto; /* Centering the content with some top/bottom margin */
+    padding: 30px;
+    background-color: #fff; /* White background for the content area */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    border-radius: 8px; /* Slightly rounded corners */
+}
+
+header h1 {
+    font-size: 2.5em; /* Larger font size for your name */
+    margin-bottom: 0.5em;
+    color: #2c3e50; /* A slightly desaturated blue for the name */
+    text-align: center; /* Center the name */
+}
+
+.about-me p {
+    font-size: 1.1em;
+    margin-bottom: 2em;
+    text-align: justify; /* Justify the paragraph for a cleaner look */
+}
+
+.notes h2 {
+    font-size: 1.8em;
+    margin-bottom: 0.8em;
+    color: #34495e; /* Another shade of desaturated blue */
+    border-bottom: 2px solid #ecf0f1; /* Light gray underline for the section title */
+    padding-bottom: 0.3em;
+}
+
+.notes ul {
+    list-style: none; /* Removes default bullet points */
+    padding: 0;
+}
+
+.notes ul li {
+    font-size: 1.1em;
+    margin-bottom: 0.5em;
+    padding: 8px;
+    border-left: 3px solid #3498db; /* Accent color for list item */
+    background-color: #ecf0f1; /* Light background for the list item */
+    border-radius: 4px;
+}
+
+.notes ul li a {
+    text-decoration: none;
+    color: #2980b9; /* Link color */
+    font-weight: bold;
+}
+
+.notes ul li a:hover {
+    text-decoration: underline;
+    color: #1abc9c; /* Different color on hover for interactivity */
+}
+
+/* Responsive adjustments (optional but good practice) */
+@media (max-width: 600px) {
+    .container {
+        width: 95%;
+        margin: 20px auto;
+        padding: 20px;
+    }
+
+    header h1 {
+        font-size: 2em;
+    }
+
+    .about-me p {
+        font-size: 1em;
+    }
+
+    .notes h2 {
+        font-size: 1.5em;
+    }
+
+    .notes ul li {
+        font-size: 1em;
+    }
+}
