@@ -55,7 +55,7 @@ header {
 header h1 {
     font-family: 'Noto Serif', serif; /* Elegant serif font for the main title */
     font-size: 2.8em; /* Adjusted font size for header layout */
-    font-weight: 700; /* Bold weight */
+    font-weight: 300; /* UPDATED: Lighter font weight */
     margin-top: 0;
     margin-bottom: 0;
     color: #FFFFFF; /* White text color for strong contrast */
