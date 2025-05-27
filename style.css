@@ -1,88 +1,126 @@
 body {
-    font-family: 'Arial', sans-serif; /* A common, clean sans-serif font */
-    line-height: 1.6;
+    /* Using Open Sans as the primary sans-serif font */
+    font-family: 'Open Sans', 'Arial', sans-serif;
+    line-height: 1.8; /* Increased line height for better readability and an airy feel */
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4; /* Light gray background */
-    color: #333; /* Dark gray text for good contrast */
+    background-color: #ffffff; /* White background */
+    color: #222222; /* Very dark gray/off-black for text */
+    -webkit-font-smoothing: antialiased; /* Smoother fonts on WebKit browsers */
+    -moz-osx-font-smoothing: grayscale; /* Smoother fonts on Firefox */
 }
 
 .container {
-    width: 80%;
-    max-width: 700px; /* Max width for better readability on larger screens */
-    margin: 40px auto; /* Centering the content with some top/bottom margin */
-    padding: 30px;
-    background-color: #fff; /* White background for the content area */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    border-radius: 8px; /* Slightly rounded corners */
+    width: 90%;
+    max-width: 800px; /* Slightly wider max-width, common for such designs */
+    margin: 60px auto; /* More top/bottom margin */
+    padding: 40px;
+    text-align: center; /* Center text elements like headings by default */
 }
 
 header h1 {
-    font-size: 2.5em; /* Larger font size for your name */
-    margin-bottom: 0.5em;
-    color: #2c3e50; /* A slightly desaturated blue for the name */
-    text-align: center; /* Center the name */
+    /* Using Lora as the serif font for the main heading */
+    font-family: 'Lora', 'Georgia', serif;
+    font-size: 3.5em; /* Significantly larger font size for your name */
+    font-weight: 700; /* Bold */
+    margin-bottom: 0.8em;
+    color: #000000; /* Black color for the name */
+    letter-spacing: 0.5px; /* Slight letter spacing */
+}
+
+.about-me {
+    margin-bottom: 3em; /* More space after the about me section */
 }
 
 .about-me p {
-    font-size: 1.1em;
-    margin-bottom: 2em;
-    text-align: justify; /* Justify the paragraph for a cleaner look */
+    font-size: 1.15em; /* Slightly larger body text */
+    line-height: 1.9; /* Generous line height for the paragraph */
+    text-align: left; /* Justify can be harsh; left-align is often cleaner for web */
+    max-width: 650px; /* Constrain paragraph width for readability */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .notes h2 {
-    font-size: 1.8em;
-    margin-bottom: 0.8em;
-    color: #34495e; /* Another shade of desaturated blue */
-    border-bottom: 2px solid #ecf0f1; /* Light gray underline for the section title */
-    padding-bottom: 0.3em;
+    /* Using Lora for the "Notes" heading as well */
+    font-family: 'Lora', 'Georgia', serif;
+    font-size: 2.5em; /* Large font size for section heading */
+    font-weight: 700;
+    margin-top: 2.5em; /* More space above the Notes section */
+    margin-bottom: 1em;
+    color: #111111; /* Slightly off-black */
+    text-align: center;
 }
 
 .notes ul {
-    list-style: none; /* Removes default bullet points */
+    list-style: none;
     padding: 0;
+    text-align: center; /* Center the list items if they are short */
 }
 
 .notes ul li {
-    font-size: 1.1em;
-    margin-bottom: 0.5em;
-    padding: 8px;
-    border-left: 3px solid #3498db; /* Accent color for list item */
-    background-color: #ecf0f1; /* Light background for the list item */
-    border-radius: 4px;
+    font-family: 'Open Sans', 'Arial', sans-serif; /* Sans-serif for list items */
+    font-size: 1.2em;
+    margin-bottom: 0.8em;
+    display: inline-block; /* Allows centering of list items if you have multiple */
+    padding: 10px 20px;
+    border: 1px solid #dddddd; /* Subtle border instead of background or left-border */
+    border-radius: 4px; /* Slightly rounded corners */
+    background-color: #f9f9f9; /* Very light background for the item */
 }
 
 .notes ul li a {
     text-decoration: none;
-    color: #2980b9; /* Link color */
-    font-weight: bold;
+    color: #333333; /* Dark gray for link text */
+    font-weight: 400; /* Regular weight */
 }
 
 .notes ul li a:hover {
-    text-decoration: underline;
-    color: #1abc9c; /* Different color on hover for interactivity */
+    text-decoration: none; /* No underline on hover for a cleaner look, common in such styles */
+    color: #000000; /* Darken link on hover */
+    background-color: #f0f0f0; /* Slightly change background on hover */
 }
 
-/* Responsive adjustments (optional but good practice) */
-@media (max-width: 600px) {
+/* Responsive adjustments */
+@media (max-width: 768px) {
     .container {
-        width: 95%;
-        margin: 20px auto;
-        padding: 20px;
+        width: 90%;
+        margin: 40px auto;
+        padding: 30px;
     }
 
     header h1 {
-        font-size: 2em;
+        font-size: 2.8em;
     }
 
     .about-me p {
-        font-size: 1em;
+        font-size: 1.1em;
     }
 
     .notes h2 {
-        font-size: 1.5em;
+        font-size: 2em;
     }
 
+    .notes ul li {
+        font-size: 1.1em;
+        padding: 8px 15px;
+        display: block; /* Stack list items on smaller screens */
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 300px; /* Max width for list items when stacked */
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 2.2em;
+    }
+    .about-me p {
+        font-size: 1em;
+    }
+    .notes h2 {
+        font-size: 1.7em;
+    }
     .notes ul li {
         font-size: 1em;
     }
