@@ -47,41 +47,57 @@ header {
     padding: 40px 80px; /* Adjusted padding: Top/Bottom, Left/Right */
     color: #FFFFFF; /* Default text color for this section */
     display: flex; /* Enable flexbox */
-    justify-content: space-between; /* Space between title and contact links */
+    justify-content: space-between; /* Space between title group and contact links */
     align-items: center; /* Vertically align items */
     flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+}
+
+/* New wrapper for h1 and hr */
+.header-title-group {
+    /* This group will contain h1 and hr */
+    margin-right: 20px; /* Space between title group and contact links if they are on the same line */
 }
 
 header h1 {
     font-family: 'Noto Serif', serif; /* Elegant serif font for the main title */
     font-size: 2.8em; /* Adjusted font size for header layout */
-    font-weight: 300; /* UPDATED: Lighter font weight */
+    font-weight: 300; /* Lighter font weight */
     margin-top: 0;
-    margin-bottom: 0;
+    margin-bottom: 0.2em; /* Space above the hr */
     color: #FFFFFF; /* White text color for strong contrast */
     letter-spacing: 0.5px; /* Slight spacing between letters */
-    max-width: none; /* Allow h1 to take space needed, flex handles positioning */
-    margin-right: 20px; /* Add some space if wrapping occurs */
 }
+
+/* Style for the horizontal line in the header */
+.header-divider {
+    display: block; /* Make the line visible */
+    border: none;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.3); /* Light, semi-transparent white for subtlety */
+    width: 100px; /* Adjust width as desired */
+    margin-top: 0.3em; /* Space after h1 text */
+    margin-bottom: 0; /* No bottom margin needed if it's the last item in its group before contact links */
+    margin-left: 0; /* Aligns to the start (left) */
+}
+
 
 /* Contact Links in Header */
 .contact-links {
     display: flex; /* Arrange button and link side-by-side */
     align-items: center; /* Vertically align items */
-    gap: 25px; /* UPDATED: Increased gap slightly for better separation */
+    gap: 25px; /* Increased gap slightly for better separation */
     flex-wrap: wrap; /* Allow items to wrap if header is too narrow */
+    /* margin-left: auto; Removed as justify-content: space-between on header will handle it */
 }
 
-/* UPDATED: Styling for "Contact" link to be naked text */
 .contact-button {
     font-family: 'Open Sans', 'Arial', sans-serif;
     font-size: 1em; /* Adjusted size for naked text appearance */
-    font-weight: 600; /* Slightly bolder than normal text */
+    font-weight: 400; /* Lighter font weight (normal) */
     color: #FFFFFF; /* White text */
     text-decoration: none; /* No underline by default */
     padding: 5px 0; /* Minimal vertical padding, no horizontal */
     transition: color 0.3s ease, text-decoration 0.3s ease;
-    /* Removed background-color, border, border-radius, display:inline-block */
 }
 
 .contact-button:hover {
@@ -92,186 +108,218 @@ header h1 {
 .linkedin-link {
     display: inline-flex; /* Align icon and text */
     align-items: center;
-    /* gap: 8px; Removed as text is gone */
-    color: #FFFFFF; /* White text (for icon's context, though fill is direct) */
+    color: #FFFFFF; 
     text-decoration: none;
-    transition: opacity 0.3s ease; /* Changed transition to opacity */
+    transition: opacity 0.3s ease; 
 }
 
 .linkedin-link:hover {
-    opacity: 0.8; /* Slightly transparent on hover */
+    opacity: 0.8; 
 }
 
-/* .linkedin-link:hover .linkedin-icon {
-    fill: #dddddd; Removed, hover effect is on the link itself now
-} */
-
-/* .linkedin-link .linkedin-text {
-    Removed as text span is gone
-} */
-
 .linkedin-icon {
-    fill: #FFFFFF; /* White icon */
-    /* transition: fill 0.3s ease; Removed, hover effect is on the link itself now */
-    width: 26px; /* Adjusted size for header */
-    height: 26px; /* Adjusted size for header */
-    display: block; /* Ensure it behaves as a block for layout */
+    fill: #FFFFFF; 
+    width: 26px; 
+    height: 26px; 
+    display: block; 
 }
 
 
 /*
   About Me Section Styles
   -----------------------
-  - Styles the biographical paragraph.
-  - Uses Noto Serif for consistency with headings, but with a regular weight.
-  - Darker blue background for this section.
 */
 .about-me {
-    background-color: #070c6b; /* New Darker Blue background */
-    padding: 40px 80px 80px 80px; /* Top, R, Bottom (increased), L padding */
-    color: #EAEAEA; /* Default text color for this section (for p) */
+    background-color: #070c6b; 
+    padding: 40px 80px 100px 80px; 
+    color: #EAEAEA; 
 }
 
 .about-me p {
-    font-family: 'Noto Serif', serif; /* Consistent serif font */
-    font-weight: 400; /* Regular weight for body text */
-    font-size: 1.9em; /* Font size adjusted */
-    line-height: 1.6; /* Adjusted for new, larger font size */
-    color: #EAEAEA; /* Softer white text color */
-    text-align: left; /* Explicitly left-aligned */
-    max-width: 950px; /* Max width of the paragraph text block */
+    font-family: 'Noto Serif', serif; 
+    font-weight: 400; 
+    font-size: 1.9em; 
+    line-height: 1.6; 
+    color: #EAEAEA; 
+    text-align: left; 
+    max-width: 1100px; 
     margin-top: 0;
     margin-bottom: 0;
-    /* Paragraph will be left aligned within its section padding */
 }
 
 /*
-  Notes Section Styles
-  --------------------
-  - Styles the "Notes" heading and the list of notes.
-  - Contrasting light gray background for this section.
+  Notes Section Styles (Main Page)
+  --------------------------------
 */
 .notes {
-    background-color: #F4F7F6; /* Light gray background */
-    padding: 60px 80px 60px 80px; /* Top, R, Bottom, L padding (increased left) */
-    flex-grow: 1; /* Allow notes section to fill remaining vertical space */
+    background-color: #F4F7F6; 
+    padding: 60px 80px 60px 80px; 
+    flex-grow: 1; 
 }
 
 .notes h2 {
-    font-family: 'Noto Serif', serif; /* Consistent serif font for section heading */
-    font-weight: 700; /* Bold weight */
-    font-size: 2.2em; /* Font size adjusted */
-    margin-top: 0; /* Adjusted margin */
-    margin-bottom: 0.3em; /* Reduced space as line is now below */
-    color: #111111; /* Dark color for heading */
-    max-width: 950px; /* Max width for the heading text itself */
+    font-family: 'Noto Serif', serif; 
+    font-weight: 700; 
+    font-size: 2.2em; 
+    margin-top: 0; 
+    margin-bottom: 0.3em; 
+    color: #111111; 
+    max-width: 1100px; 
 }
 
-/*
-  Notes Divider Line Style (Now directly under .notes h2)
-  -------------------------------------------------------
-  - Styles the small horizontal line placed directly after the "Notes" heading.
-*/
 .notes-divider {
-    border: none; /* Removes default browser HR border */
-    height: 1px;  /* Thickness of the line */
-    background-color: #AEB6BF; /* Color for visibility on light gray */
-    width: 80px;  /* Specific "small" width for the line */
-    margin-top: 0.2em; /* Small space below h2 */
-    margin-bottom: 1.5em; /* Space before the ul list starts */
-    margin-left: 0; /* Aligns the line to the left */
-    margin-right: auto; /* Standard practice for left-aligned block with specified width */
+    border: none; 
+    height: 1px;  
+    background-color: #AEB6BF; 
+    width: 80px;  
+    margin-top: 0.2em; 
+    margin-bottom: 1.5em; 
+    margin-left: 0; 
+    margin-right: auto; 
 }
 
 .notes ul {
-    list-style: none; /* Removes default bullet points */
-    padding: 0; /* Removes default padding */
-    margin-top: 0; /* Adjusted to be closer to the divider */
-    max-width: 950px; /* Max width for the list itself */
+    list-style: none; 
+    padding: 0; 
+    margin-top: 0; 
+    max-width: 1100px; 
 }
 
 .notes ul li {
-    font-family: 'Noto Serif', serif; /* Consistent serif font for note items */
-    font-weight: 400; /* Regular weight */
-    font-size: 1.2em; /* Slightly larger for better presence as a link */
-    margin-bottom: 0.6em; /* Space below each item */
-    padding: 5px 0; /* Vertical padding, no horizontal padding on li */
+    font-family: 'Noto Serif', serif; 
+    font-weight: 400; 
+    font-size: 1.2em; 
+    margin-bottom: 0.6em; 
+    padding: 5px 0; 
 }
 
 .notes ul li a {
-    text-decoration: none; /* Removes underline by default */
-    color: #070c6b; /* New Darker blue link color */
-    font-weight: 400; /* Ensure it's not inheriting bold if li was bolded */
-    padding: 2px 0; /* Minimal padding on the link itself */
-    transition: color 0.2s ease-in-out, text-decoration 0.2s ease-in-out; /* Smooth hover transition */
-    display: inline; /* Make it behave like a normal text link */
+    text-decoration: none; 
+    color: #070c6b; 
+    font-weight: 400; 
+    padding: 2px 0; 
+    transition: color 0.2s ease-in-out, text-decoration 0.2s ease-in-out; 
+    display: inline; 
 }
 
 .notes ul li a:hover {
-    color: #0B13A8; /* Slightly lighter shade of the new dark blue for hover */
-    text-decoration: underline; /* Add underline on hover for clear affordance */
+    color: #0B13A8; 
+    text-decoration: underline; 
 }
 
 /*
-  REMOVED Contact Section Styles
-  ----------------------
-  .contact-section, .contact-section h2 styles were here.
+  Generic Page Section Styles (for Matrix Theory page, etc.)
+  ---------------------------------------------------------
 */
+.page-section {
+    background-color: #F4F7F6; 
+    padding: 60px 80px; 
+    flex-grow: 1; 
+}
+
+.page-title {
+    font-family: 'Noto Serif', serif;
+    font-size: 2.8em; 
+    font-weight: 300; 
+    color: #111111; 
+    margin-top: 0;
+    margin-bottom: 0.8em; 
+    max-width: 1100px; 
+    letter-spacing: 0.5px;
+}
+
+.matrix-theory-content .content-list {
+    list-style: none; 
+    padding-left: 0; 
+    max-width: 1100px; 
+    font-family: 'Open Sans', 'Arial', sans-serif;
+    font-size: 1.1em;
+    line-height: 1.7;
+    color: #333333;
+}
+
+.matrix-theory-content .content-list li {
+    margin-bottom: 0.5em;
+}
+
+.matrix-theory-content .content-list li a {
+    color: #070c6b;
+    text-decoration: none;
+}
+
+.matrix-theory-content .content-list li a:hover {
+    text-decoration: underline;
+}
 
 
 /*
   Responsive Adjustments
   ----------------------
-  - Modifies styles for smaller screens (tablets and mobiles)
-  - Adjusts font sizes, container padding, and element layouts for better usability.
 */
+@media (max-width: 1300px) { 
+    .about-me p, .notes h2, .notes ul, .page-title, .matrix-theory-content .content-list {
+        max-width: 1050px; 
+    }
+}
+
 @media (max-width: 1024px) { 
-    header, .about-me, .notes {
+    header, .about-me, .notes, .page-section { 
         padding-left: 60px; 
         padding-right: 30px; 
+    }
+    .about-me p, .notes h2, .notes ul, .page-title, .matrix-theory-content .content-list {
+        max-width: 100%; 
     }
 }
 
 
 @media (max-width: 768px) { /* Styles for tablets and smaller */
     header {
-        padding: 30px 40px; /* Adjusted padding for header on tablets */
-        flex-direction: column; /* Stack title and links on smaller screens */
-        align-items: flex-start; /* Align items to the left when stacked */
+        padding: 30px 40px; 
+        flex-direction: column; /* Stack title group and links on smaller screens */
+        align-items: flex-start; 
+    }
+    .header-title-group {
+        margin-bottom: 15px; /* Space between title group and contact links when stacked */
+        margin-right: 0; /* No right margin when stacked */
     }
     header h1 {
         font-size: 2.5em; 
-        margin-bottom: 20px; /* UPDATED: Increased space between title and links when stacked */
+        margin-bottom: 0.2em; 
+    }
+    .header-divider {
+        width: 100px; /* Keep original width or adjust as needed for stacked view */
+        margin-bottom: 0;
+        margin-top: 0.5em;
+        background-color: rgba(255, 255, 255, 0.2); 
     }
     .contact-links {
-        gap: 20px; /* UPDATED: Adjusted gap for stacked items */
+        gap: 15px; 
+        margin-left: 0; /* Reset margin-left for stacked layout */
     }
-    .contact-button, .linkedin-link { /* Applied to linkedin-link as well */
-        font-size: 1em; /* UPDATED: Increased size for better tap target when stacked */
+    .contact-button, .linkedin-link { 
+        font-size: 1em; 
     }
     .linkedin-icon {
-        width: 28px; /* Slightly larger when stacked */
+        width: 28px; 
         height: 28px;
     }
 
-    .about-me, .notes {
+    .about-me, .notes, .page-section { 
         padding-left: 40px; 
         padding-right: 20px;
     }
-    .about-me { padding-top: 30px; padding-bottom: 60px;} 
+    .about-me { padding-top: 30px; padding-bottom: 80px;} 
     .notes {padding-top: 40px; padding-bottom: 40px;}
+    .page-section {padding-top: 40px; padding-bottom: 40px;} 
 
-
-    header h1, .about-me p, .notes h2, .notes ul { /* header h1 max-width already handled by flex */
-        max-width: 100%; 
-    }
 
     .about-me p {
         font-size: 1.6em; 
         line-height: 1.65; 
     }
 
-    .notes h2 {
+    .notes h2, .page-title { 
         font-size: 1.9em; 
     }
     .notes-divider {
@@ -281,35 +329,44 @@ header h1 {
     .notes ul li {
         font-size: 1.1em; 
     }
+    .matrix-theory-content .content-list {
+        font-size: 1em;
+    }
 }
 
 @media (max-width: 480px) { /* Styles for mobile phones */
     header {
-        padding: 20px 20px; /* Further reduce padding */
+        padding: 20px 20px; 
     }
     header h1 {
         font-size: 2.2em; 
+        margin-bottom: 0.2em; 
     }
-     .contact-button {
-        /* padding: 8px 15px; Removed, using default padding from .contact-button now */
+    .header-title-group {
+        margin-bottom: 10px;
+    }
+    .header-divider {
+        margin-top: 0.5em;
     }
     .linkedin-icon {
-        width: 24px; /* Adjusted size */
+        width: 24px; 
         height: 24px;
     }
 
-    .about-me, .notes {
+    .about-me, .notes, .page-section { 
         padding-left: 20px; 
         padding-right: 15px;
     }
-    .about-me { padding-top: 20px; padding-bottom: 40px;} 
+    .about-me { padding-top: 20px; padding-bottom: 60px;} 
     .notes {padding-top: 30px; padding-bottom: 30px;}
+    .page-section {padding-top: 30px; padding-bottom: 30px;} 
+
 
     .about-me p {
         font-size: 1.4em; 
         line-height: 1.7; 
     }
-    .notes h2 {
+    .notes h2, .page-title { 
         font-size: 1.6em; 
     }
     .notes-divider {
@@ -318,5 +375,8 @@ header h1 {
     }
     .notes ul li {
         font-size: 1.05em; 
+    }
+    .matrix-theory-content .content-list {
+        font-size: 0.95em;
     }
 }
