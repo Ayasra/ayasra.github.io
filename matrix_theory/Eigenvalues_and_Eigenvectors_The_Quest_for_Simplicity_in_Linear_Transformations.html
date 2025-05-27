@@ -66,10 +66,10 @@
             
             <div class="theorem-block">
                 <p><strong>Theorem:</strong> Eigenvectors corresponding to <strong>distinct</strong> eigenvalues are linearly independent.</p>
-                <p>This theorem is powerful because it assures us that eigenvectors originating from different eigenvalues will always point in genuinely different directions and will not be redundant in terms of spanning a space. This property is a cornerstone in constructing a basis from eigenvectors.</p>
             </div>
+            <p>This theorem is powerful because it assures us that eigenvectors originating from different eigenvalues will always point in genuinely different directions and will not be redundant in terms of spanning a space. This property is a cornerstone in constructing a basis from eigenvectors.</p>
 
-            <p>The profound connection to diagonalization now becomes clear: if one can identify a complete set of $n$ linearly independent eigenvectors $\{ \mathbf{v}_1, \dots, \mathbf{v}_n \}$ for an $n \times n$ matrix $A$ (a feat made more plausible by the theorem above, especially if the matrix has many distinct eigenvalues), these eigenvectors constitute an <strong>eigenbasis</strong> for the vector space. Within this eigenbasis, the transformation $T$ is represented by a diagonal matrix $D$, whose diagonal entries are precisely the corresponding eigenvalues $\{\lambda_1, \dots, \lambda_n\}$. The matrix $P$, formed by using these eigenvectors as its columns, serves as the <sup id="fnref-2"><a href="#fn-2" rel="footnote">2</a></sup>change-of-basis matrix that achieves this diagonalization:</p>
+            <p>The profound connection to diagonalization now becomes clear: if one can identify a complete set of $n$ linearly independent eigenvectors $\{ \mathbf{v}_1, \dots, \mathbf{v}_n \}$ for an $n \times n$ matrix $A$ (a feat made more plausible by the theorem above, especially if the matrix has many distinct eigenvalues), these eigenvectors constitute an <strong>eigenbasis</strong> for the vector space. Within this eigenbasis, the transformation $T$ is represented by a diagonal matrix $D$, whose diagonal entries are precisely the corresponding eigenvalues $\{\lambda_1, \dots, \lambda_n\}$. The matrix $P$, formed by using these eigenvectors as its columns, serves as the change-of-basis matrix<sup id="fnref-2"><a href="#fn-2" rel="footnote">1</a></sup> that achieves this diagonalization:</p>
             <div class="math-display">
             $$A = PDP^{-1} \quad \text{or equivalently} \quad D = P^{-1}AP$$
             </div>
@@ -85,8 +85,8 @@
                 $$T(\mathbf{v}) = \lambda \mathbf{v} \quad (\text{or equivalently, } A \mathbf{v} = \lambda \mathbf{v})$$
                 </div>
                 <p>The non-zero vector $\mathbf{v}$ is called an <strong>eigenvector</strong> (or right eigenvector) of $T$ (or $A$) corresponding to the eigenvalue $\lambda$.</p>
-                <p><em>Note: The zero vector $\mathbf{0}$ is explicitly excluded from being an eigenvector, because $T(\mathbf{0}) = \mathbf{0} = \lambda \mathbf{0}$ holds for any $\lambda$, making it trivial.</em></p>
             </div>
+            <p><em>Note: The zero vector $\mathbf{0}$ is explicitly excluded from being an eigenvector, because $T(\mathbf{0}) = \mathbf{0} = \lambda \mathbf{0}$ holds for any $\lambda$, making it trivial.</em></p>
 
             <div class="definition-block">
                 <p><strong>Definitions: Spectrum</strong></p>
@@ -94,8 +94,8 @@
                     <li>The <strong>spectrum</strong> of a linear transformation $T$ (or matrix $A$), often denoted $\sigma(T)$ or $\sigma(A)$, is the set of all its eigenvalues. <div class="math-display">$$\sigma(T) = \{ \lambda \in F; \lambda \text{ is an eigenvalue of } T \}$$</div></li>
                     <li>The <strong>spectral radius</strong> of a linear transformation $T$ (or matrix $A$), denoted $\rho(T)$ or $\rho(A)$, is the maximum absolute value of its eigenvalues: <div class="math-display">$$ \rho(T) = \max \{ |\lambda|; \lambda \in \sigma(T) \} $$</div></li>
                 </ul>
-                <p>While in the study of operators on infinite-dimensional spaces the spectrum can be a broader concept (though always including all eigenvalues), for finite-dimensional vector spaces, which are the typical setting for matrices like $A$, the spectrum $\sigma(A)$ consists exclusively of its eigenvalues.</p>
             </div>
+            <p>While in the study of operators on infinite-dimensional spaces the spectrum can be a broader concept (though always including all eigenvalues), for finite-dimensional vector spaces, which are the typical setting for matrices like $A$, the spectrum $\sigma(A)$ consists exclusively of its eigenvalues.</p>
 
             <h2>Characteristic Polynomial and Basic Properties</h2>
             <p>While the fundamental definition $A\mathbf{v} = \lambda \mathbf{v}$ clearly articulates what eigenvalues and eigenvectors represent, it does not inherently offer a direct computational method for their discovery. The characteristic polynomial serves as the primary tool for systematically finding eigenvalues.</p>
@@ -128,7 +128,7 @@
                     <li>$\text{tr}(A) = \sum_{i=1}^n \lambda_i$ (The trace of the matrix is the sum of its eigenvalues).</li>
                     <li>$\det(A) = \prod_{i=1}^n \lambda_i$ (The determinant of the matrix is the product of its eigenvalues).</li>
                 </ul></li>
-                <li><strong>Existence and Number of Eigenvalues:</strong> The<sup id="fnref-3"><a href="#fn-3" rel="footnote">3</a></sup> Fundamental Theorem of Algebra is key here. It states that any polynomial of degree $n \ge 1$ with complex coefficients possesses exactly $n$ complex roots, when these roots are counted with their multiplicities. As $p_A(t)$ is such a polynomial, this theorem guarantees that:
+                <li><strong>Existence and Number of Eigenvalues:</strong> The Fundamental Theorem of Algebra<sup id="fnref-3"><a href="#fn-3" rel="footnote">2</a></sup> is key here. It states that any polynomial of degree $n \ge 1$ with complex coefficients possesses exactly $n$ complex roots, when these roots are counted with their multiplicities. As $p_A(t)$ is such a polynomial, this theorem guarantees that:
                 <ul>
                     <li>Every $n \times n$ complex matrix $A$ has at least one complex eigenvalue.</li>
                     <li>Every $n \times n$ complex matrix $A$ has exactly $n$ complex eigenvalues, provided they are counted according to their algebraic multiplicity.</li>
@@ -149,15 +149,15 @@
                 <div class="math-display">
                 $$1 \le \text{Geometric Multiplicity}(\lambda) \le \text{Algebraic Multiplicity}(\lambda)$$
                 </div>
-                <p>This inequality gives rise to an important classification of matrices. A matrix $A$ is termed <sup id="fnref-4"><a href="#fn-4" rel="footnote">4</a></sup><strong>defective</strong> if, for at least one of its eigenvalues, the geometric multiplicity is strictly less than its algebraic multiplicity. Conversely, a matrix $A$ is called <strong>nondefective</strong> if the geometric multiplicity equals the algebraic multiplicity for all of its eigenvalues.</p>
             </div>
+            <p>This inequality gives rise to an important classification of matrices. A matrix $A$ is termed <strong>defective</strong><sup id="fnref-4"><a href="#fn-4" rel="footnote">3</a></sup> if, for at least one of its eigenvalues, the geometric multiplicity is strictly less than its algebraic multiplicity. Conversely, a matrix $A$ is called <strong>nondefective</strong> if the geometric multiplicity equals the algebraic multiplicity for all of its eigenvalues.</p>
 
             <p>The concept of a matrix being nondefective is central to understanding when a matrix can be diagonalized. <strong>The Diagonalizability Condition</strong> is a key theorem in this regard:</p>
             
             <div class="theorem-block">
                 <p><strong>Theorem:</strong> An $n \times n$ matrix $A$ is <strong>diagonalizable</strong> if and only if it is nondefective.</p>
-                <p>This implies that a matrix $A$ can be diagonalized if and only if the sum of the geometric multiplicities of all its distinct eigenvalues equals $n$. This condition is met when the matrix possesses a full set of $n$ linearly independent eigenvectors, which can then form an eigenbasis for the vector space, allowing the transformation to be represented by a diagonal matrix.</p>
             </div>
+            <p>This implies that a matrix $A$ can be diagonalized if and only if the sum of the geometric multiplicities of all its distinct eigenvalues equals $n$. This condition is met when the matrix possesses a full set of $n$ linearly independent eigenvectors, which can then form an eigenbasis for the vector space, allowing the transformation to be represented by a diagonal matrix.</p>
 
             <p>Finally, matrices can also be classified as <strong>derogatory</strong> or <strong>nonderogatory</strong> based on the geometric multiplicities of their eigenvalues. A matrix $A$ is <strong>nonderogatory</strong> if the geometric multiplicity of every eigenvalue is exactly 1, meaning each eigenvalue corresponds to a unique eigenvector direction (up to scalar multiples). In contrast, a matrix $A$ is <strong>derogatory</strong> if it has at least one eigenvalue with a geometric multiplicity greater than 1, indicating the existence of multiple linearly independent eigenvectors for that eigenvalue.</p>
             <p>This distinction between nonderogatory and derogatory matrices offers a further layer of insight into the structure of a matrix's eigenspaces, beyond simply counting eigenvectors for diagonalizability. A <strong>nonderogatory</strong> matrix is characterized by having the "simplest" possible eigenspace structure for each of its eigenvalues: every eigenspace is one-dimensional, meaning all eigenvectors for a given eigenvalue lie along a single line.</p>

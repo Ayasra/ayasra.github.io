@@ -135,13 +135,9 @@ body {
     font-style: italic;
 }
 
-/* UPDATED Styles for Display Math */
 .article-body .math-display {
-    margin: 2em auto; /* Keep vertical spacing and horizontal centering */
-    padding: 10px 0; /* Vertical padding, no horizontal padding for a "naked" look */
-    /* REMOVED: background-color: #f0f0f0; */
-    /* REMOVED: border: 1px solid #e0e0e0; */
-    /* REMOVED: border-radius: 4px; */
+    margin: 0.75em auto; /* UPDATED: Reduced vertical margin */
+    padding: 5px 0; /* Minimal vertical padding for a "naked" look */
     overflow-x: auto; 
     max-width: 100%; 
     box-sizing: border-box; 
@@ -203,8 +199,8 @@ body {
         margin-bottom: 0.4em; 
     }
     .article-body .math-display {
-        margin: 1.5em auto;
-        padding: 5px 0;
+        margin: 0.5em auto; /* UPDATED: Further reduced for smaller screens */
+        padding: 2px 0;
     }
 }
 
@@ -241,7 +237,7 @@ body {
         margin-bottom: 0.7em; 
     }
     .article-body .math-display {
-        margin: 1em auto;
+        margin: 0.5em auto; /* Consistent with tablet size */
     }
 }
 
