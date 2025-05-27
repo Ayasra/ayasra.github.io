@@ -37,76 +37,66 @@ body {
 /*
   Header and Main Heading (H1) Styles
   -----------------------------------
-  - Styles the main name/title of the page.
-  - Uses Noto Serif for an elegant, prominent look.
-  - Darker blue background for this section.
-  - Contains contact links on the right.
 */
 header {
-    background-color: #070c6b; /* New Darker Blue background */
-    padding: 40px 80px; /* Adjusted padding: Top/Bottom, Left/Right */
-    color: #FFFFFF; /* Default text color for this section */
-    display: flex; /* Enable flexbox */
-    justify-content: space-between; /* Space between title group and contact links */
-    align-items: center; /* Vertically align items */
-    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+    background-color: #070c6b; 
+    padding: 40px 80px; 
+    color: #FFFFFF; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    flex-wrap: wrap; 
 }
 
-/* New wrapper for h1 and hr */
 .header-title-group {
-    /* This group will contain h1 and hr */
-    margin-right: 20px; /* Space between title group and contact links if they are on the same line */
+    margin-right: 20px; 
 }
 
 header h1 {
-    font-family: 'Noto Serif', serif; /* Elegant serif font for the main title */
-    font-size: 2.8em; /* Adjusted font size for header layout */
-    font-weight: 300; /* Lighter font weight */
+    font-family: 'Noto Serif', serif; 
+    font-size: 2.8em; 
+    font-weight: 300; 
     margin-top: 0;
-    margin-bottom: 0.2em; /* Space above the hr */
-    color: #FFFFFF; /* White text color for strong contrast */
-    letter-spacing: 0.5px; /* Slight spacing between letters */
+    margin-bottom: 0.2em; 
+    color: #FFFFFF; 
+    letter-spacing: 0.5px; 
 }
 
-/* Style for the horizontal line in the header */
 .header-divider {
-    display: block; /* Make the line visible */
+    display: block; 
     border: none;
     height: 1px;
-    background-color: rgba(255, 255, 255, 0.3); /* Light, semi-transparent white for subtlety */
-    width: 100px; /* Adjust width as desired */
-    margin-top: 0.3em; /* Space after h1 text */
-    margin-bottom: 0; /* No bottom margin needed if it's the last item in its group before contact links */
-    margin-left: 0; /* Aligns to the start (left) */
+    background-color: rgba(255, 255, 255, 0.3); 
+    width: 100px; 
+    margin-top: 0.3em; 
+    margin-bottom: 0; 
+    margin-left: 0; 
 }
 
-
-/* Contact Links in Header */
 .contact-links {
-    display: flex; /* Arrange button and link side-by-side */
-    align-items: center; /* Vertically align items */
-    gap: 25px; /* Increased gap slightly for better separation */
-    flex-wrap: wrap; /* Allow items to wrap if header is too narrow */
-    /* margin-left: auto; Removed as justify-content: space-between on header will handle it */
+    display: flex; 
+    align-items: center; 
+    gap: 25px; 
+    flex-wrap: wrap; 
 }
 
 .contact-button {
     font-family: 'Open Sans', 'Arial', sans-serif;
-    font-size: 1em; /* Adjusted size for naked text appearance */
-    font-weight: 400; /* Lighter font weight (normal) */
-    color: #FFFFFF; /* White text */
-    text-decoration: none; /* No underline by default */
-    padding: 5px 0; /* Minimal vertical padding, no horizontal */
+    font-size: 1em; 
+    font-weight: 400; 
+    color: #FFFFFF; 
+    text-decoration: none; 
+    padding: 5px 0; 
     transition: color 0.3s ease, text-decoration 0.3s ease;
 }
 
 .contact-button:hover {
-    color: #dddddd; /* Lighter gray on hover */
-    text-decoration: underline; /* Underline on hover for affordance */
+    color: #dddddd; 
+    text-decoration: underline; 
 }
 
 .linkedin-link {
-    display: inline-flex; /* Align icon and text */
+    display: inline-flex; 
     align-items: center;
     color: #FFFFFF; 
     text-decoration: none;
@@ -123,7 +113,6 @@ header h1 {
     height: 26px; 
     display: block; 
 }
-
 
 /*
   About Me Section Styles
@@ -154,7 +143,7 @@ header h1 {
 .notes {
     background-color: #F4F7F6; 
     padding: 60px 80px 60px 80px; 
-    flex-grow: 1; 
+    flex-grow: 1; /* This section will fill height if it's the last one on main page */
 }
 
 .notes h2 {
@@ -178,7 +167,7 @@ header h1 {
     margin-right: auto; 
 }
 
-.notes ul {
+.notes ul { /* This is the list on the main "Notes" page */
     list-style: none; 
     padding: 0; 
     margin-top: 0; 
@@ -208,48 +197,58 @@ header h1 {
 }
 
 /*
-  Generic Page Section Styles (for Matrix Theory page, etc.)
-  ---------------------------------------------------------
+  Generic Page Section Styles (for Matrix Theory LISTING page, etc.)
+  -----------------------------------------------------------------
+  These styles are for pages like matrix-theory.html that list articles.
+  Individual articles will have their own stylesheet.
 */
-.page-section {
-    background-color: #F4F7F6; 
-    padding: 60px 80px; 
-    flex-grow: 1; 
+.page-section { /* Used by matrix-theory.html (the listing page) */
+    background-color: #F4F7F6; /* Light contrasting background */
+    padding: 60px 80px; /* Consistent padding */
+    flex-grow: 1; /* Allow section to fill remaining vertical space */
 }
 
-.page-title {
+.page-title { /* This is the H1 for pages like matrix-theory.html */
     font-family: 'Noto Serif', serif;
     font-size: 2.8em; 
     font-weight: 300; 
     color: #111111; 
     margin-top: 0;
-    margin-bottom: 0.8em; 
+    margin-bottom: 0.8em; /* Space below title */
     max-width: 1100px; 
     letter-spacing: 0.5px;
+    text-align: left; /* Ensure title is left aligned */
 }
 
-.matrix-theory-content .content-list {
+/* Styles for the list of articles on pages like matrix-theory.html */
+.content-list { 
     list-style: none; 
     padding-left: 0; 
-    max-width: 1100px; 
+    max-width: 1100px;
     font-family: 'Open Sans', 'Arial', sans-serif;
     font-size: 1.1em;
     line-height: 1.7;
     color: #333333;
 }
 
-.matrix-theory-content .content-list li {
-    margin-bottom: 0.5em;
+.content-list li {
+    margin-bottom: 0.7em; /* Increased space between list items */
+    line-height: 1.6;
 }
 
-.matrix-theory-content .content-list li a {
+.content-list li a {
     color: #070c6b;
     text-decoration: none;
+    font-weight: 600; /* Make article links slightly bolder */
 }
 
-.matrix-theory-content .content-list li a:hover {
+.content-list li a:hover {
     text-decoration: underline;
+    color: #0B13A8;
 }
+
+/* REMOVED: .article-content and its child styles (h2, h4, p, ul, .math-display, .footnotes) */
+/* These will go into a separate CSS file for articles. */
 
 
 /*
@@ -257,7 +256,7 @@ header h1 {
   ----------------------
 */
 @media (max-width: 1300px) { 
-    .about-me p, .notes h2, .notes ul, .page-title, .matrix-theory-content .content-list {
+    .about-me p, .notes h2, .notes ul, .page-title, .content-list {
         max-width: 1050px; 
     }
 }
@@ -267,7 +266,7 @@ header h1 {
         padding-left: 60px; 
         padding-right: 30px; 
     }
-    .about-me p, .notes h2, .notes ul, .page-title, .matrix-theory-content .content-list {
+    .about-me p, .notes h2, .notes ul, .page-title, .content-list {
         max-width: 100%; 
     }
 }
@@ -276,26 +275,25 @@ header h1 {
 @media (max-width: 768px) { /* Styles for tablets and smaller */
     header {
         padding: 30px 40px; 
-        flex-direction: column; /* Stack title group and links on smaller screens */
+        flex-direction: column; 
         align-items: flex-start; 
-    }
-    .header-title-group {
-        margin-bottom: 15px; /* Space between title group and contact links when stacked */
-        margin-right: 0; /* No right margin when stacked */
     }
     header h1 {
         font-size: 2.5em; 
-        margin-bottom: 0.2em; 
+        margin-bottom: 15px; /* Adjusted from 20px to align with title group logic */
     }
-    .header-divider {
-        width: 100px; /* Keep original width or adjust as needed for stacked view */
-        margin-bottom: 0;
-        margin-top: 0.5em;
-        background-color: rgba(255, 255, 255, 0.2); 
+     .header-title-group { /* Ensure this exists if you re-add it to HTML */
+        margin-bottom: 15px; 
+        margin-right: 0; 
     }
+    .header-divider{
+        width: 100px;
+        margin-bottom:0;
+    }
+
     .contact-links {
         gap: 15px; 
-        margin-left: 0; /* Reset margin-left for stacked layout */
+        margin-left: 0; 
     }
     .contact-button, .linkedin-link { 
         font-size: 1em; 
@@ -329,8 +327,8 @@ header h1 {
     .notes ul li {
         font-size: 1.1em; 
     }
-    .matrix-theory-content .content-list {
-        font-size: 1em;
+    .content-list li { /* For article listing pages */
+        font-size: 1.05em;
     }
 }
 
@@ -340,13 +338,10 @@ header h1 {
     }
     header h1 {
         font-size: 2.2em; 
-        margin-bottom: 0.2em; 
+        margin-bottom: 10px; /* Adjusted */
     }
-    .header-title-group {
+     .header-title-group {
         margin-bottom: 10px;
-    }
-    .header-divider {
-        margin-top: 0.5em;
     }
     .linkedin-icon {
         width: 24px; 
@@ -376,7 +371,7 @@ header h1 {
     .notes ul li {
         font-size: 1.05em; 
     }
-    .matrix-theory-content .content-list {
-        font-size: 0.95em;
+    .content-list li { /* For article listing pages */
+        font-size: 1em;
     }
 }

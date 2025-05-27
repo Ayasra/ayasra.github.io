@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eigenvalues &amp; Eigenvectors: The Quest for Simplicity - Musab Alayasra</title>
+    <link rel="stylesheet" href="article-style.css"> 
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+    </head>
+<body>
+    <div class="article-container"> <header class="article-header">
+            <p class="breadcrumb-nav"><a href="../matrix-theory.html">&larr; Back to Matrix Theory Notes</a></p>
+            <h1>Eigenvalues &amp; Eigenvectors: The Quest for Simplicity in Linear Transformations</h1>
+        </header>
+        
+        <article class="article-body">
+            <p>Linear algebra often deals with transformations – ways to move, stretch, rotate, or shear vectors and spaces. These transformations can be represented by matrices, but there's a catch: the matrix you write down depends entirely on the coordinate system (or basis) you choose. Change the basis, and the matrix changes, even though the underlying transformation remains the same. This raises a fundamental question: can we find a special basis where the matrix representation of a given transformation becomes as simple as possible? This quest for simplicity leads us directly to the concepts of eigenvalues and eigenvectors.</p>
+            
+            <h4>Same Transformation, Different Masks: Similar Matrices</h4>
+            <p>Imagine a linear transformation, let's call it $T$. In one coordinate system (basis $B_1$), we might represent $T$ with a matrix $A$. If we switch to a different coordinate system (basis $B_2$), the same transformation $T$ will be represented by a different matrix, $B$.</p>
+            <p>Matrices $A$ and $B$ are related; they are called <strong>similar matrices</strong>. Mathematically, two matrices $A$ and $B$ are similar if there exists an invertible matrix $P$ (the change-of-basis matrix) such that $B = P^{-1}AP$. Similar matrices are different "masks" for the exact same underlying linear transformation.</p>
+            <p>The natural question arises: Since we can change the matrix representation by changing the basis, can we find a basis where the matrix becomes incredibly simple? What's the simplest kind of matrix we can hope for?</p>
+            
+            <h2>The Simplest Form: Diagonal Matrices</h2>
+            <p>Diagonal matrices are arguably the simplest and most well-behaved type of matrices in linear algebra. Characterized by having non-zero entries only along their main diagonal, they offer significant computational advantages.</p>
+            <div class="math-display">
+            $$
+            D = \begin{bmatrix}
+            d_1 & 0 & \dots & 0 \\
+            0 & d_2 & \dots & 0 \\
+            \vdots & \vdots & \ddots & \vdots \\
+            0 & 0 & \dots & d_n
+            \end{bmatrix}
+            $$
+            </div>
+            <p>Their simplicity stems from several key properties. For instance, calculating powers of a diagonal matrix is straightforward: one simply raises each diagonal element to the desired power. The determinant of a diagonal matrix is also easily found by multiplying all its diagonal entries. If a diagonal matrix is invertible, its inverse is obtained by taking the reciprocal of each diagonal element. Furthermore, the transformative effect of a diagonal matrix is intuitive: it scales the space along each coordinate axis, with the $i$-th basis vector being scaled by the $i$-th diagonal entry, $d_i$.</p>
+            <p>This inherent simplicity makes diagonal matrices highly desirable. Consequently, a central goal when analyzing a linear transformation represented by a matrix $A$ is to determine if a basis can be found in which this transformation is represented by a diagonal matrix $D$. If such a basis exists, the original matrix $A$ is said to be similar to the diagonal matrix $D$.</p>
+            
+            <h2>Finding the Magic Basis: Eigenvectors</h2>
+            <p>The quest for a basis that simplifies a transformation matrix to a diagonal form hinges on understanding how the transformation acts on these potential basis vectors. If a matrix $D$ is diagonal with entries $\lambda_1, \lambda_2, \dots, \lambda_n$ in a basis composed of vectors $\{ \mathbf{v}_1, \mathbf{v}_2, \dots, \mathbf{v}_n \}$, it implies that the linear transformation $T$, when applied to any of these basis vectors $\mathbf{v}_i$, merely scales it by the corresponding factor $\lambda_i$. This can be expressed as:</p>
+            <p>$T(\mathbf{v}_1) = \lambda_1 \mathbf{v}_1$</p>
+            <p>$T(\mathbf{v}_2) = \lambda_2 \mathbf{v}_2$</p>
+            <p>...</p>
+            <p>$T(\mathbf{v}_n) = \lambda_n \mathbf{v}_n$</p>
+            <p>When we translate this concept back to the original matrix $A$ (which represents $T$ in the standard basis), this condition becomes the pivotal equation $A \mathbf{v}_i = \lambda_i \mathbf{v}_i$. This equation signifies that we are searching for special, non-zero vectors $\mathbf{v}$ such that applying the transformation $A$ to $\mathbf{v}$ results in a vector that is simply a scaled version of $\mathbf{v}$, denoted $\lambda \mathbf{v}$. Critically, the vector $\mathbf{v}$ maintains its direction along the same line through the origin, though its orientation might reverse if $\lambda$ is negative. These special vectors and their corresponding scaling factors are formally defined as:</p>
+            <ul>
+                <li><strong>Eigenvector:</strong> A non-zero vector $\mathbf{v}$ that satisfies $A \mathbf{v} = \lambda \mathbf{v}$ for some scalar $\lambda$ is called an <strong>eigenvector</strong> (or sometimes right eigenvector) of $A$.</li>
+                <li><strong>Eigenvalue:</strong> The corresponding scaling factor $\lambda$ is called the <strong>eigenvalue</strong> associated with the eigenvector $\mathbf{v}$.</li>
+            </ul>
+            <p>From a geometric standpoint, eigenvectors delineate the <strong>invariant directions</strong> of a linear transformation. Along these directions, the transformation acts purely as a scaling operation—either stretching or shrinking the vector—and the eigenvalue quantifies the precise magnitude of this scaling. However, not all transformations possess such real invariant directions. To illustrate this, consider, for instance, a pure rotation in a two-dimensional plane (by an angle other than $0^\circ$ or $180^\circ$). Such a transformation typically lacks real eigenvectors precisely because it alters the direction of every non-zero vector; no vector remains on its original line after rotation, thus failing to satisfy the $A \mathbf{v} = \lambda \mathbf{v}$ condition for any real $\lambda$ and non-zero $\mathbf{v}$.</p>
+            <p>Before exploring how a complete set of eigenvectors can simplify a transformation, it's important to note a fundamental property concerning their independence when associated with different eigenvalues:</p>
+            
+            <div class="theorem-block">
+                <p><strong>Theorem:</strong> Eigenvectors corresponding to <strong>distinct</strong> eigenvalues are linearly independent.</p>
+                <p>This theorem is powerful because it assures us that eigenvectors originating from different eigenvalues will always point in genuinely different directions and will not be redundant in terms of spanning a space. This property is a cornerstone in constructing a basis from eigenvectors.</p>
+            </div>
+
+            <p>The profound connection to diagonalization now becomes clear: if one can identify a complete set of $n$ linearly independent eigenvectors $\{ \mathbf{v}_1, \dots, \mathbf{v}_n \}$ for an $n \times n$ matrix $A$ (a feat made more plausible by the theorem above, especially if the matrix has many distinct eigenvalues), these eigenvectors constitute an <strong>eigenbasis</strong> for the vector space. Within this eigenbasis, the transformation $T$ is represented by a diagonal matrix $D$, whose diagonal entries are precisely the corresponding eigenvalues $\{\lambda_1, \dots, \lambda_n\}$. The matrix $P$, formed by using these eigenvectors as its columns, serves as the <sup id="fnref-2"><a href="#fn-2" rel="footnote">2</a></sup>change-of-basis matrix that achieves this diagonalization:</p>
+            <div class="math-display">
+            $$A = PDP^{-1} \quad \text{or equivalently} \quad D = P^{-1}AP$$
+            </div>
+            <p>Therefore, the discovery of eigenvectors and eigenvalues is the essential step towards finding the simplest (diagonal) representation of a linear transformation, provided such a representation exists.</p>
+
+            <h2>Formal Definitions</h2>
+            <p>Let $V$ be a vector space over a scalar field $F$ (commonly $F = \mathbb{R}$ or $F = \mathbb{C}$), and let $T: V \to V$ be a linear transformation (represented by a square matrix $A$ if $V$ is finite-dimensional and a basis is chosen).</p>
+            
+            <div class="definition-block">
+                <p><strong>Definition: Eigenvalue and Eigenvector</strong></p>
+                <p>A scalar $\lambda \in F$ is called an <strong>eigenvalue</strong> of $T$ (or $A$) if there exists a <strong>non-zero</strong> vector $\mathbf{v} \in V$ such that:</p>
+                <div class="math-display">
+                $$T(\mathbf{v}) = \lambda \mathbf{v} \quad (\text{or equivalently, } A \mathbf{v} = \lambda \mathbf{v})$$
+                </div>
+                <p>The non-zero vector $\mathbf{v}$ is called an <strong>eigenvector</strong> (or right eigenvector) of $T$ (or $A$) corresponding to the eigenvalue $\lambda$.</p>
+                <p><em>Note: The zero vector $\mathbf{0}$ is explicitly excluded from being an eigenvector, because $T(\mathbf{0}) = \mathbf{0} = \lambda \mathbf{0}$ holds for any $\lambda$, making it trivial.</em></p>
+            </div>
+
+            <div class="definition-block">
+                <p><strong>Definitions: Spectrum</strong></p>
+                <ul>
+                    <li>The <strong>spectrum</strong> of a linear transformation $T$ (or matrix $A$), often denoted $\sigma(T)$ or $\sigma(A)$, is the set of all its eigenvalues. <div class="math-display">$$\sigma(T) = \{ \lambda \in F; \lambda \text{ is an eigenvalue of } T \}$$</div></li>
+                    <li>The <strong>spectral radius</strong> of a linear transformation $T$ (or matrix $A$), denoted $\rho(T)$ or $\rho(A)$, is the maximum absolute value of its eigenvalues: <div class="math-display">$$ \rho(T) = \max \{ |\lambda|; \lambda \in \sigma(T) \} $$</div></li>
+                </ul>
+                <p>While in the study of operators on infinite-dimensional spaces the spectrum can be a broader concept (though always including all eigenvalues), for finite-dimensional vector spaces, which are the typical setting for matrices like $A$, the spectrum $\sigma(A)$ consists exclusively of its eigenvalues.</p>
+            </div>
+
+            <h2>Characteristic Polynomial and Basic Properties</h2>
+            <p>While the fundamental definition $A\mathbf{v} = \lambda \mathbf{v}$ clearly articulates what eigenvalues and eigenvectors represent, it does not inherently offer a direct computational method for their discovery. The characteristic polynomial serves as the primary tool for systematically finding eigenvalues.</p>
+            
+            <div class="definition-block">
+                <p><strong>Definition: Characteristic Polynomial</strong></p>
+                <p>For an $n \times n$ matrix $A$, its <strong>characteristic polynomial</strong> is defined as:</p>
+                <div class="math-display">
+                $$p_A(t) = \det(tI - A)$$
+                </div>
+                <p>where $t$ is a scalar variable and $I$ is the $n \times n$ identity matrix.</p>
+            </div>
+
+            <p>The most crucial aspect of the characteristic polynomial is its direct relationship with the eigenvalues of the matrix. Specifically, the scalars $\lambda$ that qualify as eigenvalues of $A$ are precisely the <strong>roots</strong> of this polynomial. This fundamental property can be stated as:</p>
+            <div class="math-display">
+            $$\lambda \in \sigma(A) \iff p_A(\lambda) = 0$$
+            </div>
+            <p>This equivalence arises directly from the eigenvalue definition. The equation $A\mathbf{v} = \lambda \mathbf{v}$ is equivalent to $(A - \lambda I)\mathbf{v} = \mathbf{0}$. For this homogeneous system to have a non-zero solution $\mathbf{v}$ (which is a requirement for an eigenvector), the matrix $(A - \lambda I)$ must be singular. A singular matrix has a determinant of zero, so $\det(A - \lambda I) = 0$. Given that $\det(A - \lambda I) = (-1)^n \det(\lambda I - A) = (-1)^n p_A(\lambda)$, the condition $p_A(\lambda) = 0$ directly follows.</p>
+            <p>The characteristic polynomial has several important structural features and relationships with other matrix properties:</p>
+            <ul>
+                <li><strong>Structure:</strong> $p_A(t)$ is a polynomial in the variable $t$ with a degree of exactly $n$. By defining it as $\det(tI - A)$, the convention ensures that the leading coefficient (the term with $t^n$) is always 1, classifying it as a monic polynomial.</li>
+                <li><strong>Coefficients, Trace, and Determinant:</strong> The expansion of the determinant $\det(tI - A)$ reveals direct links to the trace and determinant of matrix $A$:
+                <div class="math-display">$$p_A(t) = t^n - (\text{tr}(A)) t^{n-1} + \dots + (-1)^n \det(A)$$</div>
+                Notably, the coefficient of the $t^{n-1}$ term is the negative of the trace of $A$, and the constant term of the polynomial, $p_A(0)$, is equal to $\det(-A)$, which simplifies to $(-1)^n \det(A)$.</li>
+                <li><strong>Algebraic Multiplicity:</strong> The <strong>algebraic multiplicity</strong> of an eigenvalue $\lambda$ is defined as its multiplicity as a root of the characteristic polynomial $p_A(t)$. This indicates how many times the factor $(t-\lambda)$ appears in the factored form of the polynomial.</li>
+                <li><strong>Sum and Product of Eigenvalues:</strong> Since the eigenvalues $\lambda_1, \dots, \lambda_n$ (listed according to their algebraic multiplicities) are the roots of $p_A(t)$, the polynomial can also be expressed in factored form:
+                <div class="math-display">$$p_A(t) = (t-\lambda_1)(t-\lambda_2)\dots(t-\lambda_n)$$</div>
+                By expanding this factored form and comparing its coefficients with the previous expression for $p_A(t)$, two significant results emerge:
+                <ul>
+                    <li>$\text{tr}(A) = \sum_{i=1}^n \lambda_i$ (The trace of the matrix is the sum of its eigenvalues).</li>
+                    <li>$\det(A) = \prod_{i=1}^n \lambda_i$ (The determinant of the matrix is the product of its eigenvalues).</li>
+                </ul></li>
+                <li><strong>Existence and Number of Eigenvalues:</strong> The<sup id="fnref-3"><a href="#fn-3" rel="footnote">3</a></sup> Fundamental Theorem of Algebra is key here. It states that any polynomial of degree $n \ge 1$ with complex coefficients possesses exactly $n$ complex roots, when these roots are counted with their multiplicities. As $p_A(t)$ is such a polynomial, this theorem guarantees that:
+                <ul>
+                    <li>Every $n \times n$ complex matrix $A$ has at least one complex eigenvalue.</li>
+                    <li>Every $n \times n$ complex matrix $A$ has exactly $n$ complex eigenvalues, provided they are counted according to their algebraic multiplicity.</li>
+                </ul></li>
+            </ul>
+
+            <h2>Geometric Multiplicity and Diagonalizability</h2>
+            <p>Beyond the algebraic multiplicity, which quantifies how many times an eigenvalue appears as a root of the characteristic polynomial, the <strong>geometric multiplicity</strong> provides a different perspective by relating to the number of linearly independent eigenvectors associated with that eigenvalue.</p>
+            <p>For any given eigenvalue $\lambda$ of a matrix $A$, the set of all vectors $\mathbf{v}$ (including the zero vector) that satisfy the eigenvalue equation $A\mathbf{v} = \lambda \mathbf{v}$ constitutes a subspace. This subspace is known as the <strong>eigenspace</strong> of $A$ corresponding to $\lambda$, denoted $E_\lambda$. This eigenspace is equivalent to the null space of the matrix $(A - \lambda I)$. The dimension of this eigenspace $E_\lambda$ is defined as the <strong>geometric multiplicity</strong> of the eigenvalue $\lambda$. Thus:</p>
+            <div class="math-display">
+            $$\text{Geometric Multiplicity of } \lambda = \dim(E_\lambda) = \dim(\text{null space}(A - \lambda I)) = n - \text{rank}(A - \lambda I)$$
+            </div>
+            <p>This value signifies the maximum number of linearly independent eigenvectors that can be found for that particular eigenvalue $\lambda$.</p>
+            <p>A fundamental relationship, often termed the <strong>Multiplicity Inequality</strong>, connects these two types of multiplicities:</p>
+            
+            <div class="theorem-block">
+                <p><strong>Theorem:</strong> For any eigenvalue $\lambda$ of a matrix $A$, its geometric multiplicity is always less than or equal to its algebraic multiplicity.</p>
+                <div class="math-display">
+                $$1 \le \text{Geometric Multiplicity}(\lambda) \le \text{Algebraic Multiplicity}(\lambda)$$
+                </div>
+                <p>This inequality gives rise to an important classification of matrices. A matrix $A$ is termed <sup id="fnref-4"><a href="#fn-4" rel="footnote">4</a></sup><strong>defective</strong> if, for at least one of its eigenvalues, the geometric multiplicity is strictly less than its algebraic multiplicity. Conversely, a matrix $A$ is called <strong>nondefective</strong> if the geometric multiplicity equals the algebraic multiplicity for all of its eigenvalues.</p>
+            </div>
+
+            <p>The concept of a matrix being nondefective is central to understanding when a matrix can be diagonalized. <strong>The Diagonalizability Condition</strong> is a key theorem in this regard:</p>
+            
+            <div class="theorem-block">
+                <p><strong>Theorem:</strong> An $n \times n$ matrix $A$ is <strong>diagonalizable</strong> if and only if it is nondefective.</p>
+                <p>This implies that a matrix $A$ can be diagonalized if and only if the sum of the geometric multiplicities of all its distinct eigenvalues equals $n$. This condition is met when the matrix possesses a full set of $n$ linearly independent eigenvectors, which can then form an eigenbasis for the vector space, allowing the transformation to be represented by a diagonal matrix.</p>
+            </div>
+
+            <p>Finally, matrices can also be classified as <strong>derogatory</strong> or <strong>nonderogatory</strong> based on the geometric multiplicities of their eigenvalues. A matrix $A$ is <strong>nonderogatory</strong> if the geometric multiplicity of every eigenvalue is exactly 1, meaning each eigenvalue corresponds to a unique eigenvector direction (up to scalar multiples). In contrast, a matrix $A$ is <strong>derogatory</strong> if it has at least one eigenvalue with a geometric multiplicity greater than 1, indicating the existence of multiple linearly independent eigenvectors for that eigenvalue.</p>
+            <p>This distinction between nonderogatory and derogatory matrices offers a further layer of insight into the structure of a matrix's eigenspaces, beyond simply counting eigenvectors for diagonalizability. A <strong>nonderogatory</strong> matrix is characterized by having the "simplest" possible eigenspace structure for each of its eigenvalues: every eigenspace is one-dimensional, meaning all eigenvectors for a given eigenvalue lie along a single line.</p>
+            <p>In contrast, a <strong>derogatory</strong> matrix signals a more complex situation for at least one eigenvalue: its corresponding eigenspace is multi-dimensional, providing more "directions" or "freedom" in choosing linearly independent eigenvectors for that eigenvalue. This classification isn't just about whether a matrix is diagonalizable—for example, the $n \times n$ identity matrix $I_n$ (for $n>1$) is diagonalizable but also derogatory (as its single eigenvalue $\lambda=1$ has geometric multiplicity $n$). The concept of a matrix being derogatory or nonderogatory becomes particularly significant when analyzing the finer details of matrix structure, such as their canonical forms (especially for non-diagonalizable matrices) and in connection with certain unique polynomials that can define the matrix (a topic often explored through the minimal polynomial). It essentially provides a more nuanced understanding of how eigenvalues and their associated geometric spaces behave.</p>
+
+            <h2>Properties and Eigenvalues of Related Matrices</h2>
+            <p>The eigenvalues of a matrix $A$ are related to the eigenvalues of matrices derived from $A$ in several useful ways:</p>
+            <ul>
+                <li><strong>Polynomials of Matrices:</strong> If $\lambda$ is an eigenvalue of $A$ and $p(t)$ is any polynomial, then $p(\lambda)$ is an eigenvalue of the matrix $p(A)$. Furthermore, every eigenvalue of $p(A)$ is of the form $p(\lambda)$ for some eigenvalue $\lambda$ of $A$.</li>
+                <li><strong>Transpose:</strong> A matrix $A$ and its transpose $A^T$ have the same characteristic polynomial and therefore the same eigenvalues with the same algebraic multiplicities: $\sigma(A^T) = \sigma(A)$.</li>
+                <li><strong>Conjugate Transpose:</strong> The eigenvalues of the conjugate transpose $A^*$ (or $A^H$) are the complex conjugates of the eigenvalues of $A$: $\sigma(A^*) = \overline{\sigma(A)}$.</li>
+                <li><strong>Real Matrices:</strong> If $A$ is a real matrix, then its characteristic polynomial has real coefficients. Consequently, if $\lambda$ is a non-real eigenvalue of $A$, its complex conjugate $\bar{\lambda}$ must also be an eigenvalue of $A$ with the same algebraic multiplicity.</li>
+                <li><strong>Inverse:</strong> If $A$ is nonsingular (invertible), then its eigenvalues $\lambda$ are all non-zero. The eigenvalues of $A^{-1}$ are the reciprocals of the eigenvalues of $A$: $\sigma(A^{-1}) = \{ 1/\lambda \mid \lambda \in \sigma(A) \}$.</li>
+                <li><strong>Scalar Addition (Shift):</strong> Adding a scalar multiple of the identity matrix shifts the eigenvalues: $\sigma(A + \mu I) = \{ \lambda + \mu \mid \lambda \in \sigma(A) \}$.</li>
+                <li><strong>Triangular Matrices:</strong> If $A$ is an upper or lower triangular matrix, its eigenvalues are precisely the entries on its main diagonal.</li>
+                <li><strong>Block Diagonal Matrices:</strong> If $A = A_{11} \oplus \dots \oplus A_{kk}$ is block diagonal, its spectrum is the union of the spectra of the diagonal blocks: $\sigma(A) = \sigma(A_{11}) \cup \dots \sigma(A_{kk})$.</li>
+                <li><strong>Hermitian Matrices:</strong> If $A = A^*$ ($A$ is Hermitian), all its eigenvalues are real numbers. If $A$ is real and symmetric ($A=A^T$), its eigenvalues are real.</li>
+                <li><strong>Products AB vs. BA:</strong> For square matrices $A, B \in M_n$, the products $AB$ and $BA$ have exactly the same eigenvalues: $\sigma(AB) = \sigma(BA)$.</li>
+            </ul>
+
+            <h2>Conclusion: Unveiling the Core Action</h2>
+            <p>Eigenvalues and eigenvectors arise naturally from seeking the simplest possible representation of a linear transformation. They aren't just arbitrary vectors satisfying a peculiar equation; they represent the fundamental directions along which a transformation acts purely as a scaling.</p>
+            <ul>
+                <li>Eigenvectors define the <strong>invariant directions</strong>.</li>
+                <li>Eigenvalues quantify the <strong>scaling factor</strong> along those directions.</li>
+                <li>Finding an eigenbasis allows us to see the transformation in its simplest, diagonal form ($D = P^{-1}AP$).</li>
+            </ul>
+            <p>This decomposition reveals the core action of the transformation and unlocks powerful tools for analyzing systems across science, engineering, and data analysis.</p>
+            <p>By understanding this motivation, eigenvalues and eigenvectors transform from an abstract definition into a powerful concept for simplifying complexity and understanding the intrinsic behavior of linear transformations and the systems they model.</p> <div class="footnotes">
+              <ol>
+                <li id="fn-2"><strong>Why New Basis Vectors Form the Columns of a Change-of-Basis Matrix:</strong> 
+	Consider a new basis $B = \{\mathbf{b}_1, \mathbf{b}_2, \dots, \mathbf{b}_n\}$ for an $n$-dimensional vector space. Each of these new basis vectors $\mathbf{b}_i$ can itself be expressed as a column vector using the coordinates of the pre-existing standard basis $S$ (e.g., $\mathbf{b}_1 = [b_{11}, b_{21}, \dots, b_{n1}]^T$ in standard coordinates). If an arbitrary vector $\mathbf{x}$ has coordinates $[\mathbf{x}]_B = (c_1, c_2, \dots, c_n)^T$ with respect to this new basis $B$, it means that $\mathbf{x} = c_1\mathbf{b}_1 + c_2\mathbf{b}_2 + \dots + c_n\mathbf{b}_n$. Now, let's define a matrix $P$ whose columns are these new basis vectors: $P = [\mathbf{b}_1 \mid \mathbf{b}_2 \mid \dots \mid \mathbf{b}_n]$. When we multiply this matrix $P$ by the coordinate vector $[\mathbf{x}]_B$, we get: $P[\mathbf{x}]_B = [\mathbf{b}_1 \mid \mathbf{b}_2 \mid \dots \mid \mathbf{b}_n] \begin{pmatrix} c_1 \\ c_2 \\ \vdots \\ c_n \end{pmatrix} = c_1\mathbf{b}_1 + c_2\mathbf{b}_2 + \dots + c_n\mathbf{b}_n$. This resulting sum is exactly the vector $\mathbf{x}$, expressed in terms of the standard basis coordinates (because each $\mathbf{b}_i$ was written in standard coordinates). Thus, $P[\mathbf{x}]_B = [\mathbf{x}]_S$, which means $P$ is the change-of-basis matrix that transforms coordinates from the new basis $B$ to the standard basis $S$. The new basis vectors form the columns because the rules of matrix-vector multiplication naturally perform the required linear combination of these columns weighted by the coordinates in the new basis. <a href="#fnref-2" role="doc-backlink">&#x21A9;&#xFE0E;</a></li>
+                <li id="fn-3"><strong>The Fundamental Theorem of Algebra:</strong> This theorem states that every non-constant single-variable polynomial with complex coefficients has at least one complex root. An important consequence, when considering multiplicity, is that a polynomial of degree $n \ge 1$ has exactly $n$ complex roots, counted with multiplicity. <a href="#fnref-3" role="doc-backlink">&#x21A9;&#xFE0E;</a></li>
+                <li id="fn-4"><strong>Algebraic Multiplicity, Geometric Multiplicity, and the "Defect":</strong> The <strong>algebraic multiplicity (AM)</strong> of an eigenvalue $\lambda$ indicates how many times it is a root of the characteristic polynomial. This value, say $k=AM(\lambda)$, sets an <strong>upper bound</strong> on the number of linearly independent eigenvectors that can correspond to $\lambda$. The actual number of linearly independent eigenvectors for $\lambda$ is its <strong>geometric multiplicity (GM)</strong>. The fundamental relationship is $1 \le GM(\lambda) \le AM(\lambda)$. A matrix is called <strong>defective</strong> if, for at least one of its eigenvalues, the $GM$ is strictly less than the $AM$ ($GM(\lambda) < AM(\lambda)$). This "defect" signifies a deficiency in the number of linearly independent eigenvectors compared to the maximum potential suggested by the algebraic multiplicity, and it's this shortfall that prevents the matrix from being diagonalizable by an eigenbasis. <a href="#fnref-4" role="doc-backlink">&#x21A9;&#xFE0E;</a></li>
+              </ol>
+            </div>
+        </article>
+        </div>
+</body>
+</html>

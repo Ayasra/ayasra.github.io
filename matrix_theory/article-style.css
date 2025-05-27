@@ -1,0 +1,247 @@
+/* Import Google Fonts (can be redundant if main CSS is also loaded, but good for standalone articles) */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Open+Sans:wght@400;700&display=swap');
+
+/*
+  Basic Body and Container for Articles
+  -------------------------------------
+*/
+html {
+    height: 100%;
+}
+
+body {
+    font-family: 'Open Sans', 'Arial', sans-serif;
+    line-height: 1.8;
+    margin: 0;
+    padding: 0;
+    background-color: #FAF9F6; /* Very light beige background for article pages */
+    color: #333333; /* Default text color for articles */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.article-container { /* Main wrapper for article content */
+    width: 100%;
+    max-width: 900px; /* Controls the width of the article content block */
+    margin: 0 auto; /* Centers the article content block */
+    padding: 40px 20px; /* Top/bottom padding, LR padding for smaller screens */
+    box-sizing: border-box;
+    flex-grow: 1;
+}
+
+/* Article Header (Title and Breadcrumb) */
+.article-header {
+    margin-bottom: 2.5em;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 1.5em;
+}
+
+.breadcrumb-nav a {
+    font-family: 'Open Sans', 'Arial', sans-serif;
+    color: #070c6b;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+.breadcrumb-nav a:hover {
+    text-decoration: underline;
+}
+
+.article-header h1 {
+    font-family: 'Noto Serif', serif;
+    font-size: 2.6em; /* Slightly smaller than main site H1 */
+    font-weight: 400; /* Regular weight for article titles */
+    color: #1a1a1a; /* Darker text for title */
+    margin-top: 0.5em;
+    margin-bottom: 0;
+    line-height: 1.3;
+}
+
+/* Article Body Content Styling */
+.article-body {
+    /* Styles for the main content of the article */
+}
+
+/* Unified style for section introducers (previously h2 and h4) */
+.article-body h2,
+.article-body h4 { 
+    font-family: 'Noto Serif', serif;
+    font-size: 1.2em; /* Smaller, closer to paragraph text */
+    font-weight: 400; /* Normal weight */
+    color: #4A5568; /* Muted, professional gray */
+    text-transform: uppercase; /* Makes it feel like a label/introducer */
+    letter-spacing: 0.075em; /* Slight spacing for uppercase text */
+    margin-top: 2em;      /* Reduced space above */
+    margin-bottom: 1em; /* Reduced space below */
+    border-bottom: none;    /* Remove underline/border */
+    padding-bottom: 0;      /* Remove padding */
+}
+
+.article-body p {
+    font-family: 'Open Sans', 'Arial', sans-serif;
+    font-size: 1.1em; /* Standard readable size for article text */
+    line-height: 1.9;
+    color: #333333;
+    margin-bottom: 1em; /* Reduced space between paragraphs */
+}
+
+/* Styles for Definition and Theorem blocks */
+.article-body .definition-block,
+.article-body .theorem-block {
+    background-color: #f7f7f7; /* Slightly different background to distinguish */
+    border-left: 4px solid #070c6b; /* Accent color border on the left */
+    padding: 1em 1.5em; /* Padding inside the block */
+    margin-left: 20px;  /* Indentation from the main paragraph alignment */
+    margin-right: 0; /* Ensure it doesn't go too wide if container is wider */
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    border-radius: 0 4px 4px 0; /* Optional: slight rounding on the right corners */
+}
+
+.article-body .definition-block strong,
+.article-body .theorem-block strong {
+    color: #070c6b; /* Match accent color */
+    font-weight: 700; /* Keep it bold */
+}
+
+
+.article-body ul {
+    font-family: 'Open Sans', 'Arial', sans-serif;
+    list-style: disc; 
+    margin-left: 20px; /* Standard indentation */
+    margin-bottom: 1em; /* Reduced space */
+    padding-left: 20px; 
+}
+
+.article-body ul li {
+    font-family: 'Open Sans', 'Arial', sans-serif; 
+    font-size: 1.05em; /* Slightly smaller than paragraph for list items */
+    margin-bottom: 0.5em; /* Reduced space */
+    line-height: 1.7;
+}
+
+.article-body ul li strong { 
+    font-weight: 700; 
+}
+
+.article-body strong { /* General strong tag styling within article (outside def/theorem blocks) */
+    font-weight: 700;
+    color: #111; /* Slightly darker for emphasis */
+}
+
+.article-body em { /* General emphasis tag styling */
+    font-style: italic;
+}
+
+/* UPDATED Styles for Display Math */
+.article-body .math-display {
+    margin: 2em auto; /* Keep vertical spacing and horizontal centering */
+    padding: 10px 0; /* Vertical padding, no horizontal padding for a "naked" look */
+    /* REMOVED: background-color: #f0f0f0; */
+    /* REMOVED: border: 1px solid #e0e0e0; */
+    /* REMOVED: border-radius: 4px; */
+    overflow-x: auto; 
+    max-width: 100%; 
+    box-sizing: border-box; 
+    text-align: center; /* Center the math block content if it's narrower */
+}
+
+.article-body .footnotes {
+    margin-top: 3em; /* Reduced space */
+    padding-top: 1.5em; /* Reduced space */
+    border-top: 1px solid #cccccc; 
+}
+
+.article-body .footnotes ol {
+    padding-left: 20px; 
+    font-family: 'Open Sans', 'Arial', sans-serif;
+}
+
+.article-body .footnotes ol li {
+    font-size: 0.9em; /* Slightly smaller footnote text */
+    color: #444444; 
+    margin-bottom: 0.8em; /* Reduced space */
+    line-height: 1.65;
+}
+
+.article-body .footnotes ol li a { 
+    color: #070c6b;
+    text-decoration: none;
+}
+.article-body .footnotes ol li a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Adjustments for Articles */
+@media (max-width: 768px) {
+    .article-container {
+        padding: 30px 15px;
+    }
+    .article-header h1 {
+        font-size: 2.2em;
+    }
+    /* Unified responsive style for section introducers */
+    .article-body h2,
+    .article-body h4 { 
+        font-size: 1.1em; 
+        margin-top: 1.8em; 
+        margin-bottom: 0.8em; 
+    }
+    .article-body p { 
+        font-size: 1em; 
+        margin-bottom: 0.9em; 
+    }
+    .article-body .definition-block,
+    .article-body .theorem-block {
+        margin-left: 10px; 
+        padding: 0.8em 1em;
+    }
+    .article-body ul li { 
+        font-size: 0.95em; 
+        margin-bottom: 0.4em; 
+    }
+    .article-body .math-display {
+        margin: 1.5em auto;
+        padding: 5px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .article-container {
+        padding: 20px 10px;
+    }
+    .article-header h1 {
+        font-size: 1.9em;
+    }
+    /* Unified responsive style for section introducers */
+    .article-body h2,
+    .article-body h4 { 
+        font-size: 1.0em; 
+        margin-top: 1.5em; 
+        margin-bottom: 0.7em; 
+        letter-spacing: 0.05em;
+    }
+    .article-body p { 
+        font-size: 0.95em; 
+        margin-bottom: 0.8em; 
+    }
+    .article-body .definition-block,
+    .article-body .theorem-block {
+        margin-left: 5px; 
+        padding: 0.7em 0.8em;
+    }
+    .article-body ul li { 
+        font-size: 0.9em; 
+        margin-bottom: 0.3em; 
+    }
+    .article-body .footnotes ol li { 
+        font-size: 0.85em;
+        margin-bottom: 0.7em; 
+    }
+    .article-body .math-display {
+        margin: 1em auto;
+    }
+}
+
