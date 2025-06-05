@@ -49,11 +49,11 @@ body {
     text-decoration: underline;
 }
 
-.article-header h1 {
+.article-header h1 { /* Main Article Title */
     font-family: 'Noto Serif', serif;
-    font-size: 2.6em; /* Slightly smaller than main site H1 */
-    font-weight: 400; /* Regular weight for article titles */
-    color: #1a1a1a; /* Darker text for title */
+    font-size: 2.6em; 
+    font-weight: 400; 
+    color: #1a1a1a; 
     margin-top: 0.5em;
     margin-bottom: 0;
     line-height: 1.3;
@@ -64,61 +64,78 @@ body {
     /* Styles for the main content of the article */
 }
 
-/* Unified style for section introducers (previously h2 and h4) */
-.article-body h2,
-.article-body h4 { 
+/* Styles for article headings - Less prominent style */
+.article-body h2 { /* Major section headings like "The Essence of Similarity..." */
     font-family: 'Noto Serif', serif;
-    font-size: 1.2em; /* Smaller, closer to paragraph text */
+    font-size: 1.6em;  /* Reduced size */
     font-weight: 400; /* Normal weight */
-    color: #4A5568; /* Muted, professional gray */
-    text-transform: uppercase; /* Makes it feel like a label/introducer */
-    letter-spacing: 0.075em; /* Slight spacing for uppercase text */
-    margin-top: 2em;      /* Reduced space above */
-    margin-bottom: 1em; /* Reduced space below */
-    border-bottom: none;    /* Remove underline/border */
-    padding-bottom: 0;      /* Remove padding */
+    color: #333333; /* Dark gray, less vibrant */
+    margin-top: 2.5em; /* Adjusted margin */
+    margin-bottom: 0.8em;
+    border-bottom: none; /* Removed border */
+    padding-bottom: 0; /* Removed padding */
 }
+
+.article-body h3 { /* Sub-section headings like "Echoes of the Operator..." */
+    font-family: 'Noto Serif', serif;
+    font-size: 1.3em;  /* Reduced size */
+    font-weight: 400; /* Normal weight */
+    color: #444444; /* Slightly lighter dark gray */
+    margin-top: 2.0em; /* Adjusted margin */
+    margin-bottom: 0.6em;
+}
+
+.article-body h4 { /* Finer sub-section headings like "The Elegance of Scaling..." */
+    font-family: 'Noto Serif', serif;
+    font-size: 1.15em;  /* Reduced size */
+    font-weight: 400; /* Normal weight */
+    color: #555555; /* Even lighter gray */
+    margin-top: 1.6em; /* Adjusted margin */
+    margin-bottom: 0.4em;
+    /* text-transform: none; /* Ensuring it's not uppercase if it was before */
+}
+
 
 .article-body p {
     font-family: 'Open Sans', 'Arial', sans-serif;
-    font-size: 1.1em; /* Standard readable size for article text */
+    font-size: 1.1em; 
     line-height: 1.9;
     color: #333333;
-    margin-bottom: 1em; /* Reduced space between paragraphs */
+    margin-bottom: 1em; 
 }
 
 /* Styles for Definition and Theorem blocks */
 .article-body .definition-block,
 .article-body .theorem-block {
-    background-color: #f7f7f7; /* Slightly different background to distinguish */
-    border-left: 4px solid #070c6b; /* Accent color border on the left */
-    padding: 1em 1.5em; /* Padding inside the block */
-    margin-left: 20px;  /* Indentation from the main paragraph alignment */
-    margin-right: 0; /* Ensure it doesn't go too wide if container is wider */
+    background-color: #f7f7f7; 
+    border-left: 4px solid #070c6b; 
+    padding: 1em 1.5em; 
+    margin-left: 20px;  
+    margin-right: 0; 
     margin-top: 1.5em;
     margin-bottom: 1.5em;
-    border-radius: 0 4px 4px 0; /* Optional: slight rounding on the right corners */
+    border-radius: 0 4px 4px 0; 
 }
 
 .article-body .definition-block strong,
 .article-body .theorem-block strong {
-    color: #070c6b; /* Match accent color */
-    font-weight: 700; /* Keep it bold */
+    color: #070c6b; 
+    font-weight: 700; 
 }
 
 
 .article-body ul {
     font-family: 'Open Sans', 'Arial', sans-serif;
     list-style: disc; 
-    margin-left: 20px; /* Standard indentation */
-    margin-bottom: 1em; /* Reduced space */
+    margin-left: 20px; 
+    margin-bottom: 1em; 
     padding-left: 20px; 
 }
 
 .article-body ul li {
     font-family: 'Open Sans', 'Arial', sans-serif; 
-    font-size: 1.05em; /* Slightly smaller than paragraph for list items */
-    margin-bottom: 0.5em; /* Reduced space */
+    font-size: 1.05em; 
+    margin-bottom: 0.5em; 
     line-height: 1.7;
 }
 
@@ -126,27 +143,27 @@ body {
     font-weight: 700; 
 }
 
-.article-body strong { /* General strong tag styling within article (outside def/theorem blocks) */
+.article-body strong { 
     font-weight: 700;
-    color: #111; /* Slightly darker for emphasis */
+    color: #111; 
 }
 
-.article-body em { /* General emphasis tag styling */
+.article-body em { 
     font-style: italic;
 }
 
 .article-body .math-display {
-    margin: 0.75em auto; /* UPDATED: Reduced vertical margin */
-    padding: 5px 0; /* Minimal vertical padding for a "naked" look */
+    margin: 0.75em auto; 
+    padding: 5px 0; 
     overflow-x: auto; 
     max-width: 100%; 
     box-sizing: border-box; 
-    text-align: center; /* Center the math block content if it's narrower */
+    text-align: center; 
 }
 
 .article-body .footnotes {
-    margin-top: 3em; /* Reduced space */
-    padding-top: 1.5em; /* Reduced space */
+    margin-top: 3em; 
+    padding-top: 1.5em; 
     border-top: 1px solid #cccccc; 
 }
 
@@ -156,9 +173,9 @@ body {
 }
 
 .article-body .footnotes ol li {
-    font-size: 0.9em; /* Slightly smaller footnote text */
+    font-size: 0.9em; 
     color: #444444; 
-    margin-bottom: 0.8em; /* Reduced space */
+    margin-bottom: 0.8em; 
     line-height: 1.65;
 }
 
@@ -178,12 +195,20 @@ body {
     .article-header h1 {
         font-size: 2.2em;
     }
-    /* Unified responsive style for section introducers */
-    .article-body h2,
-    .article-body h4 { 
-        font-size: 1.1em; 
+    .article-body h2 { 
+        font-size: 1.4em; /* Adjusted responsive size */
+        margin-top: 2.0em; 
+        margin-bottom: 0.7em; 
+    }
+    .article-body h3 { 
+        font-size: 1.2em; /* Adjusted responsive size */
         margin-top: 1.8em; 
-        margin-bottom: 0.8em; 
+        margin-bottom: 0.5em; 
+    }
+    .article-body h4 { 
+        font-size: 1.05em;  /* Adjusted responsive size */
+        margin-top: 1.5em; 
+        margin-bottom: 0.3em; 
     }
     .article-body p { 
         font-size: 1em; 
@@ -199,7 +224,7 @@ body {
         margin-bottom: 0.4em; 
     }
     .article-body .math-display {
-        margin: 0.5em auto; /* UPDATED: Further reduced for smaller screens */
+        margin: 0.5em auto; 
         padding: 2px 0;
     }
 }
@@ -211,13 +236,20 @@ body {
     .article-header h1 {
         font-size: 1.9em;
     }
-    /* Unified responsive style for section introducers */
-    .article-body h2,
+    .article-body h2 { 
+        font-size: 1.25em; /* Adjusted responsive size */
+        margin-top: 1.8em; 
+        margin-bottom: 0.6em; 
+    }
+    .article-body h3 { 
+        font-size: 1.1em; /* Adjusted responsive size */
+        margin-top: 1.6em; 
+        margin-bottom: 0.4em; 
+    }
     .article-body h4 { 
-        font-size: 1.0em; 
-        margin-top: 1.5em; 
-        margin-bottom: 0.7em; 
-        letter-spacing: 0.05em;
+        font-size: 1.0em;  /* Adjusted responsive size */
+        margin-top: 1.4em; 
+        margin-bottom: 0.3em; 
     }
     .article-body p { 
         font-size: 0.95em; 
@@ -237,7 +269,7 @@ body {
         margin-bottom: 0.7em; 
     }
     .article-body .math-display {
-        margin: 0.5em auto; /* Consistent with tablet size */
+        margin: 0.5em auto; 
     }
 }
 
