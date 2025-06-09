@@ -4,34 +4,32 @@
 /*
   Main Body and Container Styles
   ------------------------------
-  - Sets default font, line height, and background for the page.
-  - Container is now set to full width. Sections will manage their own padding.
 */
 html {
-    height: 100%; /* Ensure html element takes full height */
+    height: 100%;
 }
 
 body {
-    font-family: 'Open Sans', 'Arial', sans-serif; /* Default sans-serif font for the page */
-    line-height: 1.8; /* Generous line height for readability */
+    font-family: 'Open Sans', 'Arial', sans-serif;
+    line-height: 1.8;
     margin: 0;
     padding: 0;
-    background-color: #F4F7F6; /* Set body background to the notes section color to avoid white stripe */
-    color: #222222; /* Default text color */
-    -webkit-font-smoothing: antialiased; /* Improves font rendering on WebKit browsers */
-    -moz-osx-font-smoothing: grayscale; /* Improves font rendering on Firefox */
-    display: flex; /* Added for flex layout */
-    flex-direction: column; /* Added for flex layout */
-    min-height: 100vh; /* Body takes at least full viewport height */
+    background-color: #F4F7F6;
+    color: #222222;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .container {
-    width: 100%; /* Container takes full width */
-    padding: 0; /* Padding is handled by individual sections */
-    text-align: left; /* Aligns text content to the left within the container */
-    display: flex; /* Added for flex layout */
-    flex-direction: column; /* Added for flex layout */
-    flex-grow: 1; /* Allow container to grow and fill body */
+    width: 100%;
+    padding: 0;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 /*
@@ -39,79 +37,79 @@ body {
   -----------------------------------
 */
 header {
-    background-color: #070c6b; /* New Darker Blue background */
-    padding: 40px 80px; /* Adjusted padding: Top/Bottom, Left/Right */
-    color: #FFFFFF; /* Default text color for this section */
-    display: flex; /* Enable flexbox */
-    justify-content: space-between; /* Space between title group and contact links */
-    align-items: center; /* Vertically align items */
-    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+    background-color: #070c6b;
+    padding: 40px 80px;
+    color: #FFFFFF;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .header-title-group {
-    margin-right: 20px; 
+    margin-right: 20px;
 }
 
 header h1 {
-    font-family: 'Noto Serif', serif; /* Elegant serif font for the main title */
-    font-size: 2.8em; /* Adjusted font size for header layout */
-    font-weight: 300; /* Lighter font weight */
+    font-family: 'Noto Serif', serif;
+    font-size: 2.8em;
+    font-weight: 300;
     margin-top: 0;
-    margin-bottom: 0.2em; 
-    color: #FFFFFF; 
-    letter-spacing: 0.5px; 
+    margin-bottom: 0.2em;
+    color: #FFFFFF;
+    letter-spacing: 0.5px;
 }
 
 .header-divider {
-    display: block; 
+    display: block;
     border: none;
     height: 1px;
-    background-color: rgba(255, 255, 255, 0.3); 
-    width: 100px; 
-    margin-top: 0.3em; 
-    margin-bottom: 0; 
-    margin-left: 0; 
+    background-color: rgba(255, 255, 255, 0.3);
+    width: 100px;
+    margin-top: 0.3em;
+    margin-bottom: 0;
+    margin-left: 0;
 }
 
 .contact-links {
-    display: flex; 
-    align-items: center; 
-    gap: 25px; 
-    flex-wrap: wrap; 
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
 }
 
 .contact-button {
     font-family: 'Open Sans', 'Arial', sans-serif;
-    font-size: 1em; 
-    font-weight: 400; 
-    color: #FFFFFF; 
-    text-decoration: none; 
-    padding: 5px 0; 
+    font-size: 1em;
+    font-weight: 400;
+    color: #FFFFFF;
+    text-decoration: none;
+    padding: 5px 0;
     transition: color 0.3s ease, text-decoration 0.3s ease;
 }
 
 .contact-button:hover {
-    color: #dddddd; 
-    text-decoration: underline; 
+    color: #dddddd;
+    text-decoration: underline;
 }
 
 .linkedin-link {
-    display: inline-flex; 
+    display: inline-flex;
     align-items: center;
-    color: #FFFFFF; 
+    color: #FFFFFF;
     text-decoration: none;
-    transition: opacity 0.3s ease; 
+    transition: opacity 0.3s ease;
 }
 
 .linkedin-link:hover {
-    opacity: 0.8; 
+    opacity: 0.8;
 }
 
 .linkedin-icon {
-    fill: #FFFFFF; 
-    width: 26px; 
-    height: 26px; 
-    display: block; 
+    fill: #FFFFFF;
+    width: 26px;
+    height: 26px;
+    display: block;
 }
 
 /*
@@ -119,127 +117,164 @@ header h1 {
   -----------------------
 */
 .about-me {
-    background-color: #070c6b; 
-    padding: 40px 80px 100px 80px; 
-    color: #EAEAEA; 
+    background-color: #070c6b;
+    padding: 40px 80px 100px 80px;
+    color: #EAEAEA;
 }
 
 .about-me p {
-    font-family: 'Noto Serif', serif; 
-    font-weight: 400; 
-    font-size: 1.9em; 
-    line-height: 1.6; 
-    color: #EAEAEA; 
-    text-align: left; 
-    max-width: 950px; /* Max width of the paragraph text block */
+    font-family: 'Noto Serif', serif;
+    font-weight: 400;
+    font-size: 1.9em;
+    line-height: 1.6;
+    color: #EAEAEA;
+    text-align: left;
+    max-width: 1100px;
     margin-top: 0;
     margin-bottom: 0;
 }
 
-/*
-  Notes Section Styles (Main Page - index.html)
-  ---------------------------------------------
-*/
-.notes {
-    background-color: #F4F7F6; 
-    padding: 60px 80px 60px 80px; 
-    flex-grow: 1; /* This section will fill height if it's the last one on main page */
+/* New Wrapper for Bottom Sections */
+.bottom-sections-wrapper {
+    display: flex;
+    width: 100%;
+    flex-grow: 1; /* This wrapper now fills the remaining vertical space */
 }
 
+/*
+  Shared Styles for Publications and Notes Sections
+  -------------------------------------------------
+*/
+.publications,
+.notes {
+    background-color: #F4F7F6;
+    padding: 60px 80px;
+    flex: 1; /* Each section takes up half the horizontal space */
+    box-sizing: border-box; /* Ensures padding is included in the width calculation */
+}
+
+/* REMOVED the border-right rule from the .publications class */
+
+
+.publications h2,
 .notes h2 {
-    font-family: 'Noto Serif', serif; 
-    font-weight: 700; 
-    font-size: 2.2em; 
-    margin-top: 0; 
-    margin-bottom: 0.3em; 
-    color: #111111; 
-    max-width: 950px; 
+    font-family: 'Noto Serif', serif;
+    font-weight: 700;
+    font-size: 2.2em;
+    margin-top: 0;
+    margin-bottom: 0.3em;
+    color: #111111;
+    max-width: 1100px;
 }
 
 .notes-divider {
-    border: none; 
-    height: 1px;  
-    background-color: #AEB6BF; 
-    width: 80px;  
-    margin-top: 0.2em; 
-    margin-bottom: 1.5em; 
-    margin-left: 0; 
-    margin-right: auto; 
+    border: none;
+    height: 1px;
+    background-color: #AEB6BF;
+    width: 80px;
+    margin: 0.2em 0 1.5em 0;
 }
 
-.notes ul { /* This is the list on the main "Notes" page (index.html) */
-    list-style: none; 
-    padding: 0; 
-    margin-top: 0; 
-    max-width: 950px; 
+
+/* Styling for Writings/Notes link list */
+.notes ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 0;
+    max-width: 1100px;
 }
 
 .notes ul li {
-    font-family: 'Noto Serif', serif; 
-    font-weight: 400; 
-    font-size: 1.2em; 
-    margin-bottom: 0.6em; 
-    padding: 5px 0; 
+    font-family: 'Noto Serif', serif;
+    font-weight: 400;
+    font-size: 1.2em;
+    margin-bottom: 0.6em;
+    padding: 5px 0;
 }
 
 .notes ul li a {
-    text-decoration: none; 
-    color: #070c6b; 
-    font-weight: 400; 
-    padding: 2px 0; 
-    transition: color 0.2s ease-in-out, text-decoration 0.2s ease-in-out; 
-    display: inline; 
+    text-decoration: none;
+    color: #070c6b;
+    font-weight: 400;
+    padding: 2px 0;
+    transition: color 0.2s ease-in-out, text-decoration 0.2s ease-in-out;
+    display: inline;
 }
 
 .notes ul li a:hover {
-    color: #0B13A8; 
-    text-decoration: underline; 
+    color: #0B13A8;
+    text-decoration: underline;
+}
+
+/* New styling for the publication list */
+.publication-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 0;
+    max-width: 1100px;
+}
+
+.publication-list li {
+    font-family: 'Open Sans', 'Arial', sans-serif;
+    font-size: 1.05em;
+    line-height: 1.7;
+    margin-bottom: 0.8em;
+    padding-left: 1.5em;
+    position: relative;
+}
+
+.publication-list li::before {
+    content: '•';
+    color: #070c6b;
+    font-weight: bold;
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: 0.05em; /* Adjust vertical alignment of bullet */
 }
 
 /*
-  Generic Page Section Styles (for Matrix Theory LISTING page, etc.)
-  -----------------------------------------------------------------
-  These styles are for pages like matrix-theory.html that list articles.
+  Generic Page Section Styles
+  ---------------------------
 */
-.page-section { /* Used by matrix-theory.html (the listing page) */
-    background-color: #F4F7F6; /* Light contrasting background */
-    padding: 60px 80px; /* Consistent padding */
-    flex-grow: 1; /* Allow section to fill remaining vertical space */
+.page-section {
+    background-color: #F4F7F6;
+    padding: 60px 80px;
+    flex-grow: 1;
 }
 
-.page-title { /* This is the H1 for pages like matrix-theory.html */
+.page-title {
     font-family: 'Noto Serif', serif;
-    font-size: 2.8em; 
-    font-weight: 300; 
-    color: #111111; 
+    font-size: 2.8em;
+    font-weight: 300;
+    color: #111111;
     margin-top: 0;
-    margin-bottom: 0.8em; /* Space below title */
-    max-width: 950px; 
+    margin-bottom: 0.8em;
+    max-width: 1100px;
     letter-spacing: 0.5px;
-    text-align: left; /* Ensure title is left aligned */
+    text-align: left;
 }
 
-/* Styles for the list of articles on pages like matrix-theory.html */
-.content-list { 
-    list-style: none; 
-    padding-left: 0; 
-    max-width: 950px;
+.content-list {
+    list-style: none;
+    padding-left: 0;
+    max-width: 1100px;
     font-family: 'Open Sans', 'Arial', sans-serif;
-    font-size: 1.1em; /* Base font size, individual li will override for actual text size */
+    font-size: 1.1em;
     line-height: 1.7;
     color: #333333;
 }
 
 .content-list li {
-    font-size: 1.3em; /* UPDATED: Increased font size for list items */
-    margin-bottom: 0.7em; 
+    font-size: 1.3em;
+    margin-bottom: 0.7em;
     line-height: 1.6;
 }
 
 .content-list li a {
     color: #070c6b;
     text-decoration: none;
-    font-weight: 600; /* Make article links slightly bolder */
+    font-weight: 600;
 }
 
 .content-list li a:hover {
@@ -247,50 +282,48 @@ header h1 {
     color: #0B13A8;
 }
 
-
 /*
   Responsive Adjustments
   ----------------------
 */
-@media (max-width: 1300px) { 
-    .about-me p, .notes h2, .notes ul, .page-title, .content-list { /* content-list added here */
-        max-width: 1050px; /* This might be too large if overall max-width is 950px, let's align */
-    }
-     /* Ensuring consistent max-width for content blocks */
-    .about-me p, .notes h2, .notes ul, .page-title, .content-list {
+@media (max-width: 1300px) {
+    .about-me p, .publications h2, .publications ul, .notes h2, .notes ul, .page-title, .content-list {
         max-width: 950px;
     }
-     @media (max-width: 1024px) { /* This breakpoint handles smaller general viewports */
-        .about-me p, .notes h2, .notes ul, .page-title, .content-list {
-            max-width: 100%; /* Full width within padding */
-        }
+}
+
+@media (max-width: 1024px) {
+    header, .about-me, .bottom-sections-wrapper, .page-section {
+        padding-left: 60px;
+        padding-right: 30px;
+    }
+    .about-me p, .publications h2, .publications ul, .notes h2, .notes ul, .page-title, .content-list {
+        max-width: 100%;
     }
 }
 
-
-@media (max-width: 1024px) { 
-    header, .about-me, .notes, .page-section { 
-        padding-left: 60px; 
-        padding-right: 30px; 
+@media (max-width: 900px) { /* Breakpoint to stack the sections */
+    .bottom-sections-wrapper {
+        flex-direction: column;
     }
-    .about-me p, .notes h2, .notes ul, .page-title, .content-list {
-        max-width: 100%; 
+    .publications {
+        /* border-right: none; No longer needed as the rule is removed */
+        border-bottom: 1px solid #e0e0e0; /* Add bottom border when stacked */
     }
 }
 
-
-@media (max-width: 768px) { /* Styles for tablets and smaller */
+@media (max-width: 768px) {
     header {
-        padding: 30px 40px; 
-        flex-direction: column; 
-        align-items: flex-start; 
+        padding: 30px 40px;
+        flex-direction: column;
+        align-items: flex-start;
     }
-    .header-title-group { 
-        margin-bottom: 15px; 
-        margin-right: 0; 
+    .header-title-group {
+        margin-bottom: 15px;
+        margin-right: 0;
     }
     header h1 {
-        font-size: 2.5em; 
+        font-size: 2.5em;
     }
     .header-divider{
         width: 100px;
@@ -298,85 +331,92 @@ header h1 {
     }
 
     .contact-links {
-        gap: 15px; 
-        margin-left: 0; 
+        gap: 15px;
+        margin-left: 0;
     }
-    .contact-button, .linkedin-link { 
-        font-size: 1em; 
+    .contact-button, .linkedin-link {
+        font-size: 1em;
     }
     .linkedin-icon {
-        width: 28px; 
+        width: 28px;
         height: 28px;
     }
 
-    .about-me, .notes, .page-section { 
-        padding-left: 40px; 
+    .about-me, .publications, .notes, .page-section {
+        padding-left: 40px;
         padding-right: 20px;
     }
-    .about-me { padding-top: 30px; padding-bottom: 80px;} 
-    .notes {padding-top: 40px; padding-bottom: 40px;}
-    .page-section {padding-top: 40px; padding-bottom: 40px;} 
-
+    .about-me { padding-top: 30px; padding-bottom: 80px;}
+    .publications, .notes {padding-top: 40px; padding-bottom: 40px;}
+    .page-section {padding-top: 40px; padding-bottom: 40px;}
 
     .about-me p {
-        font-size: 1.6em; 
-        line-height: 1.65; 
+        font-size: 1.6em;
+        line-height: 1.65;
     }
 
-    .notes h2, .page-title { 
-        font-size: 1.9em; 
+    .publications h2, .notes h2, .page-title {
+        font-size: 1.9em;
     }
     .notes-divider {
         margin-bottom: 1.2em;
     }
 
     .notes ul li {
-        font-size: 1.1em; 
+        font-size: 1.1em;
     }
-    .content-list li { /* For article listing pages */
-        font-size: 1.2em; /* UPDATED: Responsive size for tablets */
+    .publication-list li {
+        font-size: 1em;
+        padding-left: 1.2em;
+    }
+    .content-list li {
+        font-size: 1.2em;
     }
 }
 
-@media (max-width: 480px) { /* Styles for mobile phones */
+@media (max-width: 480px) {
     header {
-        padding: 20px 20px; 
+        padding: 20px 20px;
     }
     header h1 {
-        font-size: 2.2em; 
+        font-size: 2.2em;
     }
      .header-title-group {
         margin-bottom: 10px;
     }
     .linkedin-icon {
-        width: 24px; 
+        width: 24px;
         height: 24px;
     }
 
-    .about-me, .notes, .page-section { 
-        padding-left: 20px; 
+    .about-me, .publications, .notes, .page-section {
+        padding-left: 20px;
         padding-right: 15px;
     }
-    .about-me { padding-top: 20px; padding-bottom: 60px;} 
-    .notes {padding-top: 30px; padding-bottom: 30px;}
-    .page-section {padding-top: 30px; padding-bottom: 30px;} 
-
+    .about-me { padding-top: 20px; padding-bottom: 60px;}
+    .publications, .notes {padding-top: 30px; padding-bottom: 30px;}
+    .page-section {padding-top: 30px; padding-bottom: 30px;}
 
     .about-me p {
-        font-size: 1.4em; 
-        line-height: 1.7; 
+        font-size: 1.4em;
+        line-height: 1.7;
     }
-    .notes h2, .page-title { 
-        font-size: 1.6em; 
+
+    .publications h2, .notes h2, .page-title {
+        font-size: 1.6em;
     }
     .notes-divider {
-        width: 60px; 
+        width: 60px;
         margin-bottom: 1em;
     }
+
     .notes ul li {
-        font-size: 1.05em; 
+        font-size: 1.05em;
     }
-    .content-list li { /* For article listing pages */
-        font-size: 1.1em; /* UPDATED: Responsive size for mobiles */
+    .publication-list li {
+        font-size: 0.95em;
+    }
+    .content-list li {
+        font-size: 1.1em;
     }
 }

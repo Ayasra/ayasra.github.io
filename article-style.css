@@ -49,7 +49,7 @@ body {
     text-decoration: underline;
 }
 
-.article-header h1 { /* Main Article Title */
+.article-header h1 {
     font-family: 'Noto Serif', serif;
     font-size: 2.6em; 
     font-weight: 400; 
@@ -64,35 +64,33 @@ body {
     /* Styles for the main content of the article */
 }
 
-/* Styles for article headings - Less prominent style */
-.article-body h2 { /* Major section headings like "The Essence of Similarity..." */
+.article-body h2 { 
     font-family: 'Noto Serif', serif;
-    font-size: 1.6em;  /* Reduced size */
-    font-weight: 400; /* Normal weight */
-    color: #333333; /* Dark gray, less vibrant */
-    margin-top: 2.5em; /* Adjusted margin */
+    font-size: 1.6em; 
+    font-weight: 400; 
+    color: #333333; 
+    margin-top: 2.5em; 
     margin-bottom: 0.8em;
-    border-bottom: none; /* Removed border */
-    padding-bottom: 0; /* Removed padding */
+    border-bottom: none; 
+    padding-bottom: 0; 
 }
 
-.article-body h3 { /* Sub-section headings like "Echoes of the Operator..." */
+.article-body h3 { 
     font-family: 'Noto Serif', serif;
-    font-size: 1.3em;  /* Reduced size */
-    font-weight: 400; /* Normal weight */
-    color: #444444; /* Slightly lighter dark gray */
-    margin-top: 2.0em; /* Adjusted margin */
+    font-size: 1.3em;  
+    font-weight: 400; 
+    color: #444444; 
+    margin-top: 2.0em; 
     margin-bottom: 0.6em;
 }
 
-.article-body h4 { /* Finer sub-section headings like "The Elegance of Scaling..." */
+.article-body h4 { 
     font-family: 'Noto Serif', serif;
-    font-size: 1.15em;  /* Reduced size */
-    font-weight: 400; /* Normal weight */
-    color: #555555; /* Even lighter gray */
-    margin-top: 1.6em; /* Adjusted margin */
+    font-size: 1.15em;  
+    font-weight: 400; 
+    color: #555555; 
+    margin-top: 1.6em; 
     margin-bottom: 0.4em;
-    /* text-transform: none; /* Ensuring it's not uppercase if it was before */
 }
 
 
@@ -152,6 +150,56 @@ body {
     font-style: italic;
 }
 
+/* Figure and Caption Styles */
+.article-body figure {
+    margin: 2em 0; /* Add vertical space around figures */
+    text-align: center; /* Center the content of the figure block */
+}
+
+.article-body figure img {
+    max-width: 100%; /* Ensure image is responsive and doesn't overflow */
+    height: auto;
+    display: block;
+    margin-left: auto; /* Center the image itself if it's narrower than the figure */
+    margin-right: auto;
+    /* REMOVED: border: 1px solid #e0e0e0; */
+    /* REMOVED: padding: 4px; */
+}
+
+.article-body figure figcaption {
+    margin-top: 0.8em;
+    font-size: 0.9em;
+    color: #666; /* Gray color for caption text */
+    font-style: italic;
+}
+
+/* Table Styles */
+.article-body table {
+    width: 100%;
+    border-collapse: collapse; /* Clean, modern look for borders */
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    font-size: 0.95em;
+}
+
+.article-body th, 
+.article-body td {
+    border: 1px solid #d0d0d0; /* Consistent border for all cells */
+    padding: 12px;
+    text-align: left;
+    vertical-align: top; /* Align content to the top of the cell */
+}
+
+.article-body thead th {
+    background-color: #f2f2f2; /* Light gray for header row */
+    font-weight: 700;
+    color: #333;
+}
+
+.article-body tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Striped rows for readability */
+}
+
 .article-body .math-display {
     margin: 0.75em auto; 
     padding: 5px 0; 
@@ -196,17 +244,17 @@ body {
         font-size: 2.2em;
     }
     .article-body h2 { 
-        font-size: 1.4em; /* Adjusted responsive size */
+        font-size: 1.4em; 
         margin-top: 2.0em; 
         margin-bottom: 0.7em; 
     }
     .article-body h3 { 
-        font-size: 1.2em; /* Adjusted responsive size */
+        font-size: 1.2em; 
         margin-top: 1.8em; 
         margin-bottom: 0.5em; 
     }
     .article-body h4 { 
-        font-size: 1.05em;  /* Adjusted responsive size */
+        font-size: 1.05em;  
         margin-top: 1.5em; 
         margin-bottom: 0.3em; 
     }
@@ -237,17 +285,17 @@ body {
         font-size: 1.9em;
     }
     .article-body h2 { 
-        font-size: 1.25em; /* Adjusted responsive size */
+        font-size: 1.25em; 
         margin-top: 1.8em; 
         margin-bottom: 0.6em; 
     }
     .article-body h3 { 
-        font-size: 1.1em; /* Adjusted responsive size */
+        font-size: 1.1em; 
         margin-top: 1.6em; 
         margin-bottom: 0.4em; 
     }
     .article-body h4 { 
-        font-size: 1.0em;  /* Adjusted responsive size */
+        font-size: 1.0em;  
         margin-top: 1.4em; 
         margin-bottom: 0.3em; 
     }
