@@ -1,5 +1,5 @@
 /* Import Google Fonts (can be redundant if main CSS is also loaded, but good for standalone articles) */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Open+Sans:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Open+Sans:wght@400;700&family=Fira+Code:wght@400;500&display=swap');
 
 /*
   Basic Body and Container for Articles
@@ -152,31 +152,44 @@ body {
 
 /* Figure and Caption Styles */
 .article-body figure {
-    margin: 2em 0; /* Add vertical space around figures */
-    text-align: center; /* Center the content of the figure block */
+    margin: 2em auto; 
+    max-width: 85%; 
+    width: 100%; 
 }
 
 .article-body figure img {
-    max-width: 100%; /* Ensure image is responsive and doesn't overflow */
+    max-width: 100%; 
     height: auto;
     display: block;
-    margin-left: auto; /* Center the image itself if it's narrower than the figure */
-    margin-right: auto;
-    /* REMOVED: border: 1px solid #e0e0e0; */
-    /* REMOVED: padding: 4px; */
+    margin: 0; 
 }
 
 .article-body figure figcaption {
     margin-top: 0.8em;
     font-size: 0.9em;
-    color: #666; /* Gray color for caption text */
+    color: #666; 
     font-style: italic;
+    text-align: center; 
+}
+
+/* UPDATED: Styling for Code Snippets using Prism.js */
+.article-body pre[class*="language-"],
+.article-body code[class*="language-"] {
+    font-family: 'Fira Code', 'Source Code Pro', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; /* New font stack */
+    text-align: left; /* Ensure code is left-aligned */
+}
+
+.article-body pre[class*="language-"] {
+    font-size: 1.05em; /* Increased font size */
+    line-height: 1.6;
+    margin: 1.5em 0;
+    /* The prism-tomorrow theme will handle background, color, border, etc. */
 }
 
 /* Table Styles */
 .article-body table {
     width: 100%;
-    border-collapse: collapse; /* Clean, modern look for borders */
+    border-collapse: collapse; 
     margin-top: 1.5em;
     margin-bottom: 1.5em;
     font-size: 0.95em;
@@ -184,20 +197,20 @@ body {
 
 .article-body th, 
 .article-body td {
-    border: 1px solid #d0d0d0; /* Consistent border for all cells */
+    border: 1px solid #d0d0d0; 
     padding: 12px;
     text-align: left;
-    vertical-align: top; /* Align content to the top of the cell */
+    vertical-align: top; 
 }
 
 .article-body thead th {
-    background-color: #f2f2f2; /* Light gray for header row */
+    background-color: #f2f2f2; 
     font-weight: 700;
     color: #333;
 }
 
 .article-body tbody tr:nth-child(even) {
-    background-color: #f9f9f9; /* Striped rows for readability */
+    background-color: #f9f9f9; 
 }
 
 .article-body .math-display {
@@ -275,6 +288,9 @@ body {
         margin: 0.5em auto; 
         padding: 2px 0;
     }
+    .article-body pre[class*="language-"] {
+        font-size: 0.95em;
+    }
 }
 
 @media (max-width: 480px) {
@@ -319,5 +335,7 @@ body {
     .article-body .math-display {
         margin: 0.5em auto; 
     }
+    .article-body pre[class*="language-"] {
+        font-size: 0.9em;
+    }
 }
-
