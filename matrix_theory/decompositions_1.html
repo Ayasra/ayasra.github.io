@@ -88,11 +88,8 @@
             </div>
             <p>This is the most elegant factorization because it describes the transformation using a single, perfect, orthonormal basis. The action is a simple stretch along these orthogonal axes. For the special case of a <strong>real symmetric matrix</strong>, the decomposition is $\mathbf{A} = \mathbf{Q}\mathbf{D}\mathbf{Q}^T$, where `Q` is an orthogonal matrix.</p>
             <h4>Consequences of Spectral Decomposition</h4>
-            <p>Diagonalizing a matrix is not just a geometric exercise; it unlocks immense computational and theoretical power. It reveals the matrix's fundamental properties at a glance and simplifies complex operations.</p>
-            <div class="theorem-block">
-                <p><strong>Proposition: Fundamental Properties</strong></p>
-                <p>The decomposition reveals that the trace of $\mathbf{A}$ is the sum of its eigenvalues, the determinant is the product of its eigenvalues, and the rank is the number of non-zero eigenvalues.</p>
-            </div>
+            <p>Diagonalizing a matrix is not just a geometric exercise; it unlocks immense computational and theoretical power. It reveals the matrix's fundamental properties at a glance and simplifies complex operations. The decomposition reveals that the trace of $\mathbf{A}$ is the sum of its eigenvalues, the determinant is the product of its eigenvalues, and the rank is the number of non-zero eigenvalues.</p>
+
             <p>This ability to decompose a matrix into its constituent eigenvalues and eigenvectors allows for a powerful generalization of functions to matrices, known as the <strong>functional calculus</strong>.</p>
             <div class="theorem-block">
                 <p><strong>Proposition: Matrix Functions</strong></p>
@@ -111,10 +108,9 @@
                 </div>
                 <p>where $\lambda_i$ are the eigenvalues and $\vec{u}_i$ are the corresponding orthonormal eigenvectors. Each term $\vec{u}_i \vec{u}_i^*$ is a projection matrix that projects onto the one-dimensional subspace spanned by the eigenvector $\vec{u}_i$.</p>
             </div>
-            <div class="theorem-block">
-                <p><strong>Application: Principal Component Analysis (PCA)</strong></p>
-                <p>The spectral decomposition of a covariance matrix (which is real and symmetric) is the mathematical engine behind PCA. The eigenvectors of the covariance matrix are the <strong>principal components</strong>—the new orthogonal axes of the data that capture the directions of maximum variance. The eigenvalues represent the amount of variance along each component, allowing for dimensionality reduction by keeping only the most significant components.</p>
-            </div>
+            
+            <p><i>Application: Principal Component Analysis (PCA)</i></p>
+            <p>The spectral decomposition of a covariance matrix (which is real and symmetric) is the mathematical engine behind PCA. The eigenvectors of the covariance matrix are the <strong>principal components</strong>—the new orthogonal axes of the data that capture the directions of maximum variance. The eigenvalues represent the amount of variance along each component, allowing for dimensionality reduction by keeping only the most significant components.</p>
             <h2>The Master Decomposition: Singular Value Decomposition (SVD)</h2>
             <p>We arrive now at the final and most powerful of the geometric factorizations. The Spectral Theorem provided a perfect picture for normal matrices, but it required the matrix to be square and its eigenvectors to be orthogonal. What about all the other matrices? What about rectangular matrices that map vectors from one space to another of a different dimension?</p>
             <p>The <strong>Singular Value Decomposition (SVD)</strong> provides the answer. It is the ultimate generalization, revealing a beautiful and simple geometric story that is true for *any* matrix. It states that even if a matrix distorts space in a complex way, we can always find one orthogonal basis in its domain and another orthogonal basis in its range that makes the transformation look like a simple, diagonal stretch.</p>
