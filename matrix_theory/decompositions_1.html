@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Decompositions: Rotation, Reflection, and Stretch - Musab Alayasra</title>
+    <link rel="stylesheet" href="../article-style.css">
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+</head>
+<body>
+    <div class="article-container">
+        <header class="article-header">
+            <p class="breadcrumb-nav"><a href="../matrix-theory.html">&larr; Back to Matrix Theory Notes</a></p>
+            <h1>Geometric Decompositions: Rotation, Reflection, and Stretch</h1>
+        </header>
+        <article class="article-body">
+            <p>In the first part of this series, the profound connection between a matrix's algebraic identity and its geometric destiny was revealed. It was shown how the simple rule $\mathbf{U}^*\mathbf{U} = \mathbf{I}$ forged <strong>Unitary matrices</strong> into pure rotations and reflections, while the condition $\mathbf{H}^* = \mathbf{H}$ defined <strong>Hermitian matrices</strong> as pure, real-valued stretches. By classifying these fundamental actors, a matrix can be seen not as a static array of numbers, but as a dynamic operator with a clear, intuitive geometric purpose.</p>
+            <p>The previous focus was on what a matrix *does* in a single application. This analysis continues by delving deeper into the algebraic DNA of matrices, examining them through three new lenses. First, they will be classified by their iterative behavior—what happens when a transformation is applied repeatedly. Second, the focus will shift to matrices defined by their computational structure, uncovering the essential building blocks of numerical algorithms. Finally, a unifying algebraic principle will be explored that connects the well-behaved matrices from the first article into a single, elegant family.</p>
+            <h2>The Most Natural Analogy: Polar Decomposition</h2>
+            <p>Every complex number $z$ can be expressed in its polar form, $z = re^{i\theta}$. This form beautifully separates the number's two essential properties: its magnitude ($r$, a non-negative real number representing a pure stretch from the origin) and its phase ($e^{i\theta}$, a point on the unit circle representing a pure rotation). It is natural to ask if a linear transformation, represented by a square matrix $\mathbf{A}$, can be separated in the same way. Can we isolate the "stretching" component of a transformation from its "rotating" component?</p>
+            <p>The answer is a resounding yes, and it is given by the <strong>Polar Decomposition</strong>. This theorem provides the most direct and intuitive factorization of a matrix's geometric action.</p>
+            <div class="theorem-block">
+                <p><strong>Theorem: The Polar Decomposition</strong></p>
+                <p>Any square matrix $\mathbf{A}$ can be factored into the product:</p>
+                <div class="math-display">
+                    $$\mathbf{A} = \mathbf{U}\mathbf{P}$$
+                </div>
+                <p>where $\mathbf{U}$ is a unitary matrix (a rotation/reflection) and $\mathbf{P}$ is a positive semi-definite Hermitian matrix (a pure stretch).</p>
+            </div>
+            <p>This decomposition tells a clear geometric story. To understand the action of any matrix $\mathbf{A}$ on a vector, you can first apply the pure stretch $\mathbf{P}$, followed by the rigid rotation/reflection $\mathbf{U}$. The real genius of this decomposition lies in its construction. The stretch matrix $\mathbf{P}$ is uniquely defined as the principal square root of $\mathbf{A}^*\mathbf{A}$, a matrix that captures the "magnitude" of the transformation.</p>
+            <div class="theorem-block">
+                <p><strong>Proposition: Construction and Uniqueness</strong></p>
+                <p>For any square matrix $\mathbf{A}$, the positive semi-definite factor $\mathbf{P}$ in the decomposition $\mathbf{A}=\mathbf{UP}$ is uniquely determined by $\mathbf{P} = \sqrt{\mathbf{A}^*\mathbf{A}}$. If $\mathbf{A}$ is invertible, then the unitary factor $\mathbf{U} = \mathbf{A}\mathbf{P}^{-1}$ is also unique. If $\mathbf{A}$ is singular, $\mathbf{U}$ is not unique.</p>
+            </div>
+            <p>Just as a complex number can be described as a rotation followed by a scaling, a matrix also has a "left polar decomposition," $\mathbf{A} = \mathbf{P'}\mathbf{U}$. This represents a rotation first, followed by a different stretch $\mathbf{P'} = \sqrt{\mathbf{A}\mathbf{A}^*}$. The two stretch matrices, $\mathbf{P}$ and $\mathbf{P'}$, are related by $\mathbf{P'} = \mathbf{U}\mathbf{P}\mathbf{U}^*$, which shows they are unitarily similar and thus share the same set of eigenvalues. These special, non-negative eigenvalues represent the pure magnitudes of the transformation and are so fundamental that they are given their own name: the <strong>singular values of A</strong>. As we will see, these values are the key to unlocking the geometry of any matrix.</p>
+            <p>Perhaps the most powerful consequence of this decomposition is that it provides a way to find the "purest" rotation within any transformation.</p>
+            <div class="theorem-block">
+                <p><strong>Theorem: The Closest Unitary Matrix</strong></p>
+                <p>For any given square matrix $\mathbf{A}$, the unitary factor $\mathbf{U}$ from its polar decomposition is the closest unitary matrix to $\mathbf{A}$ (as measured by any unitarily invariant norm, such as the Frobenius norm).</p>
+                <div class="math-display">
+                    $$\min_{\mathbf{Q} \in U(n)} \|\mathbf{A} - \mathbf{Q}\| = \|\mathbf{A} - \mathbf{U}\|$$
+                </div>
+            </div>
+            <p>This theorem is fundamental in applications where one needs to orthogonalize a matrix or find the best possible rigid-body rotation to approximate a general, deformable transformation. This principle of finding the 'best fit' extends beyond rotations. The polar factors also help in approximating the matrix with a pure, non-negative stretch, particularly for the important case of Hermitian matrices.</p>
+            <div class="theorem-block">
+                <p><strong>Proposition: Best Hermitian Positive Semi-definite Approximation</strong></p>
+                <p>If $\mathbf{A}$ is a Hermitian matrix, its best positive semi-definite approximation in the 2-norm is given by $\frac{1}{2}(\mathbf{A} + \mathbf{P})$, where $\mathbf{P} = \sqrt{\mathbf{A}^*\mathbf{A}} = \sqrt{\mathbf{A}^2}$ is the positive semi-definite factor from its polar decomposition.</p>
+            </div>
+            <h2>The Geometry of Scaling: Eigenvalue Decomposition</h2>
+            <p>The Polar Decomposition revealed that every transformation involves a stretch. We now focus on that stretching action. The most insightful way to understand a stretch is to find the directions that are only scaled by the transformation, without changing their orientation. These are the eigenvectors, and the decomposition built upon them is the <strong>Eigenvalue Decomposition</strong>.</p>
+            <p>Not all matrices have enough eigenvectors to make this work. A matrix is called <strong>diagonalizable</strong> if it has a full set of linearly independent eigenvectors.</p>
+            <div class="theorem-block">
+                <p><strong>Theorem: The Eigenvalue Decomposition</strong></p>
+                <p>An $n \times n$ square matrix $\mathbf{A}$ is diagonalizable if and only if it can be factored as:</p>
+                <div class="math-display">
+                    $$\mathbf{A} = \mathbf{P}\mathbf{D}\mathbf{P}^{-1}$$
+                </div>
+                <p>where $\mathbf{P}$ is an invertible matrix whose columns are the eigenvectors of $\mathbf{A}$, and $\mathbf{D}$ is a diagonal matrix containing the corresponding eigenvalues.</p>
+            </div>
+            <p>Geometrically, this describes a transformation as a three-step process: a change of basis into the eigenvector coordinate system ($\mathbf{P}^{-1}$), a simple scaling along those axes ($\mathbf{D}$), and a change of basis back ($\mathbf{P}$). The key difference from what we've seen before is that the eigenvector basis in $\mathbf{P}$ is not generally orthogonal. The conditions for when this is possible are precise.</p>
+            <div class="theorem-block">
+                <p><strong>Proposition: Conditions for Diagonalizability</strong></p>
+                <p>A square matrix is diagonalizable if and only if for every eigenvalue, its <em>geometric multiplicity</em> (the number of independent eigenvectors) equals its <em>algebraic multiplicity</em> (its repetition as a root of the characteristic polynomial). A simple sufficient condition for this is if the matrix has $n$ distinct eigenvalues.</p>
+            </div>
+            <h4>The Pinnacle of Simplicity: The Spectral Theorem</h4>
+            <p>The Eigenvalue Decomposition becomes far more powerful and geometrically elegant when the matrix $\mathbf{A}$ is <strong>normal</strong> (i.e., $\mathbf{A}^*\mathbf{A} = \mathbf{A}\mathbf{A}^*$). In this case, the eigenvectors are not just linearly independent; they are perfectly <strong>orthogonal</strong>. This allows the change-of-basis matrix `P` to be a unitary matrix `U`, leading to the <strong>Spectral Decomposition</strong> (or Spectral Theorem).</p>
+            <div class="theorem-block">
+                <p><strong>Theorem: The Spectral Theorem</strong></p>
+                <p>A matrix $\mathbf{A}$ is normal if and only if it is unitarily diagonalizable:</p>
+                <div class="math-display">
+                    $$\mathbf{A} = \mathbf{U}\mathbf{D}\mathbf{U}^*$$
+                </div>
+                <p>where $\mathbf{U}$ is a unitary matrix of orthonormal eigenvectors, and $\mathbf{D}$ is a diagonal matrix of eigenvalues.</p>
+            </div>
+            <p>This is the most elegant factorization because it describes the transformation using a single, perfect, orthonormal basis. The action is a simple stretch along these orthogonal axes. For the special case of a <strong>real symmetric matrix</strong>, the decomposition is $\mathbf{A} = \mathbf{Q}\mathbf{D}\mathbf{Q}^T$, where `Q` is an orthogonal matrix.</p>
+            <h4>Consequences of Spectral Decomposition</h4>
+            <p>Diagonalizing a matrix is not just a geometric exercise; it unlocks immense computational and theoretical power. It reveals the matrix's fundamental properties at a glance and simplifies complex operations.</p>
+            <div class="theorem-block">
+                <p><strong>Proposition: Fundamental Properties</strong></p>
+                <p>The decomposition reveals that the trace of $\mathbf{A}$ is the sum of its eigenvalues, the determinant is the product of its eigenvalues, and the rank is the number of non-zero eigenvalues.</p>
+            </div>
+            <p>This ability to decompose a matrix into its constituent eigenvalues and eigenvectors allows for a powerful generalization of functions to matrices, known as the <strong>functional calculus</strong>.</p>
+            <div class="theorem-block">
+                <p><strong>Proposition: Matrix Functions</strong></p>
+                <p>If $\mathbf{A} = \mathbf{P}\mathbf{D}\mathbf{P}^{-1}$ is diagonalizable, any function $f$ that is well-defined on its eigenvalues can be extended to a matrix function:</p>
+                <div class="math-display">
+                    $$f(\mathbf{A}) = \mathbf{P}f(\mathbf{D})\mathbf{P}^{-1}$$
+                </div>
+                <p>where $f(\mathbf{D})$ is a diagonal matrix with entries $f(\lambda_i)$. This principle makes calculating matrix powers trivial ($\mathbf{A}^k = \mathbf{P}\mathbf{D}^k\mathbf{P}^{-1}$) and is used to define the matrix exponential ($e^\mathbf{A}$), the key to solving systems of linear differential equations.</p>
+            </div>
+            <p>Furthermore, the spectral decomposition of a normal matrix can be viewed as constructing the matrix from its components. This form is central to one of the most important applications in data science.</p>
+            <div class="theorem-block">
+                <p><strong>Proposition: The Projection Form</strong></p>
+                <p>For a normal matrix $\mathbf{A} = \mathbf{U}\mathbf{D}\mathbf{U}^*$, the decomposition can be rewritten as a sum of rank-one projection matrices:</p>
+                <div class="math-display">
+                    $$\mathbf{A} = \sum_{i=1}^n \lambda_i \vec{u}_i \vec{u}_i^*$$
+                </div>
+                <p>where $\lambda_i$ are the eigenvalues and $\vec{u}_i$ are the corresponding orthonormal eigenvectors. Each term $\vec{u}_i \vec{u}_i^*$ is a projection matrix that projects onto the one-dimensional subspace spanned by the eigenvector $\vec{u}_i$.</p>
+            </div>
+            <div class="theorem-block">
+                <p><strong>Application: Principal Component Analysis (PCA)</strong></p>
+                <p>The spectral decomposition of a covariance matrix (which is real and symmetric) is the mathematical engine behind PCA. The eigenvectors of the covariance matrix are the <strong>principal components</strong>—the new orthogonal axes of the data that capture the directions of maximum variance. The eigenvalues represent the amount of variance along each component, allowing for dimensionality reduction by keeping only the most significant components.</p>
+            </div>
+            <h2>The Master Decomposition: Singular Value Decomposition (SVD)</h2>
+            <p>We arrive now at the final and most powerful of the geometric factorizations. The Spectral Theorem provided a perfect picture for normal matrices, but it required the matrix to be square and its eigenvectors to be orthogonal. What about all the other matrices? What about rectangular matrices that map vectors from one space to another of a different dimension?</p>
+            <p>The <strong>Singular Value Decomposition (SVD)</strong> provides the answer. It is the ultimate generalization, revealing a beautiful and simple geometric story that is true for *any* matrix. It states that even if a matrix distorts space in a complex way, we can always find one orthogonal basis in its domain and another orthogonal basis in its range that makes the transformation look like a simple, diagonal stretch.</p>
+            <div class="theorem-block">
+                <p><strong>Theorem: The Singular Value Decomposition (SVD)</strong></p>
+                <p>Any $m \times n$ matrix $\mathbf{A}$ can be factored into:</p>
+                <div class="math-display">
+                    $$\mathbf{A} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^*$$
+                </div>
+                <p>where $\mathbf{U}$ is an $m \times m$ unitary matrix whose columns are the *left singular vectors*, $\mathbf{\Sigma}$ is an $m \times n$ rectangular diagonal matrix containing the non-negative *singular values*, and $\mathbf{V}$ is an $n \times n$ unitary matrix whose columns are the *right singular vectors*.</p>
+            </div>
+            <p>The SVD tells the complete geometric story of any linear transformation by breaking it down into an intuitive three-step process. First, an initial rotation or reflection of the input space is performed (apply $\mathbf{V}^*$), which aligns the principal "input" directions of the transformation with the standard coordinate axes. In this new orientation, the transformation becomes a pure scaling and reshaping (apply $\mathbf{\Sigma}$), where each axis is stretched by its corresponding singular value, and the dimension is changed if necessary. Finally, a second rotation or reflection is applied in the output space (apply $\mathbf{U}$), aligning the resulting stretched vectors with the principal "output" directions.</p>
+            <p>The SVD is far more than a geometric curiosity; it is a direct window into the fundamental structure of a matrix, revealing key properties at a glance.</p>
+            <div class="theorem-block">
+                <p><strong>Proposition: Matrix Properties from SVD</strong></p>
+                <p>The singular values of $\mathbf{A}$ immediately reveal several of its key properties:</p>
+                <ul>
+                    <li><strong>Rank:</strong> The rank of $\mathbf{A}$ is the number of its non-zero singular values.</li>
+                    <li><strong>Norms:</strong> The spectral norm (operator 2-norm) is the largest singular value ($\|\mathbf{A}\|_2 = \sigma_1$), and the Frobenius norm is the square root of the sum of the squares of the singular values ($\|\mathbf{A}\|_F = \sqrt{\sum \sigma_i^2}$).</li>
+                    <li><strong>Condition Number:</strong> The 2-norm condition number is the ratio of the largest to the smallest singular value, $\kappa_2(\mathbf{A}) = \sigma_1 / \sigma_r$.</li>
+                </ul>
+            </div>
+            <p>Furthermore, the SVD provides a perfect, orthonormal basis for all four fundamental subspaces.</p>
+            <div class="theorem-block">
+                <p><strong>Theorem: SVD and the Four Fundamental Subspaces</strong></p>
+                <p>Let the SVD of $\mathbf{A}$ be $\mathbf{A}=\mathbf{U\Sigma V}^*$ and let $r$ be the rank of $\mathbf{A}$.</p>
+                <ul>
+                    <li>The first $r$ columns of $\mathbf{U}$ form an orthonormal basis for the <strong>column space</strong> of $\mathbf{A}$.</li>
+                    <li>The last $m-r$ columns of $\mathbf{U}$ form an orthonormal basis for the <strong>left null space</strong> of $\mathbf{A}$.</li>
+                    <li>The first $r$ columns of $\mathbf{V}$ form an orthonormal basis for the <strong>row space</strong> of $\mathbf{A}$.</li>
+                    <li>The last $n-r$ columns of $\mathbf{V}$ form an orthonormal basis for the <strong>null space</strong> of $\mathbf{A}$.</li>
+                </ul>
+            </div>
+            <p>This decomposition also allows any matrix to be expressed as a weighted sum of simple, rank-one matrices.</p>
+            <div class="theorem-block">
+                <p><strong>Proposition: The Outer Product Form</strong></p>
+                <p>The SVD can be rewritten as:</p>
+                <div class="math-display">
+                    $$\mathbf{A} = \sum_{i=1}^r \sigma_i \vec{u}_i \vec{v}_i^*$$
+                </div>
+                <p>where $\sigma_i$ are the non-zero singular values, and $\vec{u}_i, \vec{v}_i$ are the corresponding singular vectors. This form is central to data compression, as it shows that the matrix is primarily constructed from the components associated with its largest singular values.</p>
+            </div>
+            <p>This leads to one of the most important results in applied mathematics, the Eckart-Young-Mirsky theorem, which guarantees that truncating this sum provides the best possible low-rank approximation of the original matrix. The error of this approximation, in fact, is controlled by the size of the first discarded singular value. Beyond approximation, the SVD provides a robust way to "invert" any matrix, leading to the best possible solution for linear systems.</p>
+            <div class="theorem-block">
+                <p><strong>Theorem: The Pseudoinverse and Least Squares</strong></p>
+                <p>The SVD provides a direct and stable way to compute the <strong>Moore-Penrose pseudoinverse</strong> of any matrix. If $\mathbf{A} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^*$, its pseudoinverse is $\mathbf{A}^+ = \mathbf{V}\mathbf{\Sigma}^+\mathbf{U}^*$. This pseudoinverse gives the unique minimum-norm solution to the least-squares problem $\|A\vec{x} - \vec{b}\|_2$, which is simply $\vec{x} = \mathbf{A}^+\vec{b}$.</p>
+            </div>
+            <h2>Conclusion: The Universal Story of Stretch and Rotation</h2>
+            <p>This exploration of geometric decompositions has revealed a profound and unifying truth: every linear transformation, no matter how complex or abstract, is built from the intuitive actions of stretching and rotating. We began with the <strong>Polar Decomposition</strong>, which separated any transformation into a pure stretch and a pure rotation, much like the polar form of a complex number. We then saw that for the special class of <strong>normal matrices</strong>, these actions align perfectly, leading to the elegant <strong>Spectral Decomposition</strong> where the stretching occurs along a single set of orthogonal axes.</p>
+            <p>Finally, we arrived at the <strong>Singular Value Decomposition (SVD)</strong>, the master factorization that tells this story for *any* matrix. It shows that by choosing two different orthogonal coordinate systems—one for the input space and one for the output—every transformation becomes a simple diagonal stretch. The SVD is not just a theoretical beauty; it provides the optimal low-rank approximation of a matrix, forming the mathematical bedrock of modern data science.</p>
+            <p>Having understood the geometric heart of matrices, the stage is set for our next article. We will shift our focus from geometric intuition to computational power, exploring the workhorse decompositions—such as LU, QR, and Cholesky—that make solving vast, real-world problems both possible and efficient.</p>
+        </article>
+    </div>
+</body>
+</html>

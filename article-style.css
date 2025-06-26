@@ -14,7 +14,7 @@ body {
     line-height: 1.8;
     margin: 0;
     padding: 0;
-    background-color: #FAFAF9; /* Very light beige background for article pages */
+    background-color: #FdFdFc; /* Very light beige background for article pages */
     color: #333333; /* Default text color for articles */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
