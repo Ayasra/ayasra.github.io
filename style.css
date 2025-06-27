@@ -153,9 +153,6 @@ header h1 {
     box-sizing: border-box; /* Ensures padding is included in the width calculation */
 }
 
-/* REMOVED the border-right rule from the .publications class */
-
-
 .publications h2,
 .notes h2 {
     font-family: 'Noto Serif', serif;
@@ -307,7 +304,6 @@ header h1 {
         flex-direction: column;
     }
     .publications {
-        /* border-right: none; No longer needed as the rule is removed */
         border-bottom: 1px solid #e0e0e0; /* Add bottom border when stacked */
     }
 }
@@ -419,4 +415,9 @@ header h1 {
     .content-list li {
         font-size: 1.1em;
     }
+}
+
+/* NEW RULE ADDED FOR SPACING */
+.article-column + .article-column {
+    margin-top: 2.5em; /* Adds space above the second section */
 }
