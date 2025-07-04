@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computational Decompositions: The Triangular Factorizations</title>
+    <link rel="stylesheet" href="../article-style.css">
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+</head>
+<body>
+    <div class="article-container">
+        <header class="article-header">
+            <p class="breadcrumb-nav"><a href="../matrix-theory.html">&larr; Back to Matrix Theory Notes</a></p>
+            <h1>Computational Decompositions: The Triangular Factorizations</h1>
+        </header>
+        <article class="article-body">
+            <p>In the previous article, we uncovered the deep geometric truth hidden within matrices. Decompositions like the SVD, Polar, and Spectral theorems revealed that every linear transformation, no matter how complex, is fundamentally a simple combination of rotation and stretching. This geometric insight is profound, but it leaves a practical question unanswered: how do we harness this knowledge for computation? How do we efficiently solve the cornerstone problem of linear algebra, $\mathbf{A}\mathbf{x} = \mathbf{b}$, especially when dealing with massive, real-world systems?</p>
+            <p>A direct approach, calculating the inverse $\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}$, is notoriously inefficient and numerically unstable for large matrices. The answer lies not in confronting the matrix head-on, but in decomposing it. This article explores the workhorse factorizations of numerical linear algebra. We will see how decomposing a complex matrix $\mathbf{A}$ into a product of simpler, triangular matrices turns hard problems into a sequence of easy ones, forming the foundation of modern scientific computing.</p>
+            <h2>The Workhorse of Linear Systems: LU Decomposition</h2>
+            <p>At its core, solving a system of linear equations is the goal of the familiar process of Gaussian elimination, where we systematically subtract multiples of rows from other rows to eliminate variables. This process transforms a dense, complex system into a simple upper-triangular one that can be solved easily. The LU Decomposition is the full matrix expression of this entire process. It elegantly records all the elimination steps into a single, powerful factorization.</p>
+            <div class="theorem-block">
+                <p><strong>Theorem: The LU Decomposition</strong></p>
+                <p>A square matrix $\mathbf{A}$ has an LU Decomposition of the form $\mathbf{A} = \mathbf{L}\mathbf{U}$ if all its leading principal minors are non-zero.</p>
+                <div class="math-display">
+                    $$\mathbf{A} = \mathbf{L}\mathbf{U}$$
+                </div>
+                <p>where $\mathbf{L}$ is a <strong>lower triangular</strong> matrix with 1s on its diagonal (a unit lower triangular matrix), and $\mathbf{U}$ is an <strong>upper triangular</strong> matrix.</p>
+            </div>
+            <p>A leading principal minor is the determinant of an upper-left submatrix. The condition that they all be non-zero is what guarantees that Gaussian elimination can proceed without needing to swap any rows. The matrix $\mathbf{U}$ is the final upper-triangular form that results from this process, and the matrix $\mathbf{L}$ is a special matrix that stores the multipliers used during the elimination. When this decomposition exists for an invertible matrix, it is unique.</p>
+            <div class="theorem-block">
+                <p><strong>Proposition: Uniqueness of LU Decomposition</strong></p>
+                <p>If an invertible matrix $\mathbf{A}$ has an LU decomposition where $\mathbf{L}$ is a unit lower triangular matrix, then this decomposition is unique.</p>
+            </div>
+            <p>The power of this decomposition becomes clear when solving the system $\mathbf{A}\mathbf{x} = \mathbf{b}$. Substituting $\mathbf{A} = \mathbf{L}\mathbf{U}$, we get $\mathbf{L}\mathbf{U}\mathbf{x} = \mathbf{b}$. We can split this into two separate, trivial problems by introducing an intermediate vector $\mathbf{y} = \mathbf{U}\mathbf{x}$:</p>
+            <ol>
+                <li>Solve for $\mathbf{y}$: First, solve the lower-triangular system $\mathbf{L}\mathbf{y} = \mathbf{b}$. This is done effortlessly using a process called <strong>forward substitution</strong>.</li>
+                <li>Solve for $\mathbf{x}$: Once $\mathbf{y}$ is known, solve the upper-triangular system $\mathbf{U}\mathbf{x} = \mathbf{y}$. This is done just as easily using <strong>back substitution</strong>.</li>
+            </ol>
+            <p>This same principle can be extended to find the inverse of a matrix. To find $\mathbf{A}^{-1}$, we must solve the matrix equation $\mathbf{A}\mathbf{X} = \mathbf{I}$. This can be done one column at a time by solving $n$ separate linear systems for the columns of the inverse, $\mathbf{A}\mathbf{x}_i = \mathbf{e}_i$, where $\mathbf{e}_i$ is the i-th column of the identity matrix. Once $\mathbf{A}$ is decomposed, each of these $n$ systems can be solved rapidly using the same two-step substitution process.</p>
+            <p>While many matrices meet the condition for the simple $\mathbf{A} = \mathbf{L}\mathbf{U}$ form, for general-purpose use and to ensure numerical stability, the decomposition is almost always performed with pivoting. This leads to a more robust version of the theorem.</p>
+            <div class="theorem-block">
+                <p><strong>Theorem: LUP Decomposition</strong></p>
+                <p>For any invertible square matrix $\mathbf{A}$, there exists a permutation matrix $\mathbf{P}$, a unit lower triangular matrix $\mathbf{L}$, and an upper triangular matrix $\mathbf{U}$ such that $\mathbf{P}\mathbf{A} = \mathbf{L}\mathbf{U}$.</p>
+            </div>
+            <p>This theorem guarantees that a stable factorization can always be found for any invertible matrix by performing row interchanges, which are recorded in the permutation matrix $\mathbf{P}$. This makes the LUP decomposition a robust and universally applied tool in scientific computing.</p>
+            <h2>Symmetry and Stability: The Cholesky Decomposition</h2>
+            <p>The LU decomposition is a general-purpose tool, but what if a matrix has more structure? For the special but very important class of matrices that are Hermitian and positive-definite, we can do much better. Such matrices, which arise frequently in statistics, optimization, and physics, allow for an exceptionally elegant and efficient factorization.</p>
+            <p>The Cholesky Decomposition is a specialized version of the LU decomposition that fully exploits the matrix's symmetry.</p>
+            <div class="theorem-block">
+                <p><strong>Theorem: Cholesky Factorization</strong></p>
+                <p>A square matrix $\mathbf{A}$ has a Cholesky decomposition of the form $\mathbf{A} = \mathbf{L}\mathbf{L}^*$ if and only if it is Hermitian and positive-definite.</p>
+            </div>
+            <p>This theorem provides the necessary and sufficient conditions for the existence of this special factorization. Furthermore, when these conditions are met, the resulting decomposition is unique.</p>
+            <div class="theorem-block">
+                <p><strong>Proposition: Uniqueness of Cholesky Decomposition</strong></p>
+                <p>If a matrix $\mathbf{A}$ is Hermitian and positive-definite, then its Cholesky decomposition $\mathbf{A} = \mathbf{L}\mathbf{L}^*$, where $\mathbf{L}$ is a lower triangular matrix with positive diagonal entries, is unique.</p>
+            </div>
+            <p>This factorization is essentially the matrix equivalent of taking a square root. Because the matrix $\mathbf{A}$ is symmetric, the upper triangular factor from an LU decomposition is simply the conjugate transpose of the lower triangular factor. The Cholesky decomposition leverages this fact by setting $\mathbf{U} = \mathbf{L}^*$, which means we only need to compute and store a single matrix, $\mathbf{L}$. This elegant simplification leads to two major advantages. First, it significantly improves speed; by not needing to compute the second factor independently, the Cholesky algorithm requires about half the floating-point operations of LU decomposition, making it roughly twice as fast. Second, it provides exceptional numerical stability. The positive-definite property of the matrix guarantees that the algorithm will only ever need to take square roots of positive numbers, which completely avoids the need for pivoting and ensures the process is robust.</p>
+            <p>These benefits make the Cholesky decomposition the undisputed method of choice for solving linear systems involving symmetric, positive-definite matrices, such as those derived from covariance matrices in statistics or from finite element methods in engineering simulations.</p>
+            <h2>The Geometry of Stability: QR Decomposition</h2>
+            <p>While the LU and Cholesky decompositions are built on the algebraic process of elimination, the QR Decomposition is born from a geometric idea: any set of independent vectors can be transformed into an orthonormal set that spans the same space. This is the familiar Gram-Schmidt process, and the QR decomposition is its matrix formulation. It provides a way to factor any matrix into a part that is geometrically simple (a rotation) and a part that is computationally simple (triangular).</p>
+            <div class="theorem-block">
+                <p><strong>Theorem: The QR Decomposition</strong></p>
+                <p>Any $m \times n$ matrix $\mathbf{A}$ can be factored as:</p>
+                <div class="math-display">
+                    $$\mathbf{A} = \mathbf{Q}\mathbf{R}$$
+                </div>
+                <p>where $\mathbf{Q}$ is an $m \times m$ unitary/orthogonal matrix and $\mathbf{R}$ is an $m \times n$ upper triangular matrix. For a matrix $\mathbf{A}$ with linearly independent columns, a unique factorization exists where $\mathbf{R}$ has positive diagonal entries.</p>
+            </div>
+            <p>The columns of $\mathbf{Q}$ form an orthonormal basis for the vector space. The matrix $\mathbf{R}$ then describes how to reconstruct the original columns of $\mathbf{A}$ as linear combinations of these new, orthonormal basis vectors. In practice, a more economical "thin" or "reduced" QR decomposition is often used for tall matrices, producing a $\mathbf{Q}$ with the same dimensions as $\mathbf{A}$ and a square $\mathbf{R}$.</p>
+            <p>The primary advantage of the QR decomposition is its exceptional numerical stability. The matrix $\mathbf{Q}$, being orthogonal, preserves lengths and angles because its inverse is simply its transpose ($\mathbf{Q}^{-1} = \mathbf{Q}^*$). This means that when it's used in computations, it doesn't amplify rounding errors, a problem that can sometimes affect methods based on Gaussian elimination. For this reason, QR is often computed with more stable algorithms than Gram-Schmidt, such as Householder reflections or Givens rotations.</p>
+            <p>This stability makes the QR decomposition the premier tool for solving linear <strong>least-squares problems</strong>, which are at the heart of regression analysis and data fitting. To find the best-fit solution to an overdetermined system $\mathbf{A}\mathbf{x} = \mathbf{b}$, we solve the normal equations $\mathbf{A}^*\mathbf{A}\mathbf{x} = \mathbf{A}^*\mathbf{b}$. Substituting $\mathbf{A} = \mathbf{Q}\mathbf{R}$ simplifies this problem dramatically to just $\mathbf{R}\mathbf{x} = \mathbf{Q}^*\mathbf{b}$, which can be solved with simple back substitution. This method avoids the direct computation of $\mathbf{A}^*\mathbf{A}$, which can be poorly conditioned, and is therefore the standard, robust approach.</p>
+            <p>Furthermore, the QR decomposition is the engine behind one of the most important methods for finding eigenvalues. The <strong>QR algorithm</strong> is a powerful iterative method that works by repeatedly performing a QR decomposition and multiplying the factors in reverse order. For a matrix $\mathbf{A}_k$, we compute $\mathbf{A}_k = \mathbf{Q}_k\mathbf{R}_k$ and then form the next matrix as $\mathbf{A}_{k+1} = \mathbf{R}_k\mathbf{Q}_k$. Under suitable conditions, this sequence of matrices converges to a form where the eigenvalues can be easily read from the diagonal, making it a cornerstone of modern eigenvalue computation.</p>
+            <h2>Conclusion: From Geometry to Computation</h2>
+            <p>This exploration of computational decompositions has bridged the gap between abstract geometric understanding and practical application. We have seen how factoring a matrix into triangular components is the key to efficiently solving large-scale problems. The <strong>LU decomposition</strong> provides a universal tool by capturing the essence of Gaussian elimination. For the special but crucial case of symmetric, positive-definite matrices, the <strong>Cholesky decomposition</strong> offers a faster and more stable alternative. Finally, the <strong>QR decomposition</strong>, born from the geometry of orthogonalization, provides unparalleled numerical stability, making it the gold standard for least-squares data fitting and the engine of modern eigenvalue algorithms.</p>
+            <p>These methods form the computational bedrock of scientific computing, enabling the analysis of systems far too large and complex to be solved by hand. Having now understood both the geometric heart and the computational power of matrices, the stage is set for our final article, which will explore the theoretical limits of decomposition and the modern, data-driven factorizations that are shaping the future of the field.</p>
+        </article>
+    </div>
+</body>
+</html>
