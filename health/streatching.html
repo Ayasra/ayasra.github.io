@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stretching Program Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Adding a common font for Arabic to ensure consistency */
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        .font-arabic {
+            font-family: 'Tajawal', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div id="app-container">
+        <!-- App content will be rendered here by JavaScript -->
+    </div>
+
+    <script>
+        // --- DATA AND TRANSLATIONS ---
+        const exercisesData = [
+            // Neck
+            { id: 'neck_flexion', en: { name: 'Neck Flexion (Chin to Chest)', muscleGroup: 'Neck', description: 'Sit or stand tall. Gently drop your chin towards your chest.' }, ar: { name: 'ثني الرقبة (الذقن إلى الصدر)', muscleGroup: 'الرقبة', description: 'اجلس أو قف بشكل مستقيم. أنزل ذقنك برفق نحو صدرك.' } },
+            { id: 'neck_extension', en: { name: 'Neck Extension (Head Tilt Back)', muscleGroup: 'Neck', description: 'Gently tilt your head back, looking towards the ceiling. Be very gentle with this one.' }, ar: { name: 'بسط الرقبة (إمالة الرأس للخلف)', muscleGroup: 'الرقبة', description: 'أمل رأسك برفق للخلف، وانظر نحو السقف. كن لطيفًا جدًا مع هذا التمرين.' } },
+            { id: 'lateral_flexion', en: { name: 'Lateral Flexion (Ear to Shoulder)', muscleGroup: 'Neck', description: 'Keeping your shoulders relaxed, gently tilt your head to one side, bringing your ear towards your shoulder.' }, ar: { name: 'الثني الجانبي (الأذن إلى الكتف)', muscleGroup: 'الرقبة', description: 'مع إبقاء كتفيك مسترخيين، أمل رأسك برفق إلى جانب واحد، مقربًا أذنك من كتفك.' } },
+            { id: 'neck_rotation', en: { name: 'Neck Rotation (Look Over Shoulder)', muscleGroup: 'Neck', description: 'Gently turn your head to one side, looking over your shoulder as far as comfortable. Keep your chin level.' }, ar: { name: 'دوران الرقبة (النظر فوق الكتف)', muscleGroup: 'الرقبة', description: 'أدر رأسك برفق إلى جانب واحد، وانظر فوق كتفك إلى أقصى حد مريح. حافظ على مستوى ذقنك.' } },
+            // Shoulders & Chest
+            { id: 'doorway_chest_stretch', en: { name: 'Doorway Chest Stretch', muscleGroup: 'Shoulders & Chest', description: 'Stand in a doorway with your forearms on the doorframe, forming a "goal post" shape. Take a small step forward until you feel a gentle stretch across your chest.' }, ar: { name: 'تمدد الصدر عند مدخل الباب', muscleGroup: 'الكتفين والصدر', description: 'قف في مدخل الباب مع وضع ساعديك على إطار الباب، على شكل "مرمى". خذ خطوة صغيرة للأمام حتى تشعر بتمدد لطيف عبر صدرك.' } },
+            { id: 'cross_body_shoulder_stretch', en: { name: 'Cross-Body Shoulder Stretch', muscleGroup: 'Shoulders & Chest', description: 'Bring one arm across your body at shoulder height. Use your other hand to gently pull the arm closer to your chest.' }, ar: { name: 'تمدد الكتف عبر الجسم', muscleGroup: 'الكتفين والصدر', description: 'مرر ذراعًا واحدة عبر جسمك عند ارتفاع الكتف. استخدم يدك الأخرى لسحب الذراع برفق بالقرب من صدرك.' } },
+            // Back
+            { id: 'knee_to_chest', en: { name: 'Knee-to-Chest Stretch (Single or Double)', muscleGroup: 'Back', description: 'Lie on your back with knees bent. Gently pull one or both knees towards your chest, holding with your hands.' }, ar: { name: 'تمدد الركبة إلى الصدر (فردي أو مزدوج)', muscleGroup: 'الظهر', description: 'استلقِ على ظهرك مع ثني الركبتين. اسحب برفق إحدى الركبتين أو كلتيهما نحو صدرك، ممسكًا بهما بيديك.' } },
+            { id: 'cat_cow', en: { name: 'Cat-Cow Stretch', muscleGroup: 'Back', description: 'On all fours, inhale to drop your belly and arch your back (Cow). Exhale to round your spine towards the ceiling (Cat).' }, ar: { name: 'تمدد القطة والبقرة', muscleGroup: 'الظهر', description: 'على أربع، استنشق لإنزال بطنك وتقويس ظهرك (بقرة). ازفر لتقريب عمودك الفقري نحو السقف (قطة).' } },
+            { id: 'childs_pose', en: { name: "Child's Pose", muscleGroup: 'Back', description: "Kneel on the floor, sit back on your heels, and fold forward, resting your torso on your thighs and extending your arms forward." }, ar: { name: 'وضعية الطفل', muscleGroup: 'الظهر', description: 'اركع على الأرض، واجلس على كعبيك، وانحنِ للأمام، مع إراحة جذعك على فخذيك ومد ذراعيك للأمام.' } },
+            // Hips & Glutes
+            { id: 'figure_four', en: { name: 'Figure-Four Stretch', muscleGroup: 'Hips & Glutes', description: 'Lie on your back with knees bent. Cross one ankle over the opposite knee. Gently pull the bottom knee towards your chest until you feel a stretch in your glute and outer hip.' }, ar: { name: 'تمدد شكل الرقم أربعة', muscleGroup: 'الوركين والأرداف', description: 'استلقِ على ظهرك مع ثني الركبتين. ضع كاحلًا واحدًا فوق الركبة المقابلة. اسحب الركبة السفلية برفق نحو صدرك حتى تشعر بتمدد في الأرداف والورك الخارجي.' } },
+            { id: 'pigeon_pose', en: { name: 'Pigeon Pose (Yoga)', muscleGroup: 'Hips & Glutes', description: 'Start on all fours. Bring one knee forward and place it behind your wrist, letting your shin angle across your body. Extend the other leg straight back and gently lower your hips.' }, ar: { name: 'وضعية الحمامة (يوجا)', muscleGroup: 'الوركين والأرداف', description: 'ابدأ على أربع. قدم إحدى الركبتين إلى الأمام وضعها خلف معصمك، مع ترك قصبة الساق بزاوية عبر جسمك. مد الساق الأخرى بشكل مستقيم للخلف واخفض وركيك برفق.' } },
+            { id: 'kneeling_hip_flexor', en: { name: 'Kneeling Hip Flexor Stretch', muscleGroup: 'Hips & Glutes', description: 'Kneel on one knee with the other foot flat on the floor in front of you. Keep your torso upright and gently push your hips forward.' }, ar: { name: 'تمدد العضلة القابضة للورك في وضع الركوع', muscleGroup: 'الوركين والأرداف', description: 'اركع على ركبة واحدة مع وضع القدم الأخرى مسطحة على الأرض أمامك. حافظ على استقامة جذعك وادفع وركيك برفق إلى الأمام.' } },
+            // Legs
+            { id: 'standing_hamstring', en: { name: 'Standing Hamstring Stretch', muscleGroup: 'Legs', description: 'Stand with one heel on an elevated surface, leg straight. Hinge forward gently from your hips, keeping your back straight.' }, ar: { name: 'تمدد أوتار الركبة في وضع الوقوف', muscleGroup: 'الساقين', description: 'قف مع وضع كعب واحد على سطح مرتفع، والساق مستقيمة. انحنِ برفق للأمام من وركيك، مع الحفاظ على استقامة ظهرك.' } },
+            { id: 'standing_quad', en: { name: 'Standing Quadriceps Stretch', muscleGroup: 'Legs', description: 'Stand tall, holding a wall for balance. Grab your ankle and gently pull your heel towards your glutes. Keep your pelvis tucked.' }, ar: { name: 'تمدد العضلة رباعية الرؤوس في وضع الوقوف', muscleGroup: 'الساقين', description: 'قف بشكل مستقيم، ممسكًا بحائط لتحقيق التوازن. امسك كاحلك واسحب كعبك برفق نحو أردافك. حافظ على حوضك مشدودًا.' } },
+            { id: 'gastrocnemius_stretch', en: { name: 'Gastrocnemius Stretch (Straight Leg)', muscleGroup: 'Legs', description: 'Face a wall and step one leg back, keeping it straight with your heel down. Lean forward.' }, ar: { name: 'تمدد عضلة الساق (الساق المستقيمة)', muscleGroup: 'الساقين', description: 'واجه حائطًا وخذ خطوة للخلف بساق واحدة، مع إبقائها مستقيمة وكعبك لأسفل. انحنِ إلى الأمام.' } },
+            { id: 'soleus_stretch', en: { name: 'Soleus Stretch (Bent Knee)', muscleGroup: 'Legs', description: 'From the gastrocnemius stretch, bend the knee of your back leg slightly while keeping your heel down.' }, ar: { name: 'تمدد العضلة النعلية (الركبة المثنية)', muscleGroup: 'الساقين', description: 'من وضعية تمدد عضلة الساق، اثنِ ركبة ساقك الخلفية قليلاً مع إبقاء كعبك لأسفل.' } },
+        ];
+
+        const translations = {
+            en: { title: "Your Weekly Stretching Program", subtitle: "A balanced routine for flexibility and wellness.", daysLabel: "How many days a week do you want to stretch?", daysUnit: "days", day: "Day", generateButton: "Generate New Program", language: "العربية", howTo: "How to:" },
+            ar: { title: "برنامج التمدد الأسبوعي الخاص بك", subtitle: "روتين متوازن للمرونة والعافية.", daysLabel: "كم عدد الأيام في الأسبوع التي تريد أن تتمدد فيها؟", daysUnit: "أيام", day: "اليوم", generateButton: "إنشاء برنامج جديد", language: "English", howTo: "الطريقة:" }
+        };
+
+        // --- STATE MANAGEMENT ---
+        let state = {
+            lang: 'en',
+            days: 3,
+            program: [],
+            completed: {},
+            expandedId: null
+        };
+
+        // --- DOM ELEMENTS ---
+        const appContainer = document.getElementById('app-container');
+
+        // --- LOGIC FUNCTIONS ---
+        function generateProgram() {
+            let exercisePool = exercisesData.map(ex => ({ id: ex.id, name: ex[state.lang].name, muscleGroup: ex[state.lang].muscleGroup, description: ex[state.lang].description }));
+            const muscleGroups = [...new Set(exercisePool.map(ex => ex.muscleGroup))];
+            let dailyProgram = Array.from({ length: state.days }, () => []);
+
+            muscleGroups.forEach(group => {
+                for (let i = 0; i < state.days; i++) {
+                    const exercisesInGroup = exercisePool.filter(ex => ex.muscleGroup === group);
+                    if (exercisesInGroup.length > 0) {
+                        const randIndex = Math.floor(Math.random() * exercisesInGroup.length);
+                        const selectedExercise = exercisesInGroup[randIndex];
+                        dailyProgram[i].push(selectedExercise);
+                        exercisePool = exercisePool.filter(ex => ex.id !== selectedExercise.id);
+                    }
+                }
+            });
+
+            for (let i = 0; i < state.days; i++) {
+                while (dailyProgram[i].length < 6 && exercisePool.length > 0) {
+                    const randIndex = Math.floor(Math.random() * exercisePool.length);
+                    const selectedExercise = exercisePool.splice(randIndex, 1)[0];
+                    dailyProgram[i].push(selectedExercise);
+                }
+            }
+            state.program = dailyProgram;
+            state.completed = {};
+            state.expandedId = null;
+        }
+
+        // --- RENDER FUNCTION ---
+        function render() {
+            const t = translations[state.lang];
+            const isArabic = state.lang === 'ar';
+            
+            // Main container div
+            const mainDiv = document.createElement('div');
+            mainDiv.dir = isArabic ? 'rtl' : 'ltr';
+            mainDiv.className = `min-h-screen text-gray-800 ${isArabic ? 'font-arabic' : 'font-sans'}`;
+            
+            mainDiv.innerHTML = `
+                <div class="container mx-auto p-4 md:p-8">
+                    <header class="relative text-center mb-8">
+                        <h1 class="text-4xl md:text-5xl font-bold text-gray-900">${t.title}</h1>
+                        <p class="text-lg text-gray-600 mt-2">${t.subtitle}</p>
+                        <button id="lang-toggle" class="absolute top-0 ${isArabic ? 'left-0' : 'right-0'} bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition">
+                            ${t.language}
+                        </button>
+                    </header>
+
+                    <div class="flex justify-center items-center mb-8 bg-white p-6 rounded-xl shadow-md">
+                        <label for="days-select" class="text-lg font-semibold mx-4">${t.daysLabel}</label>
+                        <select id="days-select" class="p-3 rounded-lg border-2 border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition">
+                            <option value="2" ${state.days === 2 ? 'selected' : ''}>2 ${t.daysUnit}</option>
+                            <option value="3" ${state.days === 3 ? 'selected' : ''}>3 ${t.daysUnit}</option>
+                            <option value="4" ${state.days === 4 ? 'selected' : ''}>4 ${t.daysUnit}</option>
+                            <option value="5" ${state.days === 5 ? 'selected' : ''}>5 ${t.daysUnit}</option>
+                        </select>
+                    </div>
+
+                    <div id="program-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${state.program.map((dayExercises, dayIndex) => `
+                            <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
+                                <h2 class="text-2xl font-bold mb-4 text-center text-blue-600">${t.day} ${dayIndex + 1}</h2>
+                                <ul class="space-y-3 flex-grow">
+                                    ${dayExercises.map(exercise => {
+                                        const isExpanded = state.expandedId === exercise.id;
+                                        const isCompleted = state.completed[exercise.id];
+                                        return `
+                                            <li class="bg-gray-50 rounded-lg transition-all duration-300 overflow-hidden ${isCompleted ? 'opacity-60' : ''}">
+                                                <div class="p-4 flex items-center justify-between cursor-pointer" onclick="toggleExpand('${exercise.id}')">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-shrink-0 h-6 w-6 rounded-full border-2 flex items-center justify-center cursor-pointer ${isArabic ? 'ml-4' : 'mr-4'} border-blue-500" onclick="event.stopPropagation(); toggleComplete('${exercise.id}');">
+                                                            ${isCompleted ? '<div class="h-3 w-3 rounded-full bg-green-500"></div>' : ''}
+                                                        </div>
+                                                        <div class="${isCompleted ? 'line-through' : ''}">
+                                                            <p class="font-semibold">${exercise.name}</p>
+                                                            <p class="text-sm text-gray-500">${exercise.muscleGroup}</p>
+                                                        </div>
+                                                    </div>
+                                                    <svg class="w-5 h-5 text-gray-500 transform transition-transform ${isExpanded ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                                </div>
+                                                ${isExpanded ? `
+                                                    <div class="px-4 pb-4">
+                                                        <div class="mt-2 pt-3 border-t border-gray-200">
+                                                            <h4 class="font-bold mb-1 text-blue-600">${t.howTo}</h4>
+                                                            <p class="text-gray-700 text-sm">${exercise.description}</p>
+                                                        </div>
+                                                    </div>
+                                                ` : ''}
+                                            </li>
+                                        `;
+                                    }).join('')}
+                                </ul>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="text-center mt-8">
+                        <button id="generate-btn" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition shadow-lg">
+                            ${t.generateButton}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Clear previous content and append the new one
+            appContainer.innerHTML = '';
+            appContainer.appendChild(mainDiv);
+
+            // Re-attach event listeners
+            document.getElementById('lang-toggle').addEventListener('click', toggleLanguage);
+            document.getElementById('days-select').addEventListener('change', handleDayChange);
+            document.getElementById('generate-btn').addEventListener('click', () => {
+                generateProgram();
+                render();
+            });
+        }
+
+        // --- EVENT HANDLER FUNCTIONS (made global for inline onclick) ---
+        window.toggleLanguage = () => {
+            state.lang = state.lang === 'en' ? 'ar' : 'en';
+            generateProgram();
+            render();
+        };
+
+        window.handleDayChange = (e) => {
+            state.days = parseInt(e.target.value);
+            generateProgram();
+            render();
+        };
+
+        window.toggleComplete = (exerciseId) => {
+            state.completed[exerciseId] = !state.completed[exerciseId];
+            render();
+        };
+        
+        window.toggleExpand = (exerciseId) => {
+            state.expandedId = state.expandedId === exerciseId ? null : exerciseId;
+            render();
+        };
+
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            generateProgram();
+            render();
+        });
+
+    </script>
+</body>
+</html>
