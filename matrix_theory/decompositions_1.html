@@ -104,9 +104,9 @@
                 <p><strong>Proposition: The Projection Form</strong></p>
                 <p>For a normal matrix $\mathbf{A} = \mathbf{U}\mathbf{D}\mathbf{U}^*$, the decomposition can be rewritten as a sum of rank-one projection matrices:</p>
                 <div class="math-display">
-                    $$\mathbf{A} = \sum_{i=1}^n \lambda_i \vec{u}_i \vec{u}_i^*$$
+                    $$\mathbf{A} = \sum_{i=1}^n \lambda_i  \mathbf{u}_i  \mathbf{u}_i^*$$
                 </div>
-                <p>where $\lambda_i$ are the eigenvalues and $\vec{u}_i$ are the corresponding orthonormal eigenvectors. Each term $\vec{u}_i \vec{u}_i^*$ is a projection matrix that projects onto the one-dimensional subspace spanned by the eigenvector $\vec{u}_i$.</p>
+                <p>where $\lambda_i$ are the eigenvalues and $ \mathbf{u}_i$ are the corresponding orthonormal eigenvectors. Each term $ \mathbf{u}_i  \mathbf{u}_i^*$ is a projection matrix that projects onto the one-dimensional subspace spanned by the eigenvector $ \mathbf{u}_i$.</p>
             </div>
             
             <p><i>Application: Principal Component Analysis (PCA)</i></p>
@@ -149,14 +149,25 @@
                 <p><strong>Proposition: The Outer Product Form</strong></p>
                 <p>The SVD can be rewritten as:</p>
                 <div class="math-display">
-                    $$\mathbf{A} = \sum_{i=1}^r \sigma_i \vec{u}_i \vec{v}_i^*$$
+                    $$\mathbf{A} = \sum_{i=1}^r \sigma_i  \mathbf{u}_i  \mathbf{v}_i^*$$
                 </div>
-                <p>where $\sigma_i$ are the non-zero singular values, and $\vec{u}_i, \vec{v}_i$ are the corresponding singular vectors. This form is central to data compression, as it shows that the matrix is primarily constructed from the components associated with its largest singular values.</p>
+                <p>where $\sigma_i$ are the non-zero singular values, and $ \mathbf{u}_i,  \mathbf{v}_i$ are the corresponding singular vectors. This form is central to data compression, as it shows that the matrix is primarily constructed from the components associated with its largest singular values.</p>
             </div>
-            <p>This leads to one of the most important results in applied mathematics, the Eckart-Young-Mirsky theorem, which guarantees that truncating this sum provides the best possible low-rank approximation of the original matrix. The error of this approximation, in fact, is controlled by the size of the first discarded singular value. Beyond approximation, the SVD provides a robust way to "invert" any matrix, leading to the best possible solution for linear systems.</p>
+            <p>This leads to one of the most important results in applied mathematics, the Eckart-Young-Mirsky theorem, which provides the foundation for optimal low-rank matrix approximation.</p>
+
+            <div class="theorem-block">
+                <p><strong>Theorem: Eckart-Young-Mirsky</strong></p>
+                <p>Let $\mathbf{A}$ be a real $m \times n$ matrix with singular value decomposition $\mathbf{A} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T = \sum_{i=1}^{r} \sigma_i \mathbf{u}_i \mathbf{v}_i^T$, where $r$ is the rank of $\mathbf{A}$. The best rank-$k$ approximation to $\mathbf{A}$ in the Frobenius norm is given by the truncated singular value decomposition:</p>
+                <p>$$ \mathbf{A}_k = \sum_{i=1}^{k} \sigma_i \mathbf{u}_i \mathbf{v}_i^T $$</p>
+                <p>The approximation error is determined by the truncated singular values:</p>
+                <p>$$ \|\mathbf{A} - \mathbf{A}_k\|_F = \min_{\text{rank}(\mathbf{B})=k} \|\mathbf{A} - \mathbf{B}\|_F = \sqrt{\sum_{i=k+1}^{r} \sigma_i^2} $$</p>
+                <p>For the spectral norm, the approximation error is determined by the first truncated singular value: $ \|\mathbf{A} - \mathbf{A}_k\|_2 = \sigma_{k+1} $.</p>
+            </div>
+
+            <p>This theorem guarantees that truncating the SVD sum provides the best possible rank-$k$ approximation of the original matrix. Beyond approximation, the SVD provides a robust way to "invert" any matrix through the pseudoinverse, leading to the best possible solution for linear systems.</p>
             <div class="theorem-block">
                 <p><strong>Theorem: The Pseudoinverse and Least Squares</strong></p>
-                <p>The SVD provides a direct and stable way to compute the  Moore-Penrose pseudoinverse  of any matrix. If $\mathbf{A} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^*$, its pseudoinverse is $\mathbf{A}^+ = \mathbf{V}\mathbf{\Sigma}^+\mathbf{U}^*$. This pseudoinverse gives the unique minimum-norm solution to the least-squares problem $\|A\vec{x} - \vec{b}\|_2$, which is simply $\vec{x} = \mathbf{A}^+\vec{b}$.</p>
+                <p>The SVD provides a direct and stable way to compute the  Moore-Penrose pseudoinverse  of any matrix. If $\mathbf{A} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^*$, its pseudoinverse is $\mathbf{A}^+ = \mathbf{V}\mathbf{\Sigma}^+\mathbf{U}^*$. This pseudoinverse gives the unique minimum-norm solution to the least-squares problem $\|A \mathbf{x} -  \mathbf{b}\|_2$, which is simply $ \mathbf{x} = \mathbf{A}^+ \mathbf{b}$.</p>
             </div>
             <h2>Conclusion: The Universal Story of Stretch and Rotation</h2>
             <p>This exploration of geometric decompositions has revealed a profound and unifying truth: every linear transformation, no matter how complex or abstract, is built from the intuitive actions of stretching and rotating. We began with the  Polar Decomposition , which separated any transformation into a pure stretch and a pure rotation, much like the polar form of a complex number. We then saw that for the special class of  normal matrices , these actions align perfectly, leading to the elegant  Spectral Decomposition  where the stretching occurs along a single set of orthogonal axes.</p>
