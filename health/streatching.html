@@ -31,6 +31,13 @@
     <script>
         // --- DATA AND TRANSLATIONS (Greatly expanded with all static stretches) ---
         const exercisesData = [
+            // Dynamic Warm-up
+            { id: 'arm_circles', en: { name: 'Arm Circles (Dynamic)', muscleGroup: 'Warm-up', description: 'Extend arms to the sides. Make small circles forward, gradually increasing the size. Reverse.' }, ar: { name: 'دوائر الذراعين (ديناميكي)', muscleGroup: 'إحماء', description: 'مد الذراعين إلى الجانبين. قم بعمل دوائر صغيرة للأمام، مع زيادة الحجم تدريجيًا. اعكس الاتجاه.' } },
+            { id: 'shoulder_rolls', en: { name: 'Shoulder Rolls (Dynamic)', muscleGroup: 'Warm-up', description: 'Roll your shoulders forward in a circular motion several times, then roll them backward.' }, ar: { name: 'لف الكتفين (ديناميكي)', muscleGroup: 'إحماء', description: 'لف كتفيك للأمام في حركة دائرية عدة مرات، ثم لفهما للخلف.' } },
+            { id: 'leg_swings', en: { name: 'Leg Swings (Dynamic)', muscleGroup: 'Warm-up', description: 'Stand next to a wall for support. Swing one leg forward/backward, then side-to-side across your body, gradually increasing the range.' }, ar: { name: 'أرجحة الساق (ديناميكي)', muscleGroup: 'إحماء', description: 'قف بجانب حائط للدعم. أرجح ساقًا واحدة للأمام/للخلف، ثم من جانب إلى آخر عبر جسمك، مع زيادة النطاق تدريجيًا.' } },
+            { id: 'torso_twists', en: { name: 'Torso Twists (Dynamic)', muscleGroup: 'Warm-up', description: 'Stand with feet shoulder-width apart, knees slightly bent. Gently twist your torso from side to side.' }, ar: { name: 'لف الجذع (ديناميكي)', muscleGroup: 'إحماء', description: 'قف مع فتح القدمين بعرض الكتفين، والركبتان مثنيتان قليلاً. لف جذعك برفق من جانب إلى آخر.' } },
+            { id: 'cat_cow', en: { name: 'Cat-Cow Stretch (Dynamic)', muscleGroup: 'Warm-up', description: 'On all fours, inhale to drop your belly and arch your back (Cow). Exhale to round your spine towards the ceiling (Cat).' }, ar: { name: 'تمدد القطة والبقرة (ديناميكي)', muscleGroup: 'إحماء', description: 'على أربع، استنشق لإنزال بطنك وتقويس ظهرك (بقرة). ازفر لتقريب عمودك الفقري نحو السقف (قطة).' } },
+
             // Neck
             { id: 'neck_flexion', en: { name: 'Neck Flexion (Chin to Chest)', muscleGroup: 'Neck', description: 'Sit or stand tall. Gently drop your chin towards your chest.' }, ar: { name: 'ثني الرقبة (الذقن إلى الصدر)', muscleGroup: 'الرقبة', description: 'اجلس أو قف بشكل مستقيم. أنزل ذقنك برفق نحو صدرك.' } },
             { id: 'neck_extension', en: { name: 'Neck Extension (Head Tilt Back)', muscleGroup: 'Neck', description: 'Gently tilt your head back, looking towards the ceiling. Be very gentle with this one.' }, ar: { name: 'بسط الرقبة (إمالة الرأس للخلف)', muscleGroup: 'الرقبة', description: 'أمل رأسك برفق للخلف، وانظر نحو السقف. كن لطيفًا جدًا مع هذا التمرين.' } },
@@ -71,9 +78,36 @@
             { id: 'kneeling_shin_stretch', en: { name: 'Kneeling Shin Stretch', muscleGroup: 'Legs', description: 'Kneel with feet flat and toes pointed back. Gently lean back onto your heels.' }, ar: { name: 'تمدد قصبة الساق في وضع الركوع', muscleGroup: 'الساقين', description: 'اركع مع تسطيح القدمين وتوجيه أصابع القدم للخلف. انحنِ برفق للخلف على كعبيك.' } },
         ];
 
+        const presets = {
+            warmUp: ['shoulder_rolls', 'arm_circles', 'torso_twists', 'leg_swings', 'cat_cow'],
+            office: ['neck_flexion', 'upper_trap_stretch', 'doorway_chest_stretch', 'thread_the_needle', 'seated_spinal_twist', 'figure_four', 'side_bend', 'wall_pec_stretch'],
+            postWorkout: ['lying_hamstring_strap', 'standing_quad', 'pigeon_pose', 'gastrocnemius_stretch', 'soleus_stretch', 'figure_four', 'childs_pose', 'cross_body_shoulder_stretch'],
+            dedicatedBeginner: [
+                ['neck_flexion', 'lateral_flexion', 'doorway_chest_stretch', 'cross_body_shoulder_stretch', 'knee_to_chest', 'childs_pose'],
+                ['standing_hamstring', 'standing_quad', 'gastrocnemius_stretch', 'seated_butterfly', 'figure_four', 'side_bend'],
+                ['neck_rotation', 'pec_stretch_hands_behind', 'triceps_lat_stretch', 'childs_pose', 'knee_to_chest', 'kneeling_hip_flexor'],
+                ['standing_hamstring', 'soleus_stretch', 'figure_four', 'seated_butterfly', 'cross_body_shoulder_stretch', 'side_bend'],
+                ['neck_flexion', 'doorway_chest_stretch', 'childs_pose', 'knee_to_chest', 'standing_quad', 'gastrocnemius_stretch']
+            ],
+            dedicatedIntermediate: [
+                ['upper_trap_stretch', 'wall_pec_stretch', 'thread_the_needle', 'seated_spinal_twist', 'kneeling_hip_flexor', 'lying_hamstring_strap', 'side_lunge_stretch'],
+                ['levator_scapulae_stretch', 'triceps_lat_stretch', 'side_bend', 'figure_four', 'pigeon_pose', 'standing_quad', 'stair_calf_stretch'],
+                ['neck_rotation', 'doorway_chest_stretch', 'cross_body_shoulder_stretch', 'childs_pose', 'supine_it_band_stretch', 'seated_butterfly', 'lying_hamstring_strap'],
+                ['upper_trap_stretch', 'pec_stretch_hands_behind', 'thread_the_needle', 'seated_spinal_twist', 'pigeon_pose', 'side_lunge_stretch', 'soleus_stretch'],
+                ['levator_scapulae_stretch', 'wall_pec_stretch', 'side_bend', 'figure_four', 'kneeling_hip_flexor', 'standing_hamstring', 'standing_quad']
+            ],
+            dedicatedAdvanced: [
+                ['levator_scapulae_stretch', 'upper_trap_stretch', 'thread_the_needle', 'triceps_lat_stretch', 'seated_spinal_twist', 'pigeon_pose', 'supine_it_band_stretch', 'side_lunge_stretch'],
+                ['wall_pec_stretch', 'pec_stretch_hands_behind', 'side_bend', 'childs_pose', 'kneeling_hip_flexor', 'lying_hamstring_strap', 'stair_calf_stretch', 'kneeling_shin_stretch'],
+                ['neck_rotation', 'cross_body_shoulder_stretch', 'doorway_chest_stretch', 'seated_spinal_twist', 'figure_four', 'pigeon_pose', 'standing_quad', 'gastrocnemius_stretch'],
+                ['upper_trap_stretch', 'thread_the_needle', 'triceps_lat_stretch', 'side_bend', 'supine_it_band_stretch', 'seated_butterfly', 'lying_hamstring_strap', 'soleus_stretch'],
+                ['levator_scapulae_stretch', 'wall_pec_stretch', 'seated_spinal_twist', 'childs_pose', 'pigeon_pose', 'kneeling_hip_flexor', 'side_lunge_stretch', 'standing_hamstring']
+            ]
+        };
+
         const translations = {
-            en: { title: "Your Weekly Stretching Program", subtitle: "A balanced routine for flexibility and wellness.", daysLabel: "How many days a week do you want to stretch?", daysUnit: "days", day: "Day", generateButton: "Generate New Program", language: "العربية", howTo: "How to:" },
-            ar: { title: "برنامج التمدد الأسبوعي الخاص بك", subtitle: "روتين متوازن للمرونة والعافية.", daysLabel: "كم عدد الأيام في الأسبوع التي تريد أن تتمدد فيها؟", daysUnit: "أيام", day: "اليوم", generateButton: "إنشاء برنامج جديد", language: "English", howTo: "الطريقة:" }
+            en: { title: "Your Weekly Stretching Program", subtitle: "A balanced routine for flexibility and wellness.", daysLabel: "How many days a week do you want to stretch?", daysUnit: "days", day: "Day", generateButton: "Generate New Program", language: "العربية", howTo: "How to:", presetTitle: "Or, try a preset routine:", presetWarmUp: "Warm-Up Routine", presetOffice: "Office Relief", presetPostWorkout: "Post-Workout Cooldown", presetBeginner: "Beginner 5-Day", presetIntermediate: "Intermediate 5-Day", presetAdvanced: "Advanced 5-Day" },
+            ar: { title: "برنامج التمدد الأسبوعي الخاص بك", subtitle: "روتين متوازن للمرونة والعافية.", daysLabel: "كم عدد الأيام في الأسبوع التي تريد أن تتمدد فيها؟", daysUnit: "أيام", day: "اليوم", generateButton: "إنشاء برنامج جديد", language: "English", howTo: "الطريقة:", presetTitle: "أو جرب برنامجًا جاهزًا:", presetWarmUp: "روتين الإحماء", presetOffice: "راحة المكتب", presetPostWorkout: "تهدئة ما بعد التمرين", presetBeginner: "مبتدئ 5 أيام", presetIntermediate: "متوسط 5 أيام", presetAdvanced: "متقدم 5 أيام" }
         };
 
         // --- STATE MANAGEMENT ---
@@ -82,15 +116,17 @@
             days: 3,
             program: [],
             completed: {},
-            expandedId: null
+            expandedId: null,
+            activePresetKey: null
         };
 
         // --- DOM ELEMENTS ---
         const appContainer = document.getElementById('app-container');
 
-        // --- LOGIC FUNCTIONS (Improved Logic) ---
+        // --- LOGIC FUNCTIONS ---
         function generateProgram() {
-            const allExercises = exercisesData.map(ex => ({ id: ex.id, name: ex[state.lang].name, muscleGroup: ex[state.lang].muscleGroup, description: ex[state.lang].description }));
+            state.activePresetKey = null;
+            const allExercises = exercisesData.filter(ex => ex.muscleGroup !== 'Warm-up').map(ex => ({ id: ex.id, name: ex[state.lang].name, muscleGroup: ex[state.lang].muscleGroup, description: ex[state.lang].description }));
             const muscleGroups = [...new Set(allExercises.map(ex => ex.muscleGroup))];
             let dailyProgram = [];
             const exercisesPerDay = 8;
@@ -100,7 +136,6 @@
                 let usedExerciseIdsThisDay = new Set();
                 let shuffledGroups = [...muscleGroups].sort(() => 0.5 - Math.random());
 
-                // 1. Add one unique exercise per muscle group
                 for (const group of shuffledGroups) {
                     const availableInGroup = allExercises.filter(ex => ex.muscleGroup === group && !usedExerciseIdsThisDay.has(ex.id));
                     if (availableInGroup.length > 0) {
@@ -111,7 +146,6 @@
                     }
                 }
 
-                // 2. Top up to the desired number of exercises
                 let remainingPool = allExercises.filter(ex => !usedExerciseIdsThisDay.has(ex.id)).sort(() => 0.5 - Math.random());
                 while (dayExercises.length < exercisesPerDay && remainingPool.length > 0) {
                     const selected = remainingPool.pop();
@@ -123,6 +157,28 @@
             state.program = dailyProgram;
             state.completed = {};
             state.expandedId = null;
+        }
+
+        function loadPreset(presetKey) {
+            state.activePresetKey = presetKey;
+            const presetData = presets[presetKey];
+            
+            const getExerciseById = (id) => {
+                const exerciseData = exercisesData.find(ex => ex.id === id);
+                return { id: exerciseData.id, name: exerciseData[state.lang].name, muscleGroup: exerciseData[state.lang].muscleGroup, description: exerciseData[state.lang].description };
+            };
+
+            if (Array.isArray(presetData[0])) {
+                state.program = presetData.map(dayIds => dayIds.map(getExerciseById));
+                state.days = presetData.length;
+            } else { 
+                state.program = [presetData.map(getExerciseById)];
+                state.days = 1;
+            }
+
+            state.completed = {};
+            state.expandedId = null;
+            render();
         }
 
         // --- RENDER FUNCTION ---
@@ -144,9 +200,9 @@
                         </button>
                     </header>
 
-                    <div class="flex justify-center items-center mb-8 bg-white p-6 rounded-xl shadow-md">
+                    <div class="flex justify-center items-center mb-8 bg-white p-6 rounded-xl shadow-md ${state.activePresetKey ? 'opacity-50' : ''}">
                         <label for="days-select" class="text-lg font-semibold mx-4">${t.daysLabel}</label>
-                        <select id="days-select" class="p-3 rounded-lg border-2 border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition">
+                        <select id="days-select" class="p-3 rounded-lg border-2 border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition" ${state.activePresetKey ? 'disabled' : ''}>
                             <option value="2" ${state.days === 2 ? 'selected' : ''}>2 ${t.daysUnit}</option>
                             <option value="3" ${state.days === 3 ? 'selected' : ''}>3 ${t.daysUnit}</option>
                             <option value="4" ${state.days === 4 ? 'selected' : ''}>4 ${t.daysUnit}</option>
@@ -154,10 +210,19 @@
                         </select>
                     </div>
 
-                    <div id="program-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        ${state.program.map((dayExercises, dayIndex) => `
+                    <div id="program-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                        ${state.program.map((dayExercises, dayIndex) => {
+                            let cardTitle = `${t.day} ${dayIndex + 1}`;
+                            if(state.activePresetKey === 'warmUp') cardTitle = t.presetWarmUp;
+                            if(state.activePresetKey === 'office') cardTitle = t.presetOffice;
+                            if(state.activePresetKey === 'postWorkout') cardTitle = t.presetPostWorkout;
+                            if(state.activePresetKey === 'dedicatedBeginner') cardTitle = `${t.presetBeginner} - ${t.day} ${dayIndex + 1}`;
+                            if(state.activePresetKey === 'dedicatedIntermediate') cardTitle = `${t.presetIntermediate} - ${t.day} ${dayIndex + 1}`;
+                            if(state.activePresetKey === 'dedicatedAdvanced') cardTitle = `${t.presetAdvanced} - ${t.day} ${dayIndex + 1}`;
+
+                            return `
                             <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
-                                <h2 class="text-2xl font-bold mb-4 text-center text-blue-600">${t.day} ${dayIndex + 1}</h2>
+                                <h2 class="text-xl font-bold mb-4 text-center text-blue-600">${cardTitle}</h2>
                                 <ul class="space-y-3 flex-grow">
                                     ${dayExercises.map(exercise => {
                                         const isExpanded = state.expandedId === exercise.id;
@@ -170,7 +235,7 @@
                                                             ${isCompleted ? '<div class="h-3 w-3 rounded-full bg-green-500"></div>' : ''}
                                                         </div>
                                                         <div class="${isCompleted ? 'line-through' : ''} min-w-0">
-                                                            <p class="font-semibold truncate">${exercise.name}</p>
+                                                            <p class="font-semibold">${exercise.name}</p>
                                                             <p class="text-sm text-gray-500">${exercise.muscleGroup}</p>
                                                         </div>
                                                     </div>
@@ -189,13 +254,29 @@
                                     }).join('')}
                                 </ul>
                             </div>
-                        `).join('')}
+                        `}).join('')}
                     </div>
 
-                    <div class="text-center mt-8">
-                        <button id="generate-btn" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition shadow-lg">
+                    <div class="text-center mt-12">
+                         <button id="generate-btn" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition shadow-lg">
                             ${t.generateButton}
                         </button>
+                        <div class="mt-6">
+                            <p class="text-gray-600 mb-2">${t.presetTitle}</p>
+                            <div class="flex flex-wrap justify-center gap-4">
+                                <button id="warm-up-preset-btn" class="bg-yellow-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-yellow-600 transition shadow-md">${t.presetWarmUp}</button>
+                                <button id="office-preset-btn" class="bg-teal-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-teal-600 transition shadow-md">${t.presetOffice}</button>
+                                <button id="post-workout-preset-btn" class="bg-purple-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-purple-600 transition shadow-md">${t.presetPostWorkout}</button>
+                            </div>
+                            <div class="mt-4">
+                                <p class="text-gray-600 mb-2">- Dedicated 5-Day Programs -</p>
+                                <div class="flex flex-wrap justify-center gap-4">
+                                    <button id="beginner-preset-btn" class="bg-green-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-600 transition shadow-md">${t.presetBeginner}</button>
+                                    <button id="intermediate-preset-btn" class="bg-orange-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-orange-600 transition shadow-md">${t.presetIntermediate}</button>
+                                    <button id="advanced-preset-btn" class="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 transition shadow-md">${t.presetAdvanced}</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -209,13 +290,23 @@
                 generateProgram();
                 render();
             });
+            document.getElementById('warm-up-preset-btn').addEventListener('click', () => loadPreset('warmUp'));
+            document.getElementById('office-preset-btn').addEventListener('click', () => loadPreset('office'));
+            document.getElementById('post-workout-preset-btn').addEventListener('click', () => loadPreset('postWorkout'));
+            document.getElementById('beginner-preset-btn').addEventListener('click', () => loadPreset('dedicatedBeginner'));
+            document.getElementById('intermediate-preset-btn').addEventListener('click', () => loadPreset('dedicatedIntermediate'));
+            document.getElementById('advanced-preset-btn').addEventListener('click', () => loadPreset('dedicatedAdvanced'));
         }
 
         // --- EVENT HANDLER FUNCTIONS ---
         window.toggleLanguage = () => {
             state.lang = state.lang === 'en' ? 'ar' : 'en';
-            generateProgram();
-            render();
+            if (state.activePresetKey) {
+                loadPreset(state.activePresetKey);
+            } else {
+                generateProgram();
+                render();
+            }
         };
 
         window.handleDayChange = (e) => {
@@ -239,7 +330,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             generateProgram();
             render();
-        });
+});
 
     </script>
 </body>
