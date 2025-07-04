@@ -11,6 +11,15 @@
         .font-arabic {
             font-family: 'Tajawal', sans-serif;
         }
+        /* Simple transition for the accordion */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+        .accordion-content.expanded {
+            max-height: 200px; /* Adjust as needed */
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -20,29 +29,46 @@
     </div>
 
     <script>
-        // --- DATA AND TRANSLATIONS ---
+        // --- DATA AND TRANSLATIONS (Greatly expanded with all static stretches) ---
         const exercisesData = [
             // Neck
             { id: 'neck_flexion', en: { name: 'Neck Flexion (Chin to Chest)', muscleGroup: 'Neck', description: 'Sit or stand tall. Gently drop your chin towards your chest.' }, ar: { name: 'ثني الرقبة (الذقن إلى الصدر)', muscleGroup: 'الرقبة', description: 'اجلس أو قف بشكل مستقيم. أنزل ذقنك برفق نحو صدرك.' } },
             { id: 'neck_extension', en: { name: 'Neck Extension (Head Tilt Back)', muscleGroup: 'Neck', description: 'Gently tilt your head back, looking towards the ceiling. Be very gentle with this one.' }, ar: { name: 'بسط الرقبة (إمالة الرأس للخلف)', muscleGroup: 'الرقبة', description: 'أمل رأسك برفق للخلف، وانظر نحو السقف. كن لطيفًا جدًا مع هذا التمرين.' } },
             { id: 'lateral_flexion', en: { name: 'Lateral Flexion (Ear to Shoulder)', muscleGroup: 'Neck', description: 'Keeping your shoulders relaxed, gently tilt your head to one side, bringing your ear towards your shoulder.' }, ar: { name: 'الثني الجانبي (الأذن إلى الكتف)', muscleGroup: 'الرقبة', description: 'مع إبقاء كتفيك مسترخيين، أمل رأسك برفق إلى جانب واحد، مقربًا أذنك من كتفك.' } },
             { id: 'neck_rotation', en: { name: 'Neck Rotation (Look Over Shoulder)', muscleGroup: 'Neck', description: 'Gently turn your head to one side, looking over your shoulder as far as comfortable. Keep your chin level.' }, ar: { name: 'دوران الرقبة (النظر فوق الكتف)', muscleGroup: 'الرقبة', description: 'أدر رأسك برفق إلى جانب واحد، وانظر فوق كتفك إلى أقصى حد مريح. حافظ على مستوى ذقنك.' } },
+            { id: 'upper_trap_stretch', en: { name: 'Upper Trapezius Stretch', muscleGroup: 'Neck', description: 'Tilt your head (e.g., right ear to right shoulder). Gently place your right hand on the left side of your head to add light pressure. Reach your left hand towards the floor.' }, ar: { name: 'تمدد العضلة شبه المنحرفة العلوية', muscleGroup: 'الرقبة', description: 'أمل رأسك (مثال: الأذن اليمنى نحو الكتف الأيمن). ضع يدك اليمنى برفق على الجانب الأيسر من رأسك لإضافة ضغط خفيف. مد يدك اليسرى نحو الأرض.' } },
+            { id: 'levator_scapulae_stretch', en: { name: 'Levator Scapulae Stretch', muscleGroup: 'Neck', description: 'Turn your head about 45 degrees towards your armpit. Use your hand to gently pull your head down towards your armpit.' }, ar: { name: 'تمدد العضلة الرافعة للكتف', muscleGroup: 'الرقبة', description: 'أدر رأسك حوالي 45 درجة نحو إبطك. استخدم يدك لسحب رأسك برفق لأسفل نحو إبطك.' } },
+            
             // Shoulders & Chest
             { id: 'doorway_chest_stretch', en: { name: 'Doorway Chest Stretch', muscleGroup: 'Shoulders & Chest', description: 'Stand in a doorway with your forearms on the doorframe, forming a "goal post" shape. Take a small step forward until you feel a gentle stretch across your chest.' }, ar: { name: 'تمدد الصدر عند مدخل الباب', muscleGroup: 'الكتفين والصدر', description: 'قف في مدخل الباب مع وضع ساعديك على إطار الباب، على شكل "مرمى". خذ خطوة صغيرة للأمام حتى تشعر بتمدد لطيف عبر صدرك.' } },
+            { id: 'pec_stretch_hands_behind', en: { name: 'Pec Stretch with Hands Behind Back', muscleGroup: 'Shoulders & Chest', description: 'Interlace your fingers behind your back. Straighten your arms and gently lift them away from your body until you feel a stretch across your chest.' }, ar: { name: 'تمدد الصدر مع تشبيك اليدين خلف الظهر', muscleGroup: 'الكتفين والصدر', description: 'شبك أصابعك خلف ظهرك. افرد ذراعيك وارفعها برفق بعيدًا عن جسمك حتى تشعر بتمدد عبر صدرك.' } },
+            { id: 'wall_pec_stretch', en: { name: 'Wall Pec Stretch', muscleGroup: 'Shoulders & Chest', description: 'Stand facing a wall. Place one hand flat on the wall at shoulder height, arm straight. Gently turn your body away from the arm on the wall.' }, ar: { name: 'تمدد الصدر على الحائط', muscleGroup: 'الكتفين والصدر', description: 'قف مواجهًا للحائط. ضع يدًا واحدة مسطحة على الحائط عند ارتفاع الكتف، والذراع مستقيمة. أدر جسمك برفق بعيدًا عن الذراع التي على الحائط.' } },
             { id: 'cross_body_shoulder_stretch', en: { name: 'Cross-Body Shoulder Stretch', muscleGroup: 'Shoulders & Chest', description: 'Bring one arm across your body at shoulder height. Use your other hand to gently pull the arm closer to your chest.' }, ar: { name: 'تمدد الكتف عبر الجسم', muscleGroup: 'الكتفين والصدر', description: 'مرر ذراعًا واحدة عبر جسمك عند ارتفاع الكتف. استخدم يدك الأخرى لسحب الذراع برفق بالقرب من صدرك.' } },
+            { id: 'triceps_lat_stretch', en: { name: 'Triceps and Latissimus Dorsi Stretch', muscleGroup: 'Shoulders & Chest', description: 'Reach one arm overhead. Bend your elbow, letting your hand fall behind your head. Use your other hand to gently pull the elbow further back and down.' }, ar: { name: 'تمدد العضلة ثلاثية الرؤوس والعريضة الظهرية', muscleGroup: 'الكتفين والصدر', description: 'مد ذراعًا واحدة فوق رأسك. اثنِ مرفقك، واترك يدك تسقط خلف رأسك. استخدم يدك الأخرى لسحب المرفق برفق للخلف ولأسفل.' } },
+            { id: 'thread_the_needle', en: { name: 'Thread the Needle', muscleGroup: 'Shoulders & Chest', description: 'On all fours, thread one arm underneath your torso, palm up, letting your shoulder and ear rest on the floor.' }, ar: { name: 'تمرير الخيط في الإبرة', muscleGroup: 'الكتفين والصدر', description: 'على أربع، مرر ذراعًا واحدة تحت جذعك، والكف لأعلى، مع ترك كتفك وأذنك تستريحان على الأرض.' } },
+
             // Back
-            { id: 'knee_to_chest', en: { name: 'Knee-to-Chest Stretch (Single or Double)', muscleGroup: 'Back', description: 'Lie on your back with knees bent. Gently pull one or both knees towards your chest, holding with your hands.' }, ar: { name: 'تمدد الركبة إلى الصدر (فردي أو مزدوج)', muscleGroup: 'الظهر', description: 'استلقِ على ظهرك مع ثني الركبتين. اسحب برفق إحدى الركبتين أو كلتيهما نحو صدرك، ممسكًا بهما بيديك.' } },
-            { id: 'cat_cow', en: { name: 'Cat-Cow Stretch', muscleGroup: 'Back', description: 'On all fours, inhale to drop your belly and arch your back (Cow). Exhale to round your spine towards the ceiling (Cat).' }, ar: { name: 'تمدد القطة والبقرة', muscleGroup: 'الظهر', description: 'على أربع، استنشق لإنزال بطنك وتقويس ظهرك (بقرة). ازفر لتقريب عمودك الفقري نحو السقف (قطة).' } },
+            { id: 'knee_to_chest', en: { name: 'Knee-to-Chest Stretch', muscleGroup: 'Back', description: 'Lie on your back with knees bent. Gently pull one or both knees towards your chest, holding with your hands.' }, ar: { name: 'تمدد الركبة إلى الصدر', muscleGroup: 'الظهر', description: 'استلقِ على ظهرك مع ثني الركبتين. اسحب برفق إحدى الركبتين أو كلتيهما نحو صدرك، ممسكًا بهما بيديك.' } },
             { id: 'childs_pose', en: { name: "Child's Pose", muscleGroup: 'Back', description: "Kneel on the floor, sit back on your heels, and fold forward, resting your torso on your thighs and extending your arms forward." }, ar: { name: 'وضعية الطفل', muscleGroup: 'الظهر', description: 'اركع على الأرض، واجلس على كعبيك، وانحنِ للأمام، مع إراحة جذعك على فخذيك ومد ذراعيك للأمام.' } },
+            { id: 'seated_spinal_twist', en: { name: 'Seated Spinal Twist', muscleGroup: 'Back', description: 'Sit with legs extended. Bend one knee, placing the foot outside the opposite knee. Twist your torso towards the bent knee.' }, ar: { name: 'لي العمود الفقري في وضع الجلوس', muscleGroup: 'الظهر', description: 'اجلس مع تمديد الساقين. اثنِ إحدى الركبتين، واضعًا القدم خارج الركبة المقابلة. لف جذعك نحو الركبة المثنية.' } },
+            { id: 'side_bend', en: { name: 'Side Bend (Standing or Seated)', muscleGroup: 'Back', description: 'Stand or sit tall. Reach one arm overhead and gently lean to the opposite side.' }, ar: { name: 'الانحناء الجانبي (وقوفًا أو جلوسًا)', muscleGroup: 'الظهر', description: 'قف أو اجلس بشكل مستقيم. مد ذراعًا واحدة فوق رأسك وانحنِ برفق إلى الجانب المقابل.' } },
+
             // Hips & Glutes
-            { id: 'figure_four', en: { name: 'Figure-Four Stretch', muscleGroup: 'Hips & Glutes', description: 'Lie on your back with knees bent. Cross one ankle over the opposite knee. Gently pull the bottom knee towards your chest until you feel a stretch in your glute and outer hip.' }, ar: { name: 'تمدد شكل الرقم أربعة', muscleGroup: 'الوركين والأرداف', description: 'استلقِ على ظهرك مع ثني الركبتين. ضع كاحلًا واحدًا فوق الركبة المقابلة. اسحب الركبة السفلية برفق نحو صدرك حتى تشعر بتمدد في الأرداف والورك الخارجي.' } },
-            { id: 'pigeon_pose', en: { name: 'Pigeon Pose (Yoga)', muscleGroup: 'Hips & Glutes', description: 'Start on all fours. Bring one knee forward and place it behind your wrist, letting your shin angle across your body. Extend the other leg straight back and gently lower your hips.' }, ar: { name: 'وضعية الحمامة (يوجا)', muscleGroup: 'الوركين والأرداف', description: 'ابدأ على أربع. قدم إحدى الركبتين إلى الأمام وضعها خلف معصمك، مع ترك قصبة الساق بزاوية عبر جسمك. مد الساق الأخرى بشكل مستقيم للخلف واخفض وركيك برفق.' } },
+            { id: 'figure_four', en: { name: 'Figure-Four Stretch', muscleGroup: 'Hips & Glutes', description: 'Lie on your back, cross one ankle over the opposite knee. Gently pull the bottom knee towards your chest.' }, ar: { name: 'تمدد شكل الرقم أربعة', muscleGroup: 'الوركين والأرداف', description: 'استلقِ على ظهرك، ضع كاحلًا واحدًا فوق الركبة المقابلة. اسحب الركبة السفلية برفق نحو صدرك.' } },
+            { id: 'pigeon_pose', en: { name: 'Pigeon Pose', muscleGroup: 'Hips & Glutes', description: 'Start on all fours. Bring one knee forward and place it behind your wrist, letting your shin angle across your body. Extend the other leg straight back and gently lower your hips.' }, ar: { name: 'وضعية الحمامة', muscleGroup: 'الوركين والأرداف', description: 'ابدأ على أربع. قدم إحدى الركبتين إلى الأمام وضعها خلف معصمك، مع ترك قصبة الساق بزاوية عبر جسمك. مد الساق الأخرى بشكل مستقيم للخلف واخفض وركيك برفق.' } },
             { id: 'kneeling_hip_flexor', en: { name: 'Kneeling Hip Flexor Stretch', muscleGroup: 'Hips & Glutes', description: 'Kneel on one knee with the other foot flat on the floor in front of you. Keep your torso upright and gently push your hips forward.' }, ar: { name: 'تمدد العضلة القابضة للورك في وضع الركوع', muscleGroup: 'الوركين والأرداف', description: 'اركع على ركبة واحدة مع وضع القدم الأخرى مسطحة على الأرض أمامك. حافظ على استقامة جذعك وادفع وركيك برفق إلى الأمام.' } },
+            { id: 'seated_butterfly', en: { name: 'Seated Butterfly Stretch', muscleGroup: 'Hips & Glutes', description: 'Sit on the floor with the soles of your feet together, knees bent out to the sides. Gently allow your knees to fall towards the floor.' }, ar: { name: 'تمدد الفراشة في وضع الجلوس', muscleGroup: 'الوركين والأرداف', description: 'اجلس على الأرض مع ضم باطن القدمين معًا، والركبتان مثنيتان للخارج. اسمح لركبتيك بالهبوط برفق نحو الأرض.' } },
+            { id: 'supine_it_band_stretch', en: { name: 'Supine IT Band Stretch', muscleGroup: 'Hips & Glutes', description: 'Lie on your back. Cross one leg over the other. Use your hand to gently pull the crossed leg further across your body and slightly upwards.' }, ar: { name: 'تمدد الشريط الحرقفي الظنبوبي في وضع الاستلقاء', muscleGroup: 'الوركين والأرداف', description: 'استلقِ على ظهرك. ضع ساقًا فوق الأخرى. استخدم يدك لسحب الساق المتقاطعة برفق عبر جسمك وإلى الأعلى قليلاً.' } },
+
             // Legs
             { id: 'standing_hamstring', en: { name: 'Standing Hamstring Stretch', muscleGroup: 'Legs', description: 'Stand with one heel on an elevated surface, leg straight. Hinge forward gently from your hips, keeping your back straight.' }, ar: { name: 'تمدد أوتار الركبة في وضع الوقوف', muscleGroup: 'الساقين', description: 'قف مع وضع كعب واحد على سطح مرتفع، والساق مستقيمة. انحنِ برفق للأمام من وركيك، مع الحفاظ على استقامة ظهرك.' } },
+            { id: 'lying_hamstring_strap', en: { name: 'Lying Hamstring Stretch (with Strap)', muscleGroup: 'Legs', description: 'Lie on your back. Extend one leg up, loop a strap around the ball of your foot, and gently pull the leg closer to your body.' }, ar: { name: 'تمدد أوتار الركبة في وضع الاستلقاء (مع حزام)', muscleGroup: 'الساقين', description: 'استلقِ على ظهرك. مد ساقًا واحدة لأعلى، ولف حزامًا حول مشط قدمك، واسحب الساق برفق بالقرب من جسمك.' } },
             { id: 'standing_quad', en: { name: 'Standing Quadriceps Stretch', muscleGroup: 'Legs', description: 'Stand tall, holding a wall for balance. Grab your ankle and gently pull your heel towards your glutes. Keep your pelvis tucked.' }, ar: { name: 'تمدد العضلة رباعية الرؤوس في وضع الوقوف', muscleGroup: 'الساقين', description: 'قف بشكل مستقيم، ممسكًا بحائط لتحقيق التوازن. امسك كاحلك واسحب كعبك برفق نحو أردافك. حافظ على حوضك مشدودًا.' } },
             { id: 'gastrocnemius_stretch', en: { name: 'Gastrocnemius Stretch (Straight Leg)', muscleGroup: 'Legs', description: 'Face a wall and step one leg back, keeping it straight with your heel down. Lean forward.' }, ar: { name: 'تمدد عضلة الساق (الساق المستقيمة)', muscleGroup: 'الساقين', description: 'واجه حائطًا وخذ خطوة للخلف بساق واحدة، مع إبقائها مستقيمة وكعبك لأسفل. انحنِ إلى الأمام.' } },
             { id: 'soleus_stretch', en: { name: 'Soleus Stretch (Bent Knee)', muscleGroup: 'Legs', description: 'From the gastrocnemius stretch, bend the knee of your back leg slightly while keeping your heel down.' }, ar: { name: 'تمدد العضلة النعلية (الركبة المثنية)', muscleGroup: 'الساقين', description: 'من وضعية تمدد عضلة الساق، اثنِ ركبة ساقك الخلفية قليلاً مع إبقاء كعبك لأسفل.' } },
+            { id: 'stair_calf_stretch', en: { name: 'Stair Calf Stretch', muscleGroup: 'Legs', description: 'Stand on the edge of a step. Gently let your heels drop below the level of the step.' }, ar: { name: 'تمدد ربلة الساق على الدرج', muscleGroup: 'الساقين', description: 'قف على حافة درجة. دع كعبيك يهبطان برفق أسفل مستوى الدرجة.' } },
+            { id: 'side_lunge_stretch', en: { name: 'Side Lunge Stretch', muscleGroup: 'Legs', description: 'Stand with feet wide. Shift your weight to one side, bending that knee while keeping the other leg straight.' }, ar: { name: 'تمدد الطعن الجانبي', muscleGroup: 'الساقين', description: 'قف مع فتح الساقين على نطاق واسع. انقل وزنك إلى جانب واحد، مع ثني تلك الركبة وإبقاء الساق الأخرى مستقيمة.' } },
+            { id: 'kneeling_shin_stretch', en: { name: 'Kneeling Shin Stretch', muscleGroup: 'Legs', description: 'Kneel with feet flat and toes pointed back. Gently lean back onto your heels.' }, ar: { name: 'تمدد قصبة الساق في وضع الركوع', muscleGroup: 'الساقين', description: 'اركع مع تسطيح القدمين وتوجيه أصابع القدم للخلف. انحنِ برفق للخلف على كعبيك.' } },
         ];
 
         const translations = {
@@ -62,31 +88,38 @@
         // --- DOM ELEMENTS ---
         const appContainer = document.getElementById('app-container');
 
-        // --- LOGIC FUNCTIONS ---
+        // --- LOGIC FUNCTIONS (Improved Logic) ---
         function generateProgram() {
-            let exercisePool = exercisesData.map(ex => ({ id: ex.id, name: ex[state.lang].name, muscleGroup: ex[state.lang].muscleGroup, description: ex[state.lang].description }));
-            const muscleGroups = [...new Set(exercisePool.map(ex => ex.muscleGroup))];
-            let dailyProgram = Array.from({ length: state.days }, () => []);
-
-            muscleGroups.forEach(group => {
-                for (let i = 0; i < state.days; i++) {
-                    const exercisesInGroup = exercisePool.filter(ex => ex.muscleGroup === group);
-                    if (exercisesInGroup.length > 0) {
-                        const randIndex = Math.floor(Math.random() * exercisesInGroup.length);
-                        const selectedExercise = exercisesInGroup[randIndex];
-                        dailyProgram[i].push(selectedExercise);
-                        exercisePool = exercisePool.filter(ex => ex.id !== selectedExercise.id);
-                    }
-                }
-            });
+            const allExercises = exercisesData.map(ex => ({ id: ex.id, name: ex[state.lang].name, muscleGroup: ex[state.lang].muscleGroup, description: ex[state.lang].description }));
+            const muscleGroups = [...new Set(allExercises.map(ex => ex.muscleGroup))];
+            let dailyProgram = [];
+            const exercisesPerDay = 8;
 
             for (let i = 0; i < state.days; i++) {
-                while (dailyProgram[i].length < 6 && exercisePool.length > 0) {
-                    const randIndex = Math.floor(Math.random() * exercisePool.length);
-                    const selectedExercise = exercisePool.splice(randIndex, 1)[0];
-                    dailyProgram[i].push(selectedExercise);
+                let dayExercises = [];
+                let usedExerciseIdsThisDay = new Set();
+                let shuffledGroups = [...muscleGroups].sort(() => 0.5 - Math.random());
+
+                // 1. Add one unique exercise per muscle group
+                for (const group of shuffledGroups) {
+                    const availableInGroup = allExercises.filter(ex => ex.muscleGroup === group && !usedExerciseIdsThisDay.has(ex.id));
+                    if (availableInGroup.length > 0) {
+                        const randIndex = Math.floor(Math.random() * availableInGroup.length);
+                        const selected = availableInGroup[randIndex];
+                        dayExercises.push(selected);
+                        usedExerciseIdsThisDay.add(selected.id);
+                    }
                 }
+
+                // 2. Top up to the desired number of exercises
+                let remainingPool = allExercises.filter(ex => !usedExerciseIdsThisDay.has(ex.id)).sort(() => 0.5 - Math.random());
+                while (dayExercises.length < exercisesPerDay && remainingPool.length > 0) {
+                    const selected = remainingPool.pop();
+                    dayExercises.push(selected);
+                }
+                dailyProgram.push(dayExercises);
             }
+
             state.program = dailyProgram;
             state.completed = {};
             state.expandedId = null;
@@ -97,7 +130,6 @@
             const t = translations[state.lang];
             const isArabic = state.lang === 'ar';
             
-            // Main container div
             const mainDiv = document.createElement('div');
             mainDiv.dir = isArabic ? 'rtl' : 'ltr';
             mainDiv.className = `min-h-screen text-gray-800 ${isArabic ? 'font-arabic' : 'font-sans'}`;
@@ -133,25 +165,25 @@
                                         return `
                                             <li class="bg-gray-50 rounded-lg transition-all duration-300 overflow-hidden ${isCompleted ? 'opacity-60' : ''}">
                                                 <div class="p-4 flex items-center justify-between cursor-pointer" onclick="toggleExpand('${exercise.id}')">
-                                                    <div class="flex items-center">
+                                                    <div class="flex items-center min-w-0">
                                                         <div class="flex-shrink-0 h-6 w-6 rounded-full border-2 flex items-center justify-center cursor-pointer ${isArabic ? 'ml-4' : 'mr-4'} border-blue-500" onclick="event.stopPropagation(); toggleComplete('${exercise.id}');">
                                                             ${isCompleted ? '<div class="h-3 w-3 rounded-full bg-green-500"></div>' : ''}
                                                         </div>
-                                                        <div class="${isCompleted ? 'line-through' : ''}">
-                                                            <p class="font-semibold">${exercise.name}</p>
+                                                        <div class="${isCompleted ? 'line-through' : ''} min-w-0">
+                                                            <p class="font-semibold truncate">${exercise.name}</p>
                                                             <p class="text-sm text-gray-500">${exercise.muscleGroup}</p>
                                                         </div>
                                                     </div>
-                                                    <svg class="w-5 h-5 text-gray-500 transform transition-transform ${isExpanded ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                                    <svg class="w-5 h-5 text-gray-500 transform transition-transform ${isExpanded ? 'rotate-180' : ''} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                                 </div>
-                                                ${isExpanded ? `
-                                                    <div class="px-4 pb-4">
+                                                <div class="accordion-content ${isExpanded ? 'expanded' : ''}">
+                                                    <div class="px-4 pb-4 pt-2">
                                                         <div class="mt-2 pt-3 border-t border-gray-200">
                                                             <h4 class="font-bold mb-1 text-blue-600">${t.howTo}</h4>
                                                             <p class="text-gray-700 text-sm">${exercise.description}</p>
                                                         </div>
                                                     </div>
-                                                ` : ''}
+                                                </div>
                                             </li>
                                         `;
                                     }).join('')}
@@ -168,11 +200,9 @@
                 </div>
             `;
             
-            // Clear previous content and append the new one
             appContainer.innerHTML = '';
             appContainer.appendChild(mainDiv);
 
-            // Re-attach event listeners
             document.getElementById('lang-toggle').addEventListener('click', toggleLanguage);
             document.getElementById('days-select').addEventListener('change', handleDayChange);
             document.getElementById('generate-btn').addEventListener('click', () => {
@@ -181,7 +211,7 @@
             });
         }
 
-        // --- EVENT HANDLER FUNCTIONS (made global for inline onclick) ---
+        // --- EVENT HANDLER FUNCTIONS ---
         window.toggleLanguage = () => {
             state.lang = state.lang === 'en' ? 'ar' : 'en';
             generateProgram();
