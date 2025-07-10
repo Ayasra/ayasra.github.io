@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surah Luqman | سورة لقمان</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        .font-amiri {
+            font-family: 'Amiri', serif;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .ayah-number {
+            font-family: 'Amiri', serif;
+            color: #16a34a; /* green-600 */
+            font-size: 1.125rem;
+            margin: 0 0.25rem;
+        }
+        .hidden {
+            display: none;
+        }
+        /* Styles for the Mushaf view page */
+        .mushaf-page {
+            border: 2px solid #a3e635; /* lime-400 */
+            padding: 1rem;
+            margin-bottom: 2rem;
+            background-color: #f7fee7; /* lime-50 */
+        }
+        .mushaf-text {
+            text-align: justify;
+            line-height: 2.5;
+        }
+        .mushaf-footer {
+            text-align: center;
+            margin-top: 1rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid #d9f99d; /* lime-200 */
+            color: #4d7c0f; /* lime-800 */
+            font-style: italic;
+        }
+        /* Active/Inactive button styles */
+        .toggle-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #15803d; /* green-700 */
+            color: #15803d;
+            background-color: transparent;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .toggle-btn.active {
+            background-color: #16a34a; /* green-600 */
+            color: white;
+            font-weight: bold;
+        }
+        .toggle-btn:first-child {
+            border-top-left-radius: 0.5rem;
+            border-bottom-left-radius: 0.5rem;
+        }
+        .toggle-btn:last-child {
+            border-top-right-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-green-50 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
+
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-green-800 font-amiri">سورة لقمان</h1>
+            <p class="text-2xl text-green-700">Surah Luqman</p>
+            
+            <!-- View Toggle Buttons -->
+            <div id="view-toggle" class="mt-6 flex justify-center">
+                <button id="btn-mushaf" class="toggle-btn">المصحف</button>
+                <button id="btn-translation" class="toggle-btn active">الترجمة</button>
+            </div>
+        </header>
+
+        <!-- Surah Content -->
+        <main id="surah-container">
+            <!-- Translation View Container -->
+            <div id="translation-view" class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg border border-gray-200"></div>
+            
+            <!-- Mushaf View Container -->
+            <div id="mushaf-view" class="hidden"></div>
+
+            <!-- Loading State -->
+            <div id="loading" class="text-center text-gray-500 p-8">
+                <p>Loading Surah...</p>
+            </div>
+            <!-- Error State -->
+            <div id="error" class="hidden text-center text-red-500 p-8">
+                <p>Sorry, there was an error loading the Surah. Please try again later.</p>
+            </div>
+        </main>
+
+        <footer class="text-center mt-12">
+            <p class="text-gray-500">Quranic text from api.alquran.cloud</p>
+        </footer>
+    </div>
+
+    <script>
+        window.onload = function() {
+            // --- DOM Elements ---
+            const loadingIndicator = document.getElementById('loading');
+            const errorIndicator = document.getElementById('error');
+            const translationContainer = document.getElementById('translation-view');
+            const mushafContainer = document.getElementById('mushaf-view');
+            const btnTranslation = document.getElementById('btn-translation');
+            const btnMushaf = document.getElementById('btn-mushaf');
+            const surahNumber = 31; // Surah Luqman
+
+            // --- API Fetch ---
+            const apiUrl = `https://api.alquran.cloud/v1/surah/${surahNumber}/editions/quran-uthmani,en.sahih`;
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    loadingIndicator.classList.add('hidden');
+                    const arabicAyahs = data.data[0].ayahs;
+                    const englishAyahs = data.data[1].ayahs;
+                    
+                    renderTranslationView(arabicAyahs, englishAyahs);
+                    renderMushafView(arabicAyahs);
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    loadingIndicator.classList.add('hidden');
+                    errorIndicator.classList.remove('hidden');
+                });
+
+            // --- Rendering Functions ---
+            function renderTranslationView(arabicAyahs, englishAyahs) {
+                let content = getBismillah();
+                for (let i = 0; i < arabicAyahs.length; i++) {
+                    const arabicText = arabicAyahs[i].text;
+                    const englishText = englishAyahs[i].text;
+                    const ayahNumberInSurah = arabicAyahs[i].numberInSurah;
+
+                    content += `
+                        <div class="mb-8 py-4 border-b border-gray-200">
+                            <p class="text-3xl leading-relaxed text-right font-amiri text-gray-900 mb-4" dir="rtl">
+                                ${arabicText} <span class="ayah-number">﴿${ayahNumberInSurah}﴾</span>
+                            </p>
+                            <p class="text-md text-left text-gray-600" dir="ltr">
+                               ${ayahNumberInSurah}. ${englishText}
+                            </p>
+                        </div>
+                    `;
+                }
+                translationContainer.innerHTML = content;
+            }
+
+            function renderMushafView(arabicAyahs) {
+                const pages = {};
+                // Group ayahs by page number
+                arabicAyahs.forEach(ayah => {
+                    if (!pages[ayah.page]) {
+                        pages[ayah.page] = [];
+                    }
+                    pages[ayah.page].push(ayah);
+                });
+
+                let content = '';
+                for (const pageNumber in pages) {
+                    const pageAyahs = pages[pageNumber];
+                    let pageText = '';
+                    
+                    // Add Bismillah if it's the first ayah of the Surah (and not Surah 9)
+                    if (pageAyahs[0].numberInSurah === 1 && surahNumber !== 9) {
+                         pageText += `<div class="text-center mb-4"><p class="text-3xl font-amiri text-green-700">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p></div>`;
+                    }
+
+                    let ayahsText = pageAyahs.map(ayah => `${ayah.text} <span class="ayah-number">﴿${ayah.numberInSurah}﴾</span>`).join('');
+                    
+                    pageText += `<p class="mushaf-text font-amiri text-2xl">${ayahsText}</p>`;
+                    
+                    content += `
+                        <div class="mushaf-page rounded-lg">
+                            ${pageText}
+                            <div class="mushaf-footer">${pageNumber}</div>
+                        </div>
+                    `;
+                }
+                mushafContainer.innerHTML = content;
+            }
+
+            function getBismillah() {
+                if (surahNumber === 9 || surahNumber === 1) return '';
+                return `
+                    <div class="text-center mb-8">
+                        <p class="text-3xl font-amiri text-green-700">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+                    </div>
+                `;
+            }
+
+            // --- Event Listeners for Toggle ---
+            btnTranslation.addEventListener('click', () => {
+                translationContainer.classList.remove('hidden');
+                mushafContainer.classList.add('hidden');
+                btnTranslation.classList.add('active');
+                btnMushaf.classList.remove('active');
+            });
+
+            btnMushaf.addEventListener('click', () => {
+                mushafContainer.classList.remove('hidden');
+                translationContainer.classList.add('hidden');
+                btnMushaf.classList.add('active');
+                btnTranslation.classList.remove('active');
+            });
+        };
+    </script>
+
+</body>
+</html>
