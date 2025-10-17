@@ -1,0 +1,1751 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top 300 Turkish Verbs Cheat Sheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .verb-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .verb-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Flashcard Styles */
+        .flashcard-container {
+            perspective: 1000px;
+        }
+        .flashcard {
+            width: 100%;
+            height: 250px;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .flashcard.is-flipped {
+            transform: rotateY(180deg);
+        }
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+             border: 1px solid #e5e7eb;
+        }
+        .flashcard-front {
+            background-color: white;
+        }
+        .flashcard-back {
+            background-color: #f9fafb; /* slightly off-white */
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <!-- Header Section -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900">Top 300 Turkish Verbs</h1>
+            <p class="text-lg text-gray-600 mt-2">A searchable cheat sheet and flashcard tool for quick reference.</p>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="mb-8 max-w-2xl mx-auto">
+            <div class="relative">
+                <input type="text" id="search-input" placeholder="Search for a verb in Turkish or English..." class="w-full px-5 py-3 text-lg border-2 border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                 <svg class="absolute right-5 top-1/2 -translate-y-1/2 h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Flashcard Section -->
+        <div class="max-w-xl mx-auto mb-12">
+            <h2 class="text-2xl font-bold text-center mb-4 text-gray-800">Flashcard Practice</h2>
+            <div class="flex justify-center items-center space-x-4 mb-4">
+                <div>
+                    <span class="text-sm font-medium text-gray-600">Mode:</span>
+                    <button id="mode-turkish" class="px-4 py-1.5 text-sm font-semibold rounded-md transition bg-blue-600 text-white">Turkish</button>
+                    <button id="mode-english" class="px-4 py-1.5 text-sm font-semibold rounded-md transition bg-white text-gray-700 border">English</button>
+                </div>
+                 <button id="next-card" class="px-5 py-2 font-semibold text-white bg-green-600 rounded-md hover:bg-green-700 transition shadow">
+                    Next Card &rarr;
+                </button>
+            </div>
+
+            <div class="flashcard-container">
+                <div id="flashcard" class="flashcard">
+                    <div id="flashcard-front" class="flashcard-face flashcard-front">
+                        <!-- Content will be injected by JS -->
+                    </div>
+                    <div id="flashcard-back" class="flashcard-face flashcard-back">
+                        <!-- Content will be injected by JS -->
+                    </div>
+                </div>
+            </div>
+             <p class="text-center text-gray-500 text-sm mt-3">Click card to flip</p>
+        </div>
+        
+        <hr class="mb-12 border-t-2 border-gray-200"/>
+
+        <!-- Verbs Grid -->
+        <div id="verbs-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Verb cards will be dynamically inserted here -->
+        </div>
+
+        <!-- No Results Message -->
+        <div id="no-results" class="hidden text-center mt-16">
+             <h3 class="text-2xl font-semibold text-gray-700">No Verbs Found</h3>
+             <p class="text-gray-500 mt-2">Try a different search term.</p>
+        </div>
+    </div>
+
+    <script>
+        const verbs = [
+            { infinitive: 'olmak', stem: 'ol-', english: 'to be, to become', examples: [
+                { tr: 'Doktor olmak istiyorum.', en: 'I want to be a doctor.' },
+                { tr: 'Bu proje bir başarı oldu.', en: 'This project became a success.' },
+                { tr: 'Ne olursa olsun, devam etmeliyiz.', en: 'Whatever happens, we must continue.' },
+                { tr: 'Sanırım hasta oluyorum.', en: 'I think I am getting sick.' },
+                { tr: 'Orada saat kaçta olmalısın?', en: 'What time should you be there?' }
+            ]},
+            { infinitive: 'yapmak', stem: 'yap-', english: 'to do, to make', examples: [
+                { tr: 'Ödevimi şimdi yapacağım.', en: 'I will do my homework now.' },
+                { tr: 'Annem harika bir kek yaptı.', en: 'My mom made a wonderful cake.' },
+                { tr: 'Bu konuda ne yapabiliriz?', en: 'What can we do about this?' },
+                { tr: 'Bir hata yaptım.', en: 'I made a mistake.' },
+                { tr: 'Her sabah spor yaparım.', en: 'I exercise every morning.' }
+            ]},
+            { infinitive: 'gitmek', stem: 'git-', english: 'to go', examples: [
+                { tr: 'Okula gidiyorum.', en: 'I am going to school.' },
+                { tr: 'Tatilde nereye gittin?', en: 'Where did you go on vacation?' },
+                { tr: 'Bu otobüs Taksim\'e gider mi?', en: 'Does this bus go to Taksim?' },
+                { tr: 'Her şey yolunda gidecek.', en: 'Everything will go well.' },
+                { tr: 'Sinemaya gitmek ister misin?', en: 'Do you want to go to the cinema?' }
+            ]},
+            { infinitive: 'gelmek', stem: 'gel-', english: 'to come', examples: [
+                { tr: 'Misafirler yarın gelecek.', en: 'The guests will come tomorrow.' },
+                { tr: 'Toplantıya neden geç geldin?', en: 'Why did you come late to the meeting?' },
+                { tr: 'Aklıma harika bir fikir geldi.', en: 'A great idea came to my mind.' },
+                { tr: 'Lütfen içeri gelin.', en: 'Please come inside.' },
+                { tr: 'O, işe her gün bisikletle gelir.', en: 'He comes to work by bike every day.' }
+            ]},
+            { infinitive: 'almak', stem: 'al-', english: 'to take, to buy', examples: [
+                { tr: 'Yeni bir araba aldım.', en: 'I bought a new car.' },
+                { tr: 'Marketten biraz süt alır mısın?', en: 'Can you get some milk from the market?' },
+                { tr: 'Derin bir nefes al.', en: 'Take a deep breath.' },
+                { tr: 'Bu dersi gelecek dönem alacağım.', en: 'I will take this course next semester.' },
+                { tr: 'Kötü haberler aldık.', en: 'We received bad news.' }
+            ]},
+            { infinitive: 'vermek', stem: 'ver-', english: 'to give', examples: [
+                { tr: 'Sana bir hediye vereceğim.', en: 'I will give you a gift.' },
+                { tr: 'Lütfen bana tuzu verir misin?', en: 'Can you please pass me the salt?' },
+                { tr: 'Bu işe çok önem veriyorum.', en: 'I give great importance to this work.' },
+                { tr: 'Ona borç para verdim.', en: 'I lent him money.' },
+                { tr: 'Sonunda doğru kararı verdi.', en: 'He finally made the right decision.' }
+            ]},
+            { infinitive: 'demek', stem: 'de-', english: 'to say', examples: [
+                { tr: 'Ona "merhaba" dedim.', en: 'I said "hello" to him/her.' },
+                { tr: 'Ne demek istiyorsun?', en: 'What do you mean?' },
+                { tr: 'Bana yalan söylediğini demek istememiştim.', en: 'I didn\'t mean to say you were lying.' },
+                { tr: 'Bu kelime Türkçe\'de ne demek?', en: 'What does this word mean in Turkish?' },
+                { tr: 'Yani, gelmeyeceksin demek.', en: 'So, that means you won\'t come.' }
+            ]},
+            { infinitive: 'istemek', stem: 'iste-', english: 'to want', examples: [
+                { tr: 'Biraz su istiyorum.', en: 'I want some water.' },
+                { tr: 'Onunla konuşmak istemiyorum.', en: 'I don\'t want to talk to him.' },
+                { tr: 'Ne istersen yapabilirsin.', en: 'You can do whatever you want.' },
+                { tr: 'Senden sadece dürüst olmanı istiyorum.', en: 'I just want you to be honest.' },
+                { tr: 'Bu işi gerçekten istiyor musun?', en: 'Do you really want this job?' }
+            ]},
+            { infinitive: 'bilmek', stem: 'bil-', english: 'to know', examples: [
+                { tr: 'Cevabı biliyor musun?', en: 'Do you know the answer?' },
+                { tr: 'Onun nerede olduğunu bilmiyorum.', en: 'I don\'t know where he is.' },
+                { tr: 'İyi yüzme bilir.', en: 'He knows how to swim well.' },
+                { tr: 'Bildiğim kadarıyla, toplantı iptal edildi.', en: 'As far as I know, the meeting was canceled.' },
+                { tr: 'Bunu yapmanın daha iyi bir yolunu biliyorum.', en: 'I know a better way to do this.' }
+            ]},
+            { infinitive: 'görmek', stem: 'gör-', english: 'to see', examples: [
+                { tr: 'Dün gece bir rüya gördüm.', en: 'I had a dream last night. (lit. I saw a dream)' },
+                { tr: 'Seni gördüğüme sevindim.', en: 'I\'m glad to see you.' },
+                { tr: 'Bu filmi daha önce görmüş müydün?', en: 'Had you seen this movie before?' },
+                { tr: 'Farkı göremiyorum.', en: 'I can\'t see the difference.' },
+                { tr: 'Yakında görüşürüz!', en: 'See you soon!' }
+            ]},
+            { infinitive: 'bakmak', stem: 'bak-', english: 'to look', examples: [
+                { tr: 'Pencereden dışarı bak.', en: 'Look out the window.' },
+                { tr: 'Bana öyle bakma.', en: 'Don\'t look at me like that.' },
+                { tr: 'Bu kediye kim bakacak?', en: 'Who will look after this cat?' },
+                { tr: 'Sözlüğe bakmam gerekiyor.', en: 'I need to look it up in the dictionary.' },
+                { tr: 'Duruma bir de bu açıdan bakalım.', en: 'Let\'s look at the situation from this perspective.' }
+            ]},
+            { infinitive: 'kalmak', stem: 'kal-', english: 'to stay, to remain', examples: [
+                { tr: 'Bu otelde iki gece kalacağız.', en: 'We will stay in this hotel for two nights.' },
+                { tr: 'Partide sadece üç kişi kaldı.', en: 'Only three people remained at the party.' },
+                { tr: 'Sınavı geçemedi, sınıfta kaldı.', en: 'He couldn\'t pass the exam, he was held back a year.' },
+                { tr: 'Lütfen sessiz kalın.', en: 'Please remain silent.' },
+                { tr: 'Bu akşam evde kalacağım.', en: 'I will stay at home this evening.' }
+            ]},
+            { infinitive: 'yemek', stem: 'ye-', english: 'to eat', examples: [
+                { tr: 'Akşam yemeği yiyelim mi?', en: 'Shall we have dinner?' },
+                { tr: 'Daha önce hiç suşi yemedim.', en: 'I have never eaten sushi before.' },
+                { tr: 'Çok hızlı yiyorsun.', en: 'You are eating too fast.' },
+                { tr: 'Kurt gibi açım, bir atı yiyebilirim.', en: 'I\'m starving, I could eat a horse.' },
+                { tr: 'Sağlıklı beslenmek için sebze yemelisin.', en: 'You should eat vegetables to eat healthy.' }
+            ]},
+            { infinitive: 'içmek', stem: 'iç-', english: 'to drink', examples: [
+                { tr: 'Her sabah kahve içerim.', en: 'I drink coffee every morning.' },
+                { tr: 'Soğuk bir şeyler içmek ister misin?', en: 'Would you like to drink something cold?' },
+                { tr: 'Çorbanı bitirmeden iç.', en: 'Drink your soup before it gets cold.' },
+                { tr: 'Sigara içmek sağlığa zararlıdır.', en: 'Smoking is harmful to health.' },
+                { tr: 'Günde en az iki litre su içmeliyiz.', en: 'We should drink at least two liters of water a day.' }
+            ]},
+            { infinitive: 'konuşmak', stem: 'konuş-', english: 'to speak', examples: [
+                { tr: 'Türkçe konuşabiliyor musun?', en: 'Can you speak Turkish?' },
+                { tr: 'Bu konuyu daha sonra konuşalım.', en: 'Let\'s talk about this issue later.' },
+                { tr: 'Toplantıda herkes konuştu.', en: 'Everyone spoke at the meeting.' },
+                { tr: 'Telefonda kiminle konuşuyordun?', en: 'Who were you talking to on the phone?' },
+                { tr: 'Daha yüksek sesle konuşur musun?', en: 'Can you speak louder?' }
+            ]},
+            { infinitive: 'çalışmak', stem: 'çalış-', english: 'to work, to study', examples: [
+                { tr: 'Çok çalışmam lazım.', en: 'I have to study a lot.' },
+                { tr: 'O, büyük bir şirkette çalışıyor.', en: 'He works at a big company.' },
+                { tr: 'Bu makine çalışmıyor.', en: 'This machine is not working.' },
+                { tr: 'Sınav için bütün gece çalıştım.', en: 'I studied all night for the exam.' },
+                { tr: 'Problemi çözmeye çalışıyorum.', en: 'I am trying to solve the problem.' }
+            ]},
+            { infinitive: 'girmek', stem: 'gir-', english: 'to enter', examples: [
+                { tr: 'Lütfen içeri girin.', en: 'Please come inside.' },
+                { tr: 'Üniversite sınavına girdi.', en: 'He took the university entrance exam.' },
+                { tr: 'Odaya izinsiz girdi.', en: 'He entered the room without permission.' },
+                { tr: 'Bu anahtar kapıya girmiyor.', en: 'This key doesn\'t fit in the door.' },
+                { tr: 'Kış mevsimine girdik.', en: 'We have entered the winter season.' }
+            ]},
+            { infinitive: 'çıkmak', stem: 'çık-', english: 'to exit, to go out', examples: [
+                { tr: 'Bu akşam dışarı çıkalım.', en: 'Let\'s go out tonight.' },
+                { tr: 'Merdivenleri hızla çıktı.', en: 'He went up the stairs quickly.' },
+                { tr: 'Sonuçlar ne zaman çıkacak?', en: 'When will the results be out?' },
+                { tr: 'İşten saat altıda çıkıyorum.', en: 'I leave work at six o\'clock.' },
+                { tr: 'Sorun çıktı.', en: 'A problem arose.' }
+            ]},
+            { infinitive: 'anlamak', stem: 'anla-', english: 'to understand', examples: [
+                { tr: 'Seni anlamıyorum.', en: 'I don\'t understand you.' },
+                { tr: 'Sonunda ne demek istediğini anladım.', en: 'I finally understood what he meant.' },
+                { tr: 'Anladığım kadarıyla, teklifi kabul etmedi.', en: 'As I understand it, he didn\'t accept the offer.' },
+                { tr: 'Bu konuyu anlamakta zorlanıyorum.', en: 'I am having difficulty understanding this topic.' },
+                { tr: 'Beni yanlış anladın.', en: 'You misunderstood me.' }
+            ]},
+            { infinitive: 'söylemek', stem: 'söyle-', english: 'to say, to tell', examples: [
+                { tr: 'Bana doğruyu söyle.', en: 'Tell me the truth.' },
+                { tr: 'Sana bir sır söyleyeceğim.', en: 'I will tell you a secret.' },
+                { tr: 'Ne söylediğini duymadım.', en: 'I didn\'t hear what you said.' },
+                { tr: 'Ona beklemesini söyledim.', en: 'I told him to wait.' },
+                { tr: 'Bu şarkıyı kim söylüyor?', en: 'Who is singing this song?' }
+            ]},
+            { infinitive: 'başlamak', stem: 'başla-', english: 'to start, to begin', examples: [
+                { tr: 'Toplantı saat kaçta başlıyor?', en: 'What time does the meeting start?' },
+                { tr: 'Yeni bir işe başladım.', en: 'I started a new job.' },
+                { tr: 'Hadi başlayalım!', en: 'Let\'s begin!' },
+                { tr: 'Yağmur yağmaya başladı.', en: 'It started to rain.' },
+                { tr: 'Her şeye en baştan başlamalıyız.', en: 'We have to start everything from the very beginning.' }
+            ]},
+            { infinitive: 'bitmek', stem: 'bit-', english: 'to finish, to end', examples: [
+                { tr: 'Film bitti mi?', en: 'Is the movie over?' },
+                { tr: 'İşim neredeyse bitti.', en: 'My work is almost finished.' },
+                { tr: 'Param bitti.', en: 'I ran out of money.' },
+                { tr: 'Toplantı beş gibi biter.', en: 'The meeting will end around five.' },
+                { tr: 'Artık sabrım bitti!', en: 'My patience has run out!' }
+            ]},
+            { infinitive: 'sevmek', stem: 'sev-', english: 'to love, to like', examples: [
+                { tr: 'Seni seviyorum.', en: 'I love you.' },
+                { tr: 'Çikolatalı dondurmayı çok severim.', en: 'I like chocolate ice cream a lot.' },
+                { tr: 'Kedileri mi köpekleri mi daha çok seversin?', en: 'Do you like cats or dogs more?' },
+                { tr: 'Seyahat etmeyi seviyor.', en: 'She loves to travel.' },
+                { tr: 'Bu havayı hiç sevmedim.', en: 'I didn\'t like this weather at all.' }
+            ]},
+            { infinitive: 'okumak', stem: 'oku-', english: 'to read', examples: [
+                { tr: 'Her gün kitap okurum.', en: 'I read a book every day.' },
+                { tr: 'Bu yazıyı okuyamıyorum, çok küçük.', en: 'I can\'t read this text, it\'s too small.' },
+                { tr: 'O, üniversitede tıp okuyor.', en: 'He is studying medicine at the university.' },
+                { tr: 'Gazeteyi okudun mu?', en: 'Have you read the newspaper?' },
+                { tr: 'Çocuklarına her gece masal okur.', en: 'She reads fairy tales to her children every night.' }
+            ]},
+            { infinitive: 'yazmak', stem: 'yaz-', english: 'to write', examples: [
+                { tr: 'Bir mektup yazıyorum.', en: 'I am writing a letter.' },
+                { tr: 'Lütfen adınızı buraya yazar mısınız?', en: 'Could you please write your name here?' },
+                { tr: 'Yeni bir roman yazıyor.', en: 'He is writing a new novel.' },
+                { tr: 'Doktor ona bir reçete yazdı.', en: 'The doctor wrote him a prescription.' },
+                { tr: 'Alışveriş listesini yazdım.', en: 'I wrote the shopping list.' }
+            ]},
+            { infinitive: 'sormak', stem: 'sor-', english: 'to ask', examples: [
+                { tr: 'Bir soru sorabilir miyim?', en: 'Can I ask a question?' },
+                { tr: 'Ona adresini sordum.', en: 'I asked him for his address.' },
+                { tr: 'Neden sordun?', en: 'Why did you ask?' },
+                { tr: 'Bilmediğin bir şeyi sormaktan çekinme.', en: 'Don\'t hesitate to ask something you don\'t know.' },
+                { tr: 'Polis birkaç soru sordu.', en: 'The police asked a few questions.' }
+            ]},
+            { infinitive: 'cevaplamak', stem: 'cevapla-', english: 'to answer', examples: [
+                { tr: 'Soruyu cevapladı.', en: 'He answered the question.' },
+                { tr: 'Lütfen tüm soruları cevaplayın.', en: 'Please answer all the questions.' },
+                { tr: 'E-postanı henüz cevaplayamadım.', en: 'I haven\'t been able to answer your e-mail yet.' },
+                { tr: 'Bu soruya nasıl cevap vereceğimi bilmiyorum.', en: 'I don\'t know how to answer this question.' },
+                { tr: 'Telefonu cevapladı.', en: 'She answered the phone.' }
+            ]},
+            { infinitive: 'düşünmek', stem: 'düşün-', english: 'to think', examples: [
+                { tr: 'Ne düşünüyorsun?', en: 'What are you thinking?' },
+                { tr: 'Teklifinizi düşüneceğim.', en: 'I will think about your offer.' },
+                { tr: 'Bence iyi bir fikir.', en: 'I think it\'s a good idea.' },
+                { tr: 'Onun hakkında iyi şeyler düşünüyorum.', en: 'I think good things about him.' },
+                { tr: 'Yarın ne yapacağımızı düşünmeliyiz.', en: 'We should think about what we will do tomorrow.' }
+            ]},
+            { infinitive: 'yaşamak', stem: 'yaşa-', english: 'to live', examples: [
+                { tr: 'İstanbul\'da yaşıyorum.', en: 'I live in Istanbul.' },
+                { tr: 'Büyükannem 90 yaşına kadar yaşadı.', en: 'My grandmother lived until she was 90.' },
+                { tr: 'Unutulmaz bir deneyim yaşadık.', en: 'We had an unforgettable experience.' },
+                { tr: 'Ailesiyle birlikte yaşıyor.', en: 'He lives with his family.' },
+                { tr: 'Yaşasın! Kazandık!', en: 'Hooray! We won!' }
+            ]},
+            { infinitive: 'ölmek', stem: 'öl-', english: 'to die', examples: [
+                { tr: 'Her canlı bir gün ölür.', en: 'Every living thing dies one day.' },
+                { tr: 'Sıcaktan ölüyorum!', en: 'I\'m dying of heat!' },
+                { tr: 'Bitki susuzluktan öldü.', en: 'The plant died from lack of water.' },
+                { tr: 'Ünlü yazar geçen yıl öldü.', en: 'The famous writer died last year.' },
+                { tr: 'Gülmekten öldüm.', en: 'I died laughing.' }
+            ]},
+            { infinitive: 'bulmak', stem: 'bul-', english: 'to find', examples: [
+                { tr: 'Anahtarlarımı bulamıyorum.', en: 'I can\'t find my keys.' },
+                { tr: 'Sonunda aradığım kitabı buldum.', en: 'I finally found the book I was looking for.' },
+                { tr: 'Bu fikri çok ilginç buldum.', en: 'I found this idea very interesting.' },
+                { tr: 'Kendine yeni bir iş bulmalısın.', en: 'You should find yourself a new job.' },
+                { tr: 'Polis, kanıt bulmak için her yeri aradı.', en: 'The police searched everywhere to find evidence.' }
+            ]},
+            { infinitive: 'kaybetmek', stem: 'kaybet-', english: 'to lose', examples: [
+                { tr: 'Maçı kaybettik.', en: 'We lost the match.' },
+                { tr: 'Cüzdanımı otobüste kaybettim.', en: 'I lost my wallet on the bus.' },
+                { tr: 'Umarım umudunu kaybetmezsin.', en: 'I hope you don\'t lose your hope.' },
+                { tr: 'O, babasını genç yaşta kaybetti.', en: 'He lost his father at a young age.' },
+                { tr: 'Sakin ol, kendine olan güvenini kaybetme.', en: 'Calm down, don\'t lose your self-confidence.' }
+            ]},
+            { infinitive: 'kullanmak', stem: 'kullan-', english: 'to use', examples: [
+                { tr: 'Bu bilgisayarı kullanabilir miyim?', en: 'Can I use this computer?' },
+                { tr: 'Kredi kartı kullanmıyorum.', en: 'I don\'t use a credit card.' },
+                { tr: 'Lütfen bu kelimeyi bir cümlede kullan.', en: 'Please use this word in a sentence.' },
+                { tr: 'Eski arabasını hala kullanıyor.', en: 'He is still using his old car.' },
+                { tr: 'Bu fırsatı iyi kullanmalıyız.', en: 'We must make good use of this opportunity.' }
+            ]},
+            { infinitive: 'anlatmak', stem: 'anlat-', english: 'to explain, to tell', examples: [
+                { tr: 'Bana ne olduğunu anlat.', en: 'Tell me what happened.' },
+                { tr: 'Bu konuyu sana daha sonra anlatacağım.', en: 'I will explain this topic to you later.' },
+                { tr: 'Hislerimi kelimelerle anlatamam.', en: 'I can\'t express my feelings with words.' },
+                { tr: 'Öğretmen dersi çok iyi anlattı.', en: 'The teacher explained the lesson very well.' },
+                { tr: 'Bana bir fıkra anlattı.', en: 'He told me a joke.' }
+            ]},
+            { infinitive: 'dinlemek', stem: 'dinle-', english: 'to listen', examples: [
+                { tr: 'Müzik dinlemeyi severim.', en: 'I like listening to music.' },
+                { tr: 'Lütfen beni dikkatlice dinle.', en: 'Please listen to me carefully.' },
+                { tr: 'Sana bir tavsiye vereyim, dinle.', en: 'Let me give you some advice, listen.' },
+                { tr: 'Radyoda haberleri dinledim.', en: 'I listened to the news on the radio.' },
+                { tr: 'O, kimsenin sözünü dinlemez.', en: 'He doesn\'t listen to anyone.' }
+            ]},
+            { infinitive: 'izlemek', stem: 'izle-', english: 'to watch', examples: [
+                { tr: 'Televizyon izliyorum.', en: 'I am watching television.' },
+                { tr: 'Bu filmi izlemek istiyorum.', en: 'I want to watch this movie.' },
+                { tr: 'Çocuklar çizgi film izliyor.', en: 'The children are watching cartoons.' },
+                { tr: 'Gelişmeleri yakından izliyoruz.', en: 'We are closely following the developments.' },
+                { tr: 'Güneşin batışını izledik.', en: 'We watched the sunset.' }
+            ]},
+            { infinitive: 'uyumak', stem: 'uyu-', english: 'to sleep', examples: [
+                { tr: 'Geçen gece iyi uyudum.', en: 'I slept well last night.' },
+                { tr: 'Bebek odasında uyuyor.', en: 'The baby is sleeping in her room.' },
+                { tr: 'Genellikle sekiz saat uyurum.', en: 'I usually sleep for eight hours.' },
+                { tr: 'Uyumadan önce kitap okurum.', en: 'I read a book before sleeping.' },
+                { tr: 'Çok yorgunum, hemen uyumak istiyorum.', en: 'I am very tired, I want to sleep immediately.' }
+            ]},
+            { infinitive: 'uyanmak', stem: 'uyan-', english: 'to wake up', examples: [
+                { tr: 'Sabah yedide uyanırım.', en: 'I wake up at seven in the morning.' },
+                { tr: 'Gürültüye uyandım.', en: 'I woke up to the noise.' },
+                { tr: 'Alarm çalmadan önce uyandım.', en: 'I woke up before the alarm went off.' },
+                { tr: 'Geç uyandığım için işe geç kaldım.', en: 'I was late for work because I woke up late.' },
+                { tr: 'Nihayet bu hatadan uyanmalısın.', en: 'You should finally wake up from this mistake.' }
+            ]},
+            { infinitive: 'oturmak', stem: 'otur-', english: 'to sit', examples: [
+                { tr: 'Lütfen oturun.', en: 'Please sit down.' },
+                { tr: 'Bu koltukta kim oturuyor?', en: 'Who is sitting in this chair?' },
+                { tr: 'Bahçede oturup kahve içtik.', en: 'We sat in the garden and drank coffee.' },
+                { tr: 'Yeni bir apartmanda oturuyorlar.', en: 'They live in a new apartment.' },
+                { tr: 'Bütün gün bilgisayar başında oturdum.', en: 'I sat at the computer all day.' }
+            ]},
+            { infinitive: 'kalkmak', stem: 'kalk-', english: 'to get up', examples: [
+                { tr: 'Masadan kalktı.', en: 'He got up from the table.' },
+                { tr: 'Her sabah erken kalkarım.', en: 'I get up early every morning.' },
+                { tr: 'Uçak saat kaçta kalkacak?', en: 'What time will the plane take off?' },
+                { tr: 'Hadi, ayağa kalk!', en: 'Come on, get up on your feet!' },
+                { tr: 'Bu proje rafa kalktı.', en: 'This project was shelved.' }
+            ]},
+            { infinitive: 'yürümek', stem: 'yürü-', english: 'to walk', examples: [
+                { tr: 'Parkta yürüdük.', en: 'We walked in the park.' },
+                { tr: 'İşe yürüyerek gidiyorum.', en: 'I go to work by walking.' },
+                { tr: 'Yürüyüşe çıkmak ister misin?', en: 'Do you want to go for a walk?' },
+                { tr: 'İşler yolunda yürüyor.', en: 'Things are going well.' },
+                { tr: 'Bebek yeni yürümeye başladı.', en: 'The baby just started to walk.' }
+            ]},
+            { infinitive: 'koşmak', stem: 'koş-', english: 'to run', examples: [
+                { tr: 'Her sabah koşarım.', en: 'I run every morning.' },
+                { tr: 'Otobüsü yakalamak için koştum.', en: 'I ran to catch the bus.' },
+                { tr: 'Maratonda koşacak mısın?', en: 'Are you going to run in the marathon?' },
+                { tr: 'Yardıma koştu.', en: 'He ran to help.' },
+                { tr: 'Zaman çok hızlı koşuyor.', en: 'Time runs very fast.' }
+            ]},
+            { infinitive: 'oynamak', stem: 'oyna-', english: 'to play', examples: [
+                { tr: 'Çocuklar bahçede oynuyor.', en: 'The children are playing in the garden.' },
+                { tr: 'Arkadaşlarımla futbol oynadım.', en: 'I played football with my friends.' },
+                { tr: 'Bu filmde kim oynuyor?', en: 'Who is acting in this movie?' },
+                { tr: 'Benimle oynama!', en: 'Don\'t play games with me!' },
+                { tr: 'Borsada oynamak risklidir.', en: 'Playing in the stock market is risky.' }
+            ]},
+            { infinitive: 'açmak', stem: 'aç-', english: 'to open', examples: [
+                { tr: 'Kapıyı açar mısın?', en: 'Can you open the door?' },
+                { tr: 'Yeni bir dükkan açtılar.', en: 'They opened a new shop.' },
+                { tr: 'Lütfen kitabınızı 20. sayfadan açın.', en: 'Please open your books to page 20.' },
+                { tr: 'Radyoyu açtım.', en: 'I turned on the radio.' },
+                { tr: 'Bu renk seni açmış.', en: 'This color suits you well.' }
+            ]},
+            { infinitive: 'kapatmak', stem: 'kapat-', english: 'to close', examples: [
+                { tr: 'Pencereyi kapattım.', en: 'I closed the window.' },
+                { tr: 'Lütfen giderken ışığı kapatın.', en: 'Please turn off the light when you leave.' },
+                { tr: 'Mağaza saat dokuzda kapanıyor.', en: 'The store closes at nine.' },
+                { tr: 'Bu konuyu artık kapatalım.', en: 'Let\'s close this subject now.' },
+                { tr: 'Hesabımı kapatmak istiyorum.', en: 'I want to close my account.' }
+            ]},
+            { infinitive: 'getirmek', stem: 'getir-', english: 'to bring', examples: [
+                { tr: 'Bana bir bardak su getir.', en: 'Bring me a glass of water.' },
+                { tr: 'Partiye ne getireceksin?', en: 'What will you bring to the party?' },
+                { tr: 'Bu haber bana şans getirdi.', en: 'This news brought me luck.' },
+                { tr: 'Postacı bir paket getirdi.', en: 'The postman brought a package.' },
+                { tr: 'Çocukları okuldan getirdim.', en: 'I brought the children from school.' }
+            ]},
+            { infinitive: 'götürmek', stem: 'götür-', english: 'to take away', examples: [
+                { tr: 'Çöpü dışarı götür.', en: 'Take the trash out.' },
+                { tr: 'Seni havaalanına götürebilirim.', en: 'I can take you to the airport.' },
+                { tr: 'Arabayı tamirciye götürdüm.', en: 'I took the car to the mechanic.' },
+                { tr: 'Bu yol seni nereye götürür?', en: 'Where does this road take you?' },
+                { tr: 'Beni çocukluğuma götürdü.', en: 'It took me back to my childhood.' }
+            ]},
+            { infinitive: 'beklemek', stem: 'bekle-', english: 'to wait', examples: [
+                { tr: 'Seni burada bekleyeceğim.', en: 'I will wait for you here.' },
+                { tr: 'Sırada çok bekledim.', en: 'I waited a long time in the queue.' },
+                { tr: 'Otobüs bekliyorum.', en: 'I am waiting for the bus.' },
+                { tr: 'Ne bekliyorsun? Başla artık!', en: 'What are you waiting for? Start already!' },
+                { tr: 'Bu kadarını beklemiyordum.', en: 'I wasn\'t expecting this much.' }
+            ]},
+            { infinitive: 'aramak', stem: 'ara-', english: 'to search, to call', examples: [
+                { tr: 'Seni dün aradım.', en: 'I called you yesterday.' },
+                { tr: 'Anahtarlarımı her yerde aradım.', en: 'I searched for my keys everywhere.' },
+                { tr: 'Polisi araman gerekebilir.', en: 'You might need to call the police.' },
+                { tr: 'Aradığınız kişiye şu an ulaşılamıyor.', en: 'The person you are calling cannot be reached at the moment.' },
+                { tr: 'İnternette bilgi arıyorum.', en: 'I am searching for information on the internet.' }
+            ]},
+            { infinitive: 'göndermek', stem: 'gönder-', english: 'to send', examples: [
+                { tr: 'Bir e-posta gönderdim.', en: 'I sent an e-mail.' },
+                { tr: 'Sana bir hediye göndereceğim.', en: 'I will send you a gift.' },
+                { tr: 'Beni markete gönderdi.', en: 'She sent me to the market.' },
+                { tr: 'Bu mektubu acilen göndermeliyim.', en: 'I must send this letter urgently.' },
+                { tr: 'Çocuklarını yatılı okula gönderdiler.', en: 'They sent their children to a boarding school.' }
+            ]},
+            { infinitive: 'inanmak', stem: 'inan-', english: 'to believe', examples: [
+                { tr: 'Sana inanıyorum.', en: 'I believe you.' },
+                { tr: 'Hayaletlere inanır mısın?', en: 'Do you believe in ghosts?' },
+                { tr: 'Gözlerime inanamadım.', en: 'I couldn\'t believe my eyes.' },
+                { tr: 'Onun başarılı olacağına inanıyorum.', en: 'I believe that he will be successful.' },
+                { tr: 'Bu hikaye inanmak için çok zor.', en: 'This story is too hard to believe.' }
+            ]},
+            { infinitive: 'hatırlamak', stem: 'hatırla-', english: 'to remember', examples: [
+                { tr: 'Adını hatırlamıyorum.', en: 'I don\'t remember his/her name.' },
+                { tr: 'Çocukluğumu hatırladım.', en: 'I remembered my childhood.' },
+                { tr: 'Kapıyı kilitlemeyi hatırladın mı?', en: 'Did you remember to lock the door?' },
+                { tr: 'Bana bir şey hatırlattı.', en: 'It reminded me of something.' },
+                { tr: 'Eski günleri hatırladık.', en: 'We remembered the old days.' }
+            ]},
+            { infinitive: 'unutmak', stem: 'unut-', english: 'to forget', examples: [
+                { tr: 'Randevuyu unuttum.', en: 'I forgot the appointment.' },
+                { tr: 'Şemsiyemi evde unuttum.', en: 'I forgot my umbrella at home.' },
+                { tr: 'Bana söylemeyi unutma.', en: 'Don\'t forget to tell me.' },
+                { tr: 'Asla unutmayacağım bir gündü.', en: 'It was a day I will never forget.' },
+                { tr: 'Bütün bildiklerimi unuttum.', en: 'I forgot everything I knew.' }
+            ]},
+            { infinitive: 'yardım etmek', stem: 'yardım et-', english: 'to help', examples: [
+                { tr: 'Bana yardım edebilir misin?', en: 'Can you help me?' },
+                { tr: 'Yaşlı kadına poşetlerini taşıması için yardım etti.', en: 'He helped the old woman carry her bags.' },
+                { tr: 'Yardıma ihtiyacın var mı? ', en: 'Do you need help?' },
+                { tr: 'Bu ilacın iyileşmene yardım etmesi gerekiyor.', en: 'This medicine should help you get better.' },
+                { tr: 'Her zaman birbirimize yardım ederiz.', en: 'We always help each other.' }
+            ]},
+            { infinitive: 'korkmak', stem: 'kork-', english: 'to be afraid', examples: [
+                { tr: 'Karanlıktan korkarım.', en: 'I am afraid of the dark.' },
+                { tr: 'Yükseklikten korkuyor.', en: 'She is afraid of heights.' },
+                { tr: 'Korkma, ben yanındayım.', en: 'Don\'t be afraid, I am with you.' },
+                { tr: 'Sınavdan kötü not almaktan korkuyorum.', en: 'I am afraid of getting a bad grade on the exam.' },
+                { tr: 'Köpekten korktuğu için yolunu değiştirdi.', en: 'He changed his way because he was afraid of the dog.' }
+            ]},
+            { infinitive: 'kazanmak', stem: 'kazan-', english: 'to win, to earn', examples: [
+                { tr: 'Yarışmayı o kazandı.', en: 'He/she won the competition.' },
+                { tr: 'Çok para kazanıyor.', en: 'He earns a lot of money.' },
+                { tr: 'Bu maç bizim için çok önemli, kazanmalıyız.', en: 'This match is very important for us, we must win.' },
+                { tr: 'Deneyim kazandım.', en: 'I gained experience.' },
+                { tr: 'Piyangoyu kazandığını hayal et.', en: 'Imagine winning the lottery.' }
+            ]},
+            { infinitive: 'öğrenmek', stem: 'öğren-', english: 'to learn', examples: [
+                { tr: 'Yeni bir dil öğreniyorum.', en: 'I am learning a new language.' },
+                { tr: 'Hatalarımdan çok şey öğrendim.', en: 'I learned a lot from my mistakes.' },
+                { tr: 'Bisiklet sürmeyi ne zaman öğrendin?', en: 'When did you learn to ride a bike?' },
+                { tr: 'Haberi yeni öğrendim.', en: 'I just learned the news.' },
+                { tr: 'Öğrenmenin yaşı yoktur.', en: 'There is no age for learning.' }
+            ]},
+            { infinitive: 'öğretmek', stem: 'öğret-', english: 'to teach', examples: [
+                { tr: 'O, İngilizce öğretiyor.', en: 'He/she teaches English.' },
+                { tr: 'Babam bana araba kullanmayı öğretti.', en: 'My father taught me how to drive.' },
+                { tr: 'Bu deneyim bana sabırlı olmayı öğretti.', en: 'This experience taught me to be patient.' },
+                { tr: 'Size Türkçe öğretmek için buradayım.', en: 'I am here to teach you Turkish.' },
+                { tr: 'Köpeğine yeni numaralar öğretiyor.', en: 'He is teaching his dog new tricks.' }
+            ]},
+            { infinitive: 'tanışmak', stem: 'tanış-', english: 'to meet (for the first time)', examples: [
+                { tr: 'Tanıştığımıza memnun oldum.', en: 'Nice to meet you.' },
+                { tr: 'Onunla bir partide tanıştım.', en: 'I met him at a party.' },
+                { tr: 'Yeni insanlarla tanışmayı severim.', en: 'I like meeting new people.' },
+                { tr: 'Henüz ailesiyle tanışmadım.', en: 'I haven\'t met his family yet.' },
+                { tr: 'Ne zaman tanışmıştınız?', en: 'When did you meet?' }
+            ]},
+            { infinitive: 'buluşmak', stem: 'buluş-', english: 'to meet up', examples: [
+                { tr: 'Yarın saat üçte buluşalım.', en: 'Let\'s meet at three o\'clock tomorrow.' },
+                { tr: 'Arkadaşlarımla kahve içmek için buluştum.', en: 'I met up with my friends to drink coffee.' },
+                { tr: 'Nerede buluşacağız?', en: 'Where will we meet?' },
+                { tr: 'Uzun zaman sonra ilk defa buluştuk.', en: 'We met for the first time after a long time.' },
+                { tr: 'İki nehir bu noktada buluşur.', en: 'The two rivers meet at this point.' }
+            ]},
+            { infinitive: 'koymak', stem: 'koy-', english: 'to put', examples: [
+                { tr: 'Kitabı masaya koydum.', en: 'I put the book on the table.' },
+                { tr: 'Anahtarlarını nereye koydun?', en: 'Where did you put your keys?' },
+                { tr: 'Çorbaya biraz tuz koyar mısın?', en: 'Can you put some salt in the soup?' },
+                { tr: 'Kendini benim yerime koy.', en: 'Put yourself in my place.' },
+                { tr: 'Kuralları biz koyarız.', en: 'We set the rules.' }
+            ]},
+            { infinitive: 'geçmek', stem: 'geç-', english: 'to pass', examples: [
+                { tr: 'Sınavı geçtim.', en: 'I passed the exam.' },
+                { tr: 'Kırmızı ışıkta geçmek yasaktır.', en: 'It is forbidden to cross on a red light.' },
+                { tr: 'Zaman ne çabuk geçiyor!', en: 'How quickly time passes!' },
+                { tr: 'Araba yanımdan hızla geçti.', en: 'The car passed by me quickly.' },
+                { tr: 'Başım ağrısı geçti.', en: 'My headache has passed.' }
+            ]},
+            { infinitive: 'durmak', stem: 'dur-', english: 'to stop', examples: [
+                { tr: 'Kırmızı ışıkta dur.', en: 'Stop at the red light.' },
+                { tr: 'Lütfen konuşmayı durdurun.', en: 'Please stop talking.' },
+                { tr: 'Saatim durmuş.', en: 'My watch has stopped.' },
+                { tr: 'Yağmur durdu.', en: 'The rain has stopped.' },
+                { tr: 'Neden burada duruyoruz?', en: 'Why are we stopping here?' }
+            ]},
+            { infinitive: 'binmek', stem: 'bin-', english: 'to get on, to ride', examples: [
+                { tr: 'Otobüse bindim.', en: 'I got on the bus.' },
+                { tr: 'Bisiklete binmeyi severim.', en: 'I like riding a bicycle.' },
+                { tr: 'Hangi durağa bineceksin?', en: 'Which stop will you get on at?' },
+                { tr: 'Ata binmek çok eğlenceli.', en: 'Riding a horse is a lot of fun.' },
+                { tr: 'Uçağa binmek için sıraya girdiler.', en: 'They got in line to board the plane.' }
+            ]},
+            { infinitive: 'inmek', stem: 'in-', english: 'to get off, to descend', examples: [
+                { tr: 'Bir sonraki durakta ineceğim.', en: 'I will get off at the next stop.' },
+                { tr: 'Merdivenlerden yavaşça indi.', en: 'He descended the stairs slowly.' },
+                { tr: 'Fiyatlar indi.', en: 'The prices have dropped.' },
+                { tr: 'Uçak piste indi.', en: 'The plane landed on the runway.' },
+                { tr: 'Dağdan indik.', en: 'We came down from the mountain.' }
+            ]},
+            { infinitive: 'gülmek', stem: 'gül-', english: 'to laugh', examples: [
+                { tr: 'Neden gülüyorsun?', en: 'Why are you laughing?' },
+                { tr: 'Onun şakasına çok güldüm.', en: 'I laughed a lot at his joke.' },
+                { tr: 'Gülmek en iyi ilaçtır.', en: 'Laughter is the best medicine.' },
+                { tr: 'Bana gülme!', en: 'Don\'t laugh at me!' },
+                { tr: 'İçimden gülüyordum.', en: 'I was laughing inside.' }
+            ]}, 
+            { infinitive: 'ağlamak', stem: 'ağla-', english: 'to cry', examples: [
+                { tr: 'Bebek ağlıyor.', en: 'The baby is crying.' },
+                { tr: 'Film o kadar üzücüydü ki ağladım.', en: 'The movie was so sad that I cried.' },
+                { tr: 'Neden ağladığını bana anlatabilir misin?', en: 'Can you tell me why you are crying?' },
+                { tr: 'Soğan doğrarken hep ağlarım.', en: 'I always cry when I chop onions.' },
+                { tr: 'Sevinçten ağladı.', en: 'He/she cried with joy.' }
+            ]},
+            { infinitive: 'pişirmek', stem: 'pişir-', english: 'to cook', examples: [
+                { tr: 'Akşam yemeği pişiriyorum.', en: 'I am cooking dinner.' },
+                { tr: 'Fırında tavuk pişireceğim.', en: 'I will cook chicken in the oven.' },
+                { tr: 'Annem harika yemekler pişirir.', en: 'My mother cooks wonderful meals.' },
+                { tr: 'Bu yemeği pişirmek ne kadar sürer?', en: 'How long does it take to cook this dish?' },
+                { tr: 'Birlikte bir şeyler pişirelim.', en: 'Let\'s cook something together.' }
+            ]},
+            { infinitive: 'kesmek', stem: 'kes-', english: 'to cut', examples: [
+                { tr: 'Ekmeği kesti.', en: 'He/she cut the bread.' },
+                { tr: 'Parmağımı kağıtla kestim.', en: 'I cut my finger with paper.' },
+                { tr: 'Saçlarımı kestirmek istiyorum.', en: 'I want to have my hair cut.' },
+                { tr: 'Lütfen bir dilim pasta kes.', en: 'Please cut a slice of cake.' },
+                { tr: 'Elektrikleri kestiler.', en: 'They cut off the electricity.' }
+            ]},
+            { infinitive: 'tutmak', stem: 'tut-', english: 'to hold', examples: [
+                { tr: 'Elimi tut.', en: 'Hold my hand.' },
+                { tr: 'Sözünü tutmalısın.', en: 'You must keep your promise.' },
+                { tr: 'Bu takım şampiyonluğu tutuyor.', en: 'This team is rooting for the championship.' },
+                { tr: 'Nefesimi tuttum ve suya daldım.', en: 'I held my breath and dived into the water.' },
+                { tr: 'Balık tutmaya gittik.', en: 'We went fishing.' }
+            ]},
+            { infinitive: 'çekmek', stem: 'çek-', english: 'to pull, to take (a photo)', examples: [
+                { tr: 'Bir fotoğraf çekelim.', en: 'Let\'s take a photo.' },
+                { tr: 'Kapıyı kendine doğru çek.', en: 'Pull the door towards you.' },
+                { tr: 'Dişimi çektirmek zorundayım.', en: 'I have to have my tooth pulled.' },
+                { tr: 'Bu film çok dikkatimi çekti.', en: 'This movie really caught my attention.' },
+                { tr: 'Bankadan para çektim.', en: 'I withdrew money from the bank.' }
+            ]},
+            { infinitive: 'taşımak', stem: 'taşı-', english: 'to carry', examples: [
+                { tr: 'Bu kutu çok ağır, taşıyamam.', en: 'This box is too heavy, I can\'t carry it.' },
+                { tr: 'Yeni evimize yarın taşınıyoruz.', en: 'We are moving to our new house tomorrow.' },
+                { tr: 'Bana bu masayı taşımama yardım eder misin?', en: 'Can you help me carry this table?' },
+                { tr: 'Ağır çantalar taşıyordu.', en: 'She was carrying heavy bags.' },
+                { tr: 'Bu şirket uluslararası yük taşıyor.', en: 'This company transports international cargo.' }
+            ]},
+            { infinitive: 'giyinmek', stem: 'giyin-', english: 'to get dressed', examples: [
+                { tr: 'Hızlıca giyindim.', en: 'I got dressed quickly.' },
+                { tr: 'Parti için özel giyinmelisin.', en: 'You should dress up for the party.' },
+                { tr: 'Sabahları giyinmek uzun sürüyor.', en: 'It takes a long time to get dressed in the mornings.' },
+                { tr: 'Hava soğuk, kalın giyin.', en: 'The weather is cold, dress warmly.' },
+                { tr: 'Kostüm balosu için palyaço gibi giyindi.', en: 'He dressed up as a clown for the costume party.' }
+            ]},
+            { infinitive: 'soyunmak', stem: 'soyun-', english: 'to get undressed', examples: [
+                { tr: 'Odasında soyundu.', en: 'He got undressed in his room.' },
+                { tr: 'Yüzmeden önce soyunmalısın.', en: 'You must get undressed before swimming.' },
+                { tr: 'Doktor, muayene için soyunmasını istedi.', en: 'The doctor asked him to get undressed for the examination.' },
+                { tr: 'Eve gelir gelmez iş kıyafetlerini soyundu.', en: 'As soon as he got home, he took off his work clothes.' },
+                { tr: 'Sahneye çıkmadan önce kostümünü giymek için soyundu.', en: 'He got undressed to put on his costume before going on stage.' }
+            ]},
+            { infinitive: 'yıkanmak', stem: 'yıkan-', english: 'to wash oneself, to bathe', examples: [
+                { tr: 'Her sabah yıkanırım.', en: 'I take a shower every morning.' },
+                { tr: 'Denizde yüzdükten sonra yıkandım.', en: 'I washed myself after swimming in the sea.' },
+                { tr: 'Çok terledim, hemen yıkanmalıyım.', en: 'I am very sweaty, I must take a bath immediately.' },
+                { tr: 'Bebek banyoda yıkanıyor.', en: 'The baby is being bathed in the bathroom.' },
+                { tr: 'Sıcak suyla yıkanmak beni rahatlatır.', en: 'Bathing with hot water relaxes me.' }
+            ]},
+            { infinitive: 'yıkamak', stem: 'yıka-', english: 'to wash (something)', examples: [
+                { tr: 'Arabayı yıkadım.', en: 'I washed the car.' },
+                { tr: 'Yemekten önce ellerini yıka.', en: 'Wash your hands before the meal.' },
+                { tr: 'Bulaşıkları kim yıkayacak?', en: 'Who will wash the dishes?' },
+                { tr: 'Köpeğimi yıkamam gerekiyor.', en: 'I need to wash my dog.' },
+                { tr: 'Meyve ve sebzeleri yemeden önce iyice yıkayın.', en: 'Wash fruits and vegetables thoroughly before eating them.' }
+            ]},
+            { infinitive: 'temizlemek', stem: 'temizle-', english: 'to clean', examples: [
+                { tr: 'Evi temizliyorum.', en: 'I am cleaning the house.' },
+                { tr: 'Lütfen masanın üstünü temizle.', en: 'Please clean the table.' },
+                { tr: 'Gözlüklerimi temizlemem lazım.', en: 'I need to clean my glasses.' },
+                { tr: 'Halıdaki lekeyi temizlemeye çalıştı.', en: 'She tried to clean the stain on the carpet.' },
+                { tr: 'Pencereleri temizledik.', en: 'We cleaned the windows.' }
+            ]},
+            { infinitive: 'kirlenmek', stem: 'kirlen-', english: 'to get dirty', examples: [
+                { tr: 'Üstüm kirlendi.', en: 'My clothes got dirty.' },
+                { tr: 'Çocuklar oynarken kirlenir.', en: 'Children get dirty while playing.' },
+                { tr: 'Beyaz ayakkabılar çabuk kirlenir.', en: 'White shoes get dirty quickly.' },
+                { tr: 'Hava kirliliği yüzünden pencereler kirlenmiş.', en: 'The windows got dirty because of the air pollution.' },
+                { tr: 'Piknikte elbiselerimiz kirlendi.', en: 'Our clothes got dirty at the picnic.' }
+            ]},
+            { infinitive: 'kirletmek', stem: 'kirlet-', english: 'to make dirty', examples: [
+                { tr: 'Çevreyi kirletmeyin.', en: 'Don\'t pollute the environment.' },
+                { tr: 'Üstümü kahve dökerek kirlettim.', en: 'I got my clothes dirty by spilling coffee.' },
+                { tr: 'Fabrikalar nehri kirletiyor.', en: 'Factories are polluting the river.' },
+                { tr: 'Duvarları çizmeyin, kirletmeyin.', en: 'Don\'t draw on the walls, don\'t make them dirty.' },
+                { tr: 'Yalan söyleyerek adını kirletti.', en: 'He tarnished his name by lying.' }
+            ]},
+            { infinitive: 'seyahat etmek', stem: 'seyahat et-', english: 'to travel', examples: [
+                { tr: 'Yazın Avrupa\'ya seyahat edeceğiz.', en: 'We will travel to Europe in the summer.' },
+                { tr: 'İş için sık sık seyahat eder.', en: 'He often travels for work.' },
+                { tr: 'Trenle seyahat etmeyi seviyorum.', en: 'I like traveling by train.' },
+                { tr: 'Dünyayı seyahat etmek en büyük hayalim.', en: 'Traveling the world is my biggest dream.' },
+                { tr: 'Geçmişe seyahat etmek mümkün mü?', en: 'Is it possible to travel to the past?' }
+            ]},
+            { infinitive: 'ziyaret etmek', stem: 'ziyaret et-', english: 'to visit', examples: [
+                { tr: 'Büyükannemi ziyaret ettim.', en: 'I visited my grandmother.' },
+                { tr: 'Müzeyi ziyaret etmek için bilet aldık.', en: 'We bought tickets to visit the museum.' },
+                { tr: 'Hasta arkadaşımızı hastanede ziyaret ettik.', en: 'We visited our sick friend in the hospital.' },
+                { tr: 'Bu web sitesini her gün binlerce kişi ziyaret ediyor.', en: 'Thousands of people visit this website every day.' },
+                { tr: 'Türkiye\'yi ziyaret etmeyi planlıyoruz.', en: 'We are planning to visit Turkey.' }
+            ]},
+            { infinitive: 'davet etmek', stem: 'davet et-', english: 'to invite', examples: [
+                { tr: 'Seni partime davet ediyorum.', en: 'I am inviting you to my party.' },
+                { tr: 'Onları akşam yemeğine davet ettik.', en: 'We invited them to dinner.' },
+                { tr: 'Bizi düğünlerine davet etmediler.', en: 'They didn\'t invite us to their wedding.' },
+                { tr: 'Konuşma yapması için bir uzman davet edildi.', en: 'An expert was invited to give a speech.' },
+                { tr: 'Çekinme, arkadaşlarını da davet et.', en: 'Don\'t hesitate, invite your friends too.' }
+            ]},
+            { infinitive: 'kabul etmek', stem: 'kabul et-', english: 'to accept', examples: [
+                { tr: 'Teklifini kabul ediyorum.', en: 'I accept your offer.' },
+                { tr: 'Hatasını kabul etti.', en: 'He accepted his mistake.' },
+                { tr: 'Üniversiteye kabul edildiğimi öğrendim.', en: 'I learned that I was accepted to the university.' },
+                { tr: 'Bu şartları kabul edemem.', en: 'I cannot accept these conditions.' },
+                { tr: 'Davetiniz için teşekkürler, memnuniyetle kabul ediyorum.', en: 'Thank you for your invitation, I accept it with pleasure.' }
+            ]},
+            { infinitive: 'reddetmek', stem: 'reddet-', english: 'to refuse', examples: [
+                { tr: 'Daveti reddetti.', en: 'He/she refused the invitation.' },
+                { tr: 'İş teklifini reddetmek zorunda kaldım.', en: 'I had to refuse the job offer.' },
+                { tr: 'Yardımımı reddetti.', en: 'She refused my help.' },
+                { tr: 'Suçlamaları reddediyor.', en: 'He is denying the accusations.' },
+                { tr: 'Bu fikri neden reddettiğini anlamıyorum.', en: 'I don\'t understand why he rejected this idea.' }
+            ]},
+            { infinitive: 'karar vermek', stem: 'karar ver-', english: 'to decide', examples: [
+                { tr: 'Ne yapacağıma karar veremedim.', en: 'I couldn\'t decide what to do.' },
+                { tr: 'Taşınmaya karar verdik.', en: 'We decided to move.' },
+                { tr: 'Bu zor bir karar.', en: 'This is a difficult decision.' },
+                { tr: 'Acele karar verme, iyice düşün.', en: 'Don\'t make a hasty decision, think it over.' },
+                { tr: 'Sonunda kimin kazanacağına jüri karar verecek.', en: 'The jury will decide who wins in the end.' }
+            ]},
+            { infinitive: 'değiştirmek', stem: 'değiştir-', english: 'to change', examples: [
+                { tr: 'Fikrimi değiştirdim.', en: 'I changed my mind.' },
+                { tr: 'Bu eski ampulü değiştirmeliyiz.', en: 'We need to change this old light bulb.' },
+                { tr: 'Saç rengini değiştirdi.', en: 'She changed her hair color.' },
+                { tr: 'Arabanın lastiğini değiştirdi.', en: 'He changed the car\'s tire.' },
+                { tr: 'Kanalları değiştirmeyi bırak!', en: 'Stop changing the channels!' }
+            ]},
+            { infinitive: 'geliştirmek', stem: 'geliştir-', english: 'to improve, to develop', examples: [
+                { tr: 'Türkçemi geliştirmek istiyorum.', en: 'I want to improve my Turkish.' },
+                { tr: 'Yeni stratejiler geliştirmeliyiz.', en: 'We need to develop new strategies.' },
+                { tr: 'Bu program becerilerini geliştirmeni sağlayacak.', en: 'This program will help you improve your skills.' },
+                { tr: 'Kendini sürekli geliştiren biridir.', en: 'He is someone who constantly improves himself.' },
+                { tr: 'Teknolojiyi daha da geliştirdiler.', en: 'They have further developed the technology.' }
+            ]},
+            { infinitive: 'hazırlamak', stem: 'hazırla-', english: 'to prepare', examples: [
+                { tr: 'Yemek hazırlıyorum.', en: 'I am preparing food.' },
+                { tr: 'Sunumumu hazırlamam gerekiyor.', en: 'I need to prepare my presentation.' },
+                { tr: 'Annem misafirler için harika bir sofra hazırladı.', en: 'My mother prepared a wonderful table for the guests.' },
+                { tr: 'Size bir fincan kahve hazırlayayım.', en: 'Let me prepare a cup of coffee for you.' },
+                { tr: 'Sınava öğrencileri o hazırlıyor.', en: 'She is preparing the students for the exam.' }
+            ]},
+            { infinitive: 'hazırlanmak', stem: 'hazırlan-', english: 'to get ready', examples: [
+                { tr: 'Okul için hazırlanıyorum.', en: 'I am getting ready for school.' },
+                { tr: 'Partiye gitmek için hazırlanıyor.', en: 'She is getting ready to go to the party.' },
+                { tr: 'Kötü hava koşullarına hazırlıklı olun.', en: 'Be prepared for bad weather conditions.' },
+                { tr: 'Sınava iyi hazırlandım.', en: 'I prepared well for the exam.' },
+                { tr: 'Takım maça hazırlanıyor.', en: 'The team is preparing for the match.' }
+            ]},
+            { infinitive: 'hissetmek', stem: 'hisset-', english: 'to feel', examples: [
+                { tr: 'Bugün kendimi iyi hissetmiyorum.', en: 'I don\'t feel well today.' },
+                { tr: 'Depremi hissettin mi?', en: 'Did you feel the earthquake?' },
+                { tr: 'Onun yalan söylediğini hissediyorum.', en: 'I feel that he is lying.' },
+                { tr: 'Aniden bir ağrı hissettim.', en: 'I suddenly felt a pain.' },
+                { tr: 'Başarımın gururunu hissediyorum.', en: 'I feel the pride of my success.' }
+            ]},
+            { infinitive: 'aşık olmak', stem: 'aşık ol-', english: 'to fall in love', examples: [
+                { tr: 'Ona ilk görüşte aşık oldum.', en: 'I fell in love with him/her at first sight.' },
+                { tr: 'Romeo, Juliet\'e aşıktı.', en: 'Romeo was in love with Juliet.' },
+                { tr: 'Bu şehre aşık oldum.', en: 'I fell in love with this city.' },
+                { tr: 'Birbirlerine aşık oldular ve evlendiler.', en: 'They fell in love with each other and got married.' },
+                { tr: 'İnsan hayatta bir kez gerçekten aşık olur.', en: 'A person truly falls in love once in a lifetime.' }
+            ]},
+            { infinitive: 'nefret etmek', stem: 'nefret et-', english: 'to hate', examples: [
+                { tr: 'Yalandan nefret ederim.', en: 'I hate lies.' },
+                { tr: 'Beklemekten nefret ediyorum.', en: 'I hate waiting.' },
+                { tr: 'Neden ondan bu kadar nefret ediyorsun?', en: 'Why do you hate him so much?' },
+                { tr: 'Erken kalkmaktan nefret ediyor.', en: 'She hates waking up early.' },
+                { tr: 'Haksızlıktan nefret ederim.', en: 'I hate injustice.' }
+            ]},
+            { infinitive: 'özlemek', stem: 'özle-', english: 'to miss', examples: [
+                { tr: 'Ailemi çok özledim.', en: 'I miss my family a lot.' },
+                { tr: 'Eski günleri özlüyorum.', en: 'I miss the old days.' },
+                { tr: 'Seni çok özleyeceğim.', en: 'I will miss you so much.' },
+                { tr: 'Yaz tatilini şimdiden özledim.', en: 'I already miss the summer holiday.' },
+                { tr: 'Memleketimin yemeklerini özledim.', en: 'I miss the food of my hometown.' }
+            ]},
+            { infinitive: 'ummak', stem: 'um-', english: 'to hope', examples: [
+                { tr: 'Umarım her şey yolunda gider.', en: 'I hope everything goes well.' },
+                { tr: 'Sınavı geçmeyi umuyorum.', en: 'I am hoping to pass the exam.' },
+                { tr: 'Ondan bunu ummazdım.', en: 'I wouldn\'t have expected this from him.' },
+                { tr: 'Umarım yağmur yağmaz.', en: 'I hope it doesn\'t rain.' },
+                { tr: 'Yeni işinde mutlu olmasını umuyorum.', en: 'I hope she will be happy in her new job.' }
+            ]},
+            { infinitive: 'denemek', stem: 'dene-', english: 'to try', examples: [
+                { tr: 'Bu yemeği denemek ister misin?', en: 'Do you want to try this food?' },
+                { tr: 'Yeni bir şeyler denemekten korkma.', en: 'Don\'t be afraid to try new things.' },
+                { tr: 'Bu elbiseyi deneyebilir miyim?', en: 'Can I try this dress on?' },
+                { tr: 'Şansımı bir kez daha deneyeceğim.', en: 'I will try my luck one more time.' },
+                { tr: 'Farklı bir yöntem denedik ama işe yaramadı.', en: 'We tried a different method but it didn\'t work.' }
+            ]},
+            { infinitive: 'başarmak', stem: 'başar-', english: 'to succeed', examples: [
+                { tr: 'Sonunda başardım.', en: 'I finally succeeded.' },
+                { tr: 'Eğer çok çalışırsan, başarabilirsin.', en: 'If you work hard, you can succeed.' },
+                { tr: 'Zoru başardık.', en: 'We achieved the difficult.' },
+                { tr: 'Hedeflerine ulaşmayı başardı.', en: 'She managed to achieve her goals.' },
+                { tr: 'Bu projeyi zamanında bitirmeyi başardılar.', en: 'They succeeded in finishing this project on time.' }
+            ]},
+            { infinitive: 'başarısız olmak', stem: 'başarısız ol-', english: 'to fail', examples: [
+                { tr: 'Sınavda başarısız oldum.', en: 'I failed the exam.' },
+                { tr: 'Bu planda başarısız olmak istemiyoruz.', en: 'We don\'t want to fail in this plan.' },
+                { tr: 'Birkaç kez denedi ama başarısız oldu.', en: 'He tried several times but failed.' },
+                { tr: 'Başarısız olmaktan korkma.', en: 'Don\'t be afraid of failing.' },
+                { tr: 'Proje finansman eksikliği nedeniyle başarısız oldu.', en: 'The project failed due to lack of funding.' }
+            ]},
+            { infinitive: 'şaşırmak', stem: 'şaşır-', english: 'to be surprised', examples: [
+                { tr: 'Seni burada görünce şaşırdım.', en: 'I was surprised to see you here.' },
+                { tr: 'Bu habere hiç şaşırmadım.', en: 'I wasn\'t surprised at all by this news.' },
+                { tr: 'Ne kadar büyüdüğünü görünce şaşıracaksın.', en: 'You will be surprised when you see how much he has grown.' },
+                { tr: 'Beni şaşırtmayı her zaman başarıyorsun.', en: 'You always manage to surprise me.' },
+                { tr: 'Sonuçlar beklediğimden iyiydi, çok şaşırdım.', en: 'The results were better than I expected, I was very surprised.' }
+            ]},
+            { infinitive: 'sevinmek', stem: 'sevin-', english: 'to be happy', examples: [
+                { tr: 'Bu habere çok sevindim.', en: 'I was very happy to hear this news.' },
+                { tr: 'Kazandığını duyunca sevindik.', en: 'We were happy when we heard you won.' },
+                { tr: 'Geldiğine sevindim.', en: 'I\'m glad you came.' },
+                { tr: 'Çocuklar hediyeleri görünce çok sevindiler.', en: 'The children were very happy when they saw the gifts.' },
+                { tr: 'Boşuna sevinme, daha işimiz bitmedi.', en: 'Don\'t rejoice in vain, our work is not finished yet.' }
+            ]},
+            { infinitive: 'üzülmek', stem: 'üzül-', english: 'to be sad', examples: [
+                { tr: 'Neden üzgünsün?', en: 'Why are you sad?' },
+                { tr: 'Onun söylediği sözlere çok üzüldüm.', en: 'I was very upset by the words he said.' },
+                { tr: 'Kaybettiğimize üzüldüm ama bir dahaki sefere kazanırız.', en: 'I\'m sad that we lost, but we\'ll win next time.' },
+                { tr: 'Lütfen kendini daha fazla üzme.', en: 'Please don\'t upset yourself anymore.' },
+                { tr: 'Hiçbir şey için üzülmeye değmez.', en: 'It\'s not worth being sad about anything.' }
+            ]},
+            { infinitive: 'kızmak', stem: 'kız-', english: 'to get angry', examples: [
+                { tr: 'Bana kızma.', en: 'Don\'t be angry with me.' },
+                { tr: 'Geç kaldığı için ona çok kızdım.', en: 'I got very angry with him for being late.' },
+                { tr: 'Neden bu kadar kızgınsın?', en: 'Why are you so angry?' },
+                { tr: 'Kendime kızıyorum.', en: 'I\'m angry with myself.' },
+                { tr: 'Trafikte beklerken çok kızdı.', en: 'He got very angry while waiting in traffic.' }
+            ]},
+            { infinitive: 'bağırmak', stem: 'bağır-', english: 'to shout', examples: [
+                { tr: 'Lütfen bağırma.', en: 'Please don\'t shout.' },
+                { tr: 'Kalabalıkta ismimi bağırdı.', en: 'He shouted my name in the crowd.' },
+                { tr: 'Yardım için bağırdı ama kimse duymadı.', en: 'She shouted for help but nobody heard.' },
+                { tr: 'Bana bağırmayı kes!', en: 'Stop shouting at me!' },
+                { tr: 'Maçta kendi takımları için bağırdılar.', en: 'They cheered for their team at the match.' }
+            ]},
+            { infinitive: 'fısıldamak', stem: 'fısılda-', english: 'to whisper', examples: [
+                { tr: 'Kulağıma bir şey fısıldadı.', en: 'He/she whispered something in my ear.' },
+                { tr: 'Sessiz ol, kütüphanede fısıldayarak konuşmalısın.', en: 'Be quiet, you should speak in a whisper in the library.' },
+                { tr: 'Bebek uyurken fısıldadılar.', en: 'They whispered while the baby was sleeping.' },
+                { tr: 'Gizli planı bana fısıldadı.', en: 'He whispered the secret plan to me.' },
+                { tr: 'Ne fısıldıyorsunuz orada?', en: 'What are you whispering over there?' }
+            ]},
+            { infinitive: 'satmak', stem: 'sat-', english: 'to sell', examples: [
+                { tr: 'Eski arabasını satıyor.', en: 'He/she is selling his/her old car.' },
+                { tr: 'Bu dükkanda antika eşyalar satılıyor.', en: 'Antique goods are sold in this shop.' },
+                { tr: 'Evimi satmaya karar verdim.', en: 'I decided to sell my house.' },
+                { tr: 'Bu ürünler internette satılıyor mu?', en: 'Are these products sold on the internet?' },
+                { tr: 'Biletleri karaborsada sattılar.', en: 'They sold the tickets on the black market.' }
+            ]},
+            { infinitive: 'satın almak', stem: 'satın al-', english: 'to purchase', examples: [
+                { tr: 'Yeni bir ev satın aldılar.', en: 'They purchased a new house.' },
+                { tr: 'Süpermarketten biraz yiyecek satın aldım.', en: 'I bought some food from the supermarket.' },
+                { tr: 'Bu elbiseyi nereden satın aldın?', en: 'Where did you buy this dress?' },
+                { tr: 'Online alışveriş yaparak zaman satın alabilirsiniz.', en: 'You can save (lit. buy) time by shopping online.' },
+                { tr: 'Şirket, rakip bir firmayı satın aldı.', en: 'The company acquired a rival firm.' }
+            ]},
+            { infinitive: 'ödemek', stem: 'öde-', english: 'to pay', examples: [
+                { tr: 'Hesabı ben ödeyeceğim.', en: 'I will pay the bill.' },
+                { tr: 'Kirayı her ayın başında öderim.', en: 'I pay the rent at the beginning of each month.' },
+                { tr: 'Kredi kartıyla ödeyebilir miyim?', en: 'Can I pay by credit card?' },
+                { tr: 'Bu hata için büyük bir bedel ödedi.', en: 'He paid a heavy price for this mistake.' },
+                { tr: 'Borcumu en kısa zamanda ödeyeceğim.', en: 'I will pay my debt as soon as possible.' }
+            ]},
+            { infinitive: 'kiralamak', stem: 'kirala-', english: 'to rent', examples: [
+                { tr: 'Yaz için bir ev kiraladık.', en: 'We rented a house for the summer.' },
+                { tr: 'Tatilde araba kiralamak iyi bir fikir.', en: 'Renting a car on holiday is a good idea.' },
+                { tr: 'Öğrenciler için kiralık oda arıyorum.', en: 'I am looking for a room to rent for students.' },
+                { tr: 'Bu daireyi bir yıllığına kiraladılar.', en: 'They rented this flat for a year.' },
+                { tr: 'Bisiklet kiralamak ne kadar?', en: 'How much is it to rent a bicycle?' }
+            ]},
+            { infinitive: 'ödünç vermek', stem: 'ödünç ver-', english: 'to lend', examples: [
+                { tr: 'Ona biraz para ödünç verdim.', en: 'I lent him/her some money.' },
+                { tr: 'Kitabımı sana ödünç verebilirim ama kaybetme.', en: 'I can lend you my book, but don\'t lose it.' },
+                { tr: 'Bana kalemini ödünç verir misin?', en: 'Can you lend me your pen?' },
+                { tr: 'Bankalar insanlara borç para ödünç verir.', en: 'Banks lend money to people.' },
+                { tr: 'Asla bir arkadaşına para ödünç verme.', en: 'Never lend money to a friend.' }
+            ]},
+            { infinitive: 'ödünç almak', stem: 'ödünç al-', english: 'to borrow', examples: [
+                { tr: 'Kütüphaneden üç kitap ödünç aldım.', en: 'I borrowed three books from the library.' },
+                { tr: 'Arkadaşımdan arabasını ödünç aldım.', en: 'I borrowed my friend\'s car.' },
+                { tr: 'Biraz şeker ödünç alabilir miyim?', en: 'Can I borrow some sugar?' },
+                { tr: 'Banka\'dan kredi ödünç almak zorunda kaldık.', en: 'We had to take out a loan from the bank.' },
+                { tr: 'Bu fikri ondan ödünç aldım.', en: 'I borrowed this idea from him.' }
+            ]},
+            { infinitive: 'çalmak', stem: 'çal-', english: 'to steal, to play (instrument)', examples: [
+                { tr: 'Gitar çalabiliyor.', en: 'He/she can play the guitar.' },
+                { tr: 'Birisi cüzdanımı çalmış.', en: 'Someone has stolen my wallet.' },
+                { tr: 'Kapı çalıyor, bakar mısın?', en: 'The doorbell is ringing, can you get it?' },
+                { tr: 'Radyoda en sevdiğim şarkı çalıyor.', en: 'My favorite song is playing on the radio.' },
+                { tr: 'Piyano çalmayı öğrenmek istiyorum.', en: 'I want to learn to play the piano.' }
+            ]},
+            { infinitive: 'sürmek', stem: 'sür-', english: 'to drive, to last', examples: [
+                { tr: 'Araba sürmeyi biliyor musun?', en: 'Do you know how to drive a car?' },
+                { tr: 'Toplantı üç saat sürdü.', en: 'The meeting lasted for three hours.' },
+                { tr: 'Ekmeğe tereyağı sürdü.', en: 'He spread butter on the bread.' },
+                { tr: 'Bisiklet sürmek için parka gittik.', en: 'We went to the park to ride a bike.' },
+                { tr: 'Bu güzel günler sonsuza dek sürmez.', en: 'These good days won\'t last forever.' }
+            ]},
+            { infinitive: 'uçmak', stem: 'uç-', english: 'to fly', examples: [
+                { tr: 'Kuşlar uçar.', en: 'Birds fly.' },
+                { tr: 'Yarın İstanbul\'a uçuyorum.', en: 'I am flying to Istanbul tomorrow.' },
+                { tr: 'Uçurtma rüzgarda güzelce uçuyordu.', en: 'The kite was flying beautifully in the wind.' },
+                { tr: 'Sevinçten havalara uçtu.', en: 'He was over the moon with joy.' },
+                { tr: 'Uçmaktan korkuyor musun?', en: 'Are you afraid of flying?' }
+            ]},
+            { infinitive: 'yüzmek', stem: 'yüz-', english: 'to swim', examples: [
+                { tr: 'Denizde yüzmeyi severim.', en: 'I like swimming in the sea.' },
+                { tr: 'Çocuklar havuzda yüzüyor.', en: 'The children are swimming in the pool.' },
+                { tr: 'Çok iyi yüzme biliyor.', en: 'She knows how to swim very well.' },
+                { tr: 'Bu nehirde yüzmek tehlikelidir.', en: 'It is dangerous to swim in this river.' },
+                { tr: 'Yazın her gün yüzeriz.', en: 'We swim every day in the summer.' }
+            ]},
+            { infinitive: 'dalmak', stem: 'dal-', english: 'to dive', examples: [
+                { tr: 'Derin suya daldı.', en: 'He dived into the deep water.' },
+                { tr: 'Tüplü dalış kursuna katıldım.', en: 'I joined a scuba diving course.' },
+                { tr: 'Kitabını okurken düşüncelere daldı.', en: 'He was lost in thought while reading his book.' },
+                { tr: 'Balıklar suyun altına daldı.', en: 'The fish dived under the water.' },
+                { tr: 'Birden odaya daldı.', en: 'He suddenly burst into the room.' }
+            ]},
+            { infinitive: 'tırmanmak', stem: 'tırman-', english: 'to climb', examples: [
+                { tr: 'Dağa tırmandılar.', en: 'They climbed the mountain.' },
+                { tr: 'Kedi ağaca tırmandı.', en: 'The cat climbed the tree.' },
+                { tr: 'Kariyer basamaklarını hızla tırmandı.', en: 'He quickly climbed the career ladder.' },
+                { tr: 'Tırmanma duvarında pratik yapıyor.', en: 'She is practicing on the climbing wall.' },
+                { tr: 'Fiyatlar tırmanmaya devam ediyor.', en: 'Prices continue to climb.' }
+            ]},
+            { infinitive: 'atlamak', stem: 'atla-', english: 'to jump', examples: [
+                { tr: 'Çitin üzerinden atladı.', en: 'He/she jumped over the fence.' },
+                { tr: 'Çocuklar yatakta atlıyor.', en: 'The children are jumping on the bed.' },
+                { tr: 'Bu konuyu atlayalım.', en: 'Let\'s skip this topic.' },
+                { tr: 'Havuzun derin ucundan atladı.', en: 'He jumped from the deep end of the pool.' },
+                { tr: 'Hemen sonuca atlama.', en: 'Don\'t jump to conclusions.' }
+            ]},
+            { infinitive: 'düşmek', stem: 'düş-', english: 'to fall', examples: [
+                { tr: 'Merdivenden düştüm.', en: 'I fell down the stairs.' },
+                { tr: 'Yapraklar sonbaharda düşer.', en: 'Leaves fall in autumn.' },
+                { tr: 'Fiyatlar düştü.', en: 'The prices fell.' },
+                { tr: 'Yorgunluktan yere düştü.', en: 'He fell to the ground from exhaustion.' },
+                { tr: 'Aklıma bir fikir düştü.', en: 'An idea came to my mind.' }
+            ]},
+            { infinitive: 'kırmak', stem: 'kır-', english: 'to break', examples: [
+                { tr: 'Vazoyu kim kırdı?', en: 'Who broke the vase?' },
+                { tr: 'Kolunu futbol oynarken kırmış.', en: 'He broke his arm while playing football.' },
+                { tr: 'Sözlerinle kalbimi kırdın.', en: 'You broke my heart with your words.' },
+                { tr: 'Rekor kırmak için çok çalıştı.', en: 'He worked hard to break the record.' },
+                { tr: 'Lütfen bardakları kırmamaya dikkat et.', en: 'Please be careful not to break the glasses.' }
+            ]},
+            { infinitive: 'tamir etmek', stem: 'tamir et-', english: 'to repair', examples: [
+                { tr: 'Bozuk saati tamir etti.', en: 'He/she repaired the broken watch.' },
+                { tr: 'Arabamı tamir ettirmem gerekiyor.', en: 'I need to get my car repaired.' },
+                { tr: 'Çatıyı tamir etmek ne kadar sürer?', en: 'How long will it take to repair the roof?' },
+                { tr: 'İlişkilerini tamir etmeye çalışıyorlar.', en: 'They are trying to mend their relationship.' },
+                { tr: 'Bilgisayarımı kendim tamir ettim.', en: 'I repaired my computer myself.' }
+            ]},
+            { infinitive: 'boyamak', stem: 'boya-', english: 'to paint, to dye', examples: [
+                { tr: 'Duvarları maviye boyadık.', en: 'We painted the walls blue.' },
+                { tr: 'Saçını kızıla boyattı.', en: 'She had her hair dyed red.' },
+                { tr: 'Çocuklar resim boyamayı sever.', en: 'Children love to paint pictures.' },
+                { tr: 'Eski mobilyaları boyayarak yeniledi.', en: 'He renewed the old furniture by painting it.' },
+                { tr: 'Paskalya için yumurta boyadılar.', en: 'They painted eggs for Easter.' }
+            ]},
+            { infinitive: 'çizmek', stem: 'çiz-', english: 'to draw', examples: [
+                { tr: 'Güzel bir resim çizdi.', en: 'He/she drew a beautiful picture.' },
+                { tr: 'Kare çizmek için bir cetvel kullandı.', en: 'He used a ruler to draw a square.' },
+                { tr: 'Arabamın kapısını birisi çizmiş.', en: 'Someone has scratched my car door.' },
+                { tr: 'Kendi portresini çizdi.', en: 'She drew her own portrait.' },
+                { tr: 'Planı bir kağıda çizdi.', en: 'He drew the plan on a piece of paper.' }
+            ]},
+            { infinitive: 'yapıştırmak', stem: 'yapıştır-', english: 'to stick, to glue', examples: [
+                { tr: 'Kağıtları birbirine yapıştırdı.', en: 'He/she glued the papers together.' },
+                { tr: 'Zarfı yapıştırdıktan sonra postaladı.', en: 'He mailed the envelope after sealing it.' },
+                { tr: 'Duyuruyu panoya yapıştırdı.', en: 'She posted the announcement on the board.' },
+                { tr: 'Kırık bardağı yapıştırmaya çalıştı.', en: 'He tried to glue the broken glass.' },
+                { tr: 'Çocuklar çıkartmaları defterlerine yapıştırdı.', en: 'The children stuck the stickers in their notebooks.' }
+            ]},
+            { infinitive: 'doldurmak', stem: 'doldur-', english: 'to fill', examples: [
+                { tr: 'Bardağı suyla doldur.', en: 'Fill the glass with water.' },
+                { tr: 'Başvuru formunu doldurmanız gerekiyor.', en: 'You need to fill out the application form.' },
+                { tr: 'Odayı güzel bir koku doldurdu.', en: 'A beautiful smell filled the room.' },
+                { tr: 'Arabanın deposunu doldurdu.', en: 'He filled up the car\'s tank.' },
+                { tr: 'Gözleri yaşlarla doldu.', en: 'Her eyes filled with tears.' }
+            ]},
+            { infinitive: 'boşaltmak', stem: 'boşalt-', english: 'to empty', examples: [
+                { tr: 'Kutuyu boşalttı.', en: 'He/she emptied the box.' },
+                { tr: 'Çöp kutusunu boşaltır mısın?', en: 'Can you empty the trash can?' },
+                { tr: 'Yangın alarmı çalınca binayı boşalttılar.', en: 'They evacuated the building when the fire alarm went off.' },
+                { tr: 'Bardağındaki suyu lavaboya boşalttı.', en: 'He poured the water in his glass into the sink.' },
+                { tr: 'İçini bana boşalttı.', en: 'He poured his heart out to me.' }
+            ]},
+            { infinitive: 'giymek', stem: 'giy-', english: 'to wear', examples: [
+                { tr: 'Bugün ne giyeceksin?', en: 'What will you wear today?' },
+                { tr: 'Düğünde takım elbise giydi.', en: 'He wore a suit at the wedding.' },
+                { tr: 'Hava soğuk, ceketini giy.', en: 'The weather is cold, wear your jacket.' },
+                { tr: 'Bu ayakkabıları giymekten hoşlanmıyorum.', en: 'I don\'t like wearing these shoes.' },
+                { tr: 'Okul üniforması giymek zorundalar.', en: 'They have to wear a school uniform.' }
+            ]},
+            { infinitive: 'takmak', stem: 'tak-', english: 'to wear (accessories), to attach', examples: [
+                { tr: 'Gözlük takıyor.', en: 'He/she wears glasses.' },
+                { tr: 'Kravat takmayı sevmiyor.', en: 'He doesn\'t like to wear a tie.' },
+                { tr: 'Parti için küpelerini taktı.', en: 'She wore her earrings for the party.' },
+                { tr: 'Yeni lastikleri arabaya taktılar.', en: 'They attached the new tires to the car.' },
+                { tr: 'Onu kafana takma.', en: 'Don\'t worry about it.' }
+            ]},
+            { infinitive: 'çıkarmak', stem: 'çıkar-', english: 'to take off, to remove', examples: [
+                { tr: 'Ayakkabılarını çıkar.', en: 'Take off your shoes.' },
+                { tr: 'Cebinden bir anahtar çıkardı.', en: 'He took a key out of his pocket.' },
+                { tr: 'Lekeyi çıkarmak için çok uğraştı.', en: 'She tried hard to remove the stain.' },
+                { tr: 'Çöpü dışarı çıkarır mısın?', en: 'Can you take out the trash?' },
+                { tr: 'Bu gürültü beni çıldırtacak.', en: 'This noise is driving me crazy.' }
+            ]},
+            { infinitive: 'saklamak', stem: 'sakla-', english: 'to hide', examples: [
+                { tr: 'Hediyeyi nereye sakladın?', en: 'Where did you hide the gift?' },
+                { tr: 'Benden bir şey mi saklıyorsun?', en: 'Are you hiding something from me?' },
+                { tr: 'Parasını yatağın altında saklıyor.', en: 'He hides his money under the bed.' },
+                { tr: 'Duygularını iyi saklar.', en: 'She hides her feelings well.' },
+                { tr: 'Bu sırrı daha fazla saklayamam.', en: 'I can\'t keep this secret any longer.' }
+            ]},
+            { infinitive: 'saklanmak', stem: 'saklan-', english: 'to hide oneself', examples: [
+                { tr: 'Çocuklar ağacın arkasına saklandı.', en: 'The children hid behind the tree.' },
+                { tr: 'Saklambaç oynayalım!', en: 'Let\'s play hide-and-seek!' },
+                { tr: 'Güneş bulutların arkasına saklandı.', en: 'The sun hid behind the clouds.' },
+                { tr: 'Neden benden saklanıyorsun?', en: 'Why are you hiding from me?' },
+                { tr: 'Korkudan masanın altına saklandı.', en: 'He hid under the table out of fear.' }
+            ]},
+            { infinitive: 'güvenmek', stem: 'güven-', english: 'to trust', examples: [
+                { tr: 'Sana güvenebilir miyim?', en: 'Can I trust you?' },
+                { tr: 'Ona her zaman güvenirim.', en: 'I always trust him.' },
+                { tr: 'İçgüdülerine güvenmelisin.', en: 'You should trust your instincts.' },
+                { tr: 'Tanımadığın insanlara hemen güvenme.', en: 'Don\'t trust people you don\'t know right away.' },
+                { tr: 'Güvenimi boşa çıkardı.', en: 'He betrayed my trust.' }
+            ]},
+            { infinitive: 'tartışmak', stem: 'tartış-', english: 'to argue, to discuss', examples: [
+                { tr: 'Bu konuyu tartışmalıyız.', en: 'We should discuss this topic.' },
+                { tr: 'Sürekli aynı şeyler hakkında tartışıyoruz.', en: 'We are constantly arguing about the same things.' },
+                { tr: 'Onunla tartışmak istemiyorum.', en: 'I don\'t want to argue with him.' },
+                { tr: 'Toplantıda yeni projeyi tartıştık.', en: 'We discussed the new project at the meeting.' },
+                { tr: 'Farklı fikirleri tartışmak faydalıdır.', en: 'It is useful to discuss different ideas.' }
+            ]},
+            { infinitive: 'kavga etmek', stem: 'kavga et-', english: 'to fight', examples: [
+                { tr: 'Kardeşiyle kavga etti.', en: 'He/she fought with his/her sibling.' },
+                { tr: 'Küçük şeyler yüzünden kavga etmeyin.', en: 'Don\'t fight over small things.' },
+                { tr: 'İki sürücü trafikte kavga etti.', en: 'Two drivers fought in traffic.' },
+                { tr: 'Neden kavga ettiklerini bilmiyorum.', en: 'I don\'t know why they fought.' },
+                { tr: 'Onlar sürekli kavga ederler ama sonra barışırlar.', en: 'They always fight, but then they make up.' }
+            ]},
+            { infinitive: 'barışmak', stem: 'barış-', english: 'to make peace', examples: [
+                { tr: 'Sonunda barıştılar.', en: 'They finally made peace.' },
+                { tr: 'Arkadaşımla küstük ama sonra barıştık.', en: 'I fell out with my friend, but we made up later.' },
+                { tr: 'Onunla barışmak için ilk adımı sen atmalısın.', en: 'You should take the first step to make peace with him.' },
+                { tr: 'İki ülke barışmak için anlaştı.', en: 'The two countries agreed to make peace.' },
+                { tr: 'Umarım yakında barışırlar.', en: 'I hope they make up soon.' }
+            ]},
+            { infinitive: 'evlenmek', stem: 'evlen-', english: 'to get married', examples: [
+                { tr: 'Gelecek yıl evlenecekler.', en: 'They will get married next year.' },
+                { tr: 'Benimle evlenir misin?', en: 'Will you marry me?' },
+                { tr: 'Yirmi yaşında evlendi.', en: 'She got married at the age of twenty.' },
+                { tr: 'Aşkı için evlendi, parası için değil.', en: 'He married for love, not for money.' },
+                { tr: 'Ne zaman evlenmeyi düşünüyorsun?', en: 'When are you thinking of getting married?' }
+            ]},
+            { infinitive: 'boşanmak', stem: 'boşan-', english: 'to get divorced', examples: [
+                { tr: 'Beş yıl sonra boşandılar.', en: 'They got divorced after five years.' },
+                { tr: 'Boşanmaya karar verdiler.', en: 'They decided to get a divorce.' },
+                { tr: 'Boşanmak zor bir süreç olabilir.', en: 'Getting divorced can be a difficult process.' },
+                { tr: 'Eşinden geçen yıl boşandı.', en: 'He divorced his wife last year.' },
+                { tr: 'Şiddetli geçimsizlik nedeniyle boşandılar.', en: 'They divorced due to irreconcilable differences.' }
+            ]},
+            { infinitive: 'doğmak', stem: 'doğ-', english: 'to be born', examples: [
+                { tr: '1990 yılında doğdum.', en: 'I was born in 1990.' },
+                { tr: 'Güneş doğudan doğar.', en: 'The sun rises from the east.' },
+                { tr: 'Yeni bir umut doğdu.', en: 'A new hope was born.' },
+                { tr: 'Nerede doğdun?', en: 'Where were you born?' },
+                { tr: 'İkiz bebekleri doğdu.', en: 'Their twin babies were born.' }
+            ]},
+            { infinitive: 'büyümek', stem: 'büyü-', english: 'to grow up', examples: [
+                { tr: 'Bu şehirde büyüdüm.', en: 'I grew up in this city.' },
+                { tr: 'Çocuklar ne çabuk büyüyor!', en: 'How fast children grow up!' },
+                { tr: 'Büyüyünce ne olmak istiyorsun?', en: 'What do you want to be when you grow up?' },
+                { tr: 'Ekonomi hızla büyüyor.', en: 'The economy is growing rapidly.' },
+                { tr: 'Bitkilerin büyümesi için suya ihtiyacı var.', en: 'Plants need water to grow.' }
+            ]},
+            { infinitive: 'yaşlanmak', stem: 'yaşlan-', english: 'to get old', examples: [
+                { tr: 'Herkes zamanla yaşlanır.', en: 'Everyone gets old over time.' },
+                { tr: 'Dedem oldukça yaşlandı.', en: 'My grandfather has gotten quite old.' },
+                { tr: 'Yaşlanmaktan korkuyor.', en: 'She is afraid of getting old.' },
+                { tr: 'Bu mobilya iyi yaşlanmış.', en: 'This furniture has aged well.' },
+                { tr: 'Birlikte yaşlanmak istiyoruz.', en: 'We want to grow old together.' }
+            ]},
+            { infinitive: 'taşınmak', stem: 'taşın-', english: 'to move (house)', examples: [
+                { tr: 'Yeni bir eve taşındık.', en: 'We moved to a new house.' },
+                { tr: 'Gelecek ay Ankara\'ya taşınıyorum.', en: 'I am moving to Ankara next month.' },
+                { tr: 'Taşınmak çok yorucu bir iş.', en: 'Moving is a very tiring job.' },
+                { tr: 'Ne zaman taşındınız?', en: 'When did you move?' },
+                { tr: 'Şirket yeni bir ofise taşındı.', en: 'The company moved to a new office.' }
+            ]},
+            { infinitive: 'üretmek', stem: 'üret-', english: 'to produce', examples: [
+                { tr: 'Bu fabrika araba üretiyor.', en: 'This factory produces cars.' },
+                { tr: 'Türkiye fındık üretiyor.', en: 'Turkey produces hazelnuts.' },
+                { tr: 'Yeni fikirler üretmeliyiz.', en: 'We need to produce new ideas.' },
+                { tr: 'Arılar bal üretir.', en: 'Bees produce honey.' },
+                { tr: 'Bu film şirketi yılda on film üretiyor.', en: 'This film company produces ten films a year.' }
+            ]},
+            { infinitive: 'tüketmek', stem: 'tüket-', english: 'to consume', examples: [
+                { tr: 'Çok fazla şeker tüketiyoruz.', en: 'We consume too much sugar.' },
+                { tr: 'Bu araba çok benzin tüketiyor.', en: 'This car consumes a lot of gasoline.' },
+                { tr: 'Enerjini boşa tüketme.', en: 'Don\'t waste your energy.' },
+                { tr: 'Daha az et tüketmeye çalışıyorum.', en: 'I am trying to consume less meat.' },
+                { tr: 'Sabrımı tüketiyorsun.', en: 'You are exhausting my patience.' }
+            ]},
+            { infinitive: 'korumak', stem: 'koru-', english: 'to protect', examples: [
+                { tr: 'Doğayı korumalıyız.', en: 'We must protect nature.' },
+                { tr: 'Güneş kremi cildini güneşten korur.', en: 'Sunscreen protects your skin from the sun.' },
+                { tr: 'Polisin görevi vatandaşları korumaktır.', en: 'The duty of the police is to protect the citizens.' },
+                { tr: 'Şifrenizi kimseyle paylaşmayarak hesabınızı koruyun.', en: 'Protect your account by not sharing your password with anyone.' },
+                { tr: 'Sakinliğini korumaya çalıştı.', en: 'He tried to keep his calm.' }
+            ]},
+            { infinitive: 'savunmak', stem: 'savun-', english: 'to defend', examples: [
+                { tr: 'Fikirlerini savundu.', en: 'He/she defended his/her ideas.' },
+                { tr: 'Avukat, müvekkilini mahkemede savundu.', en: 'The lawyer defended his client in court.' },
+                { tr: 'Takım kaleyi iyi savundu.', en: 'The team defended the goal well.' },
+                { tr: 'Hayvan haklarını savunan bir derneğe üye.', en: 'She is a member of an association that defends animal rights.' },
+                { tr: 'Kendini savunmak için hiçbir şey söylemedi.', en: 'He said nothing to defend himself.' }
+            ]},
+            { infinitive: 'saldırmak', stem: 'saldır-', english: 'to attack', examples: [
+                { tr: 'Düşman şehre saldırdı.', en: 'The enemy attacked the city.' },
+                { tr: 'Köpek aniden çocuğa saldırdı.', en: 'The dog suddenly attacked the child.' },
+                { tr: 'Rakip takım sürekli saldırıyor.', en: 'The opposing team is constantly attacking.' },
+                { tr: 'Bilgisayar sistemine bir virüs saldırdı.', en: 'A virus attacked the computer system.' },
+                { tr: 'Sözleriyle bana saldırdı.', en: 'He attacked me with his words.' }
+            ]},
+            { infinitive: 'kaçmak', stem: 'kaç-', english: 'to escape, to run away', examples: [
+                { tr: 'Hırsız kaçtı.', en: 'The thief ran away.' },
+                { tr: 'Hapishaneden kaçmaya çalıştılar.', en: 'They tried to escape from prison.' },
+                { tr: 'Bu fırsatı kaçırmak istemiyorum.', en: 'I don\'t want to miss this opportunity.' },
+                { tr: 'Gürültüden kaçmak için odasına gitti.', en: 'He went to his room to escape the noise.' },
+                { tr: 'Ağzımdan yanlış bir kelime kaçtı.', en: 'A wrong word slipped out of my mouth.' }
+            ]},
+            { infinitive: 'yakalamak', stem: 'yakala-', english: 'to catch', examples: [
+                { tr: 'Polis suçluyu yakaladı.', en: 'The police caught the criminal.' },
+                { tr: 'Otobüsü son anda yakaladım.', en: 'I caught the bus at the last moment.' },
+                { tr: 'Balık tutarken büyük bir balık yakaladı.', en: 'He caught a big fish while fishing.' },
+                { tr: 'Soğuk algınlığına yakalandım.', en: 'I caught a cold.' },
+                { tr: 'Bu fırsatı yakalamalıyız.', en: 'We must seize this opportunity.' }
+            ]},
+            { infinitive: 'tercih etmek', stem: 'tercih et-', english: 'to prefer', examples: [
+                { tr: 'Çay mı kahve mi tercih edersin?', en: 'Do you prefer tea or coffee?' },
+                { tr: 'Evde kalmayı tercih ederim.', en: 'I prefer to stay at home.' },
+                { tr: 'Sessiz bir yerde çalışmayı tercih ediyor.', en: 'She prefers to work in a quiet place.' },
+                { tr: 'Hangi rengi tercih ediyorsunuz?', en: 'Which color do you prefer?' },
+                { tr: 'Ölümü tercih ederim ama yalan söylemem.', en: 'I would rather die than lie.' }
+            ]},
+            { infinitive: 'tavsiye etmek', stem: 'tavsiye et-', english: 'to recommend', examples: [
+                { tr: 'Bu restoranı tavsiye ederim.', en: 'I recommend this restaurant.' },
+                { tr: 'Doktor ona dinlenmesini tavsiye etti.', en: 'The doctor advised him to rest.' },
+                { tr: 'Hangi kitabı okumamı tavsiye edersin?', en: 'Which book do you recommend I read?' },
+                { tr: 'Oraya gitmemenizi tavsiye ederim.', en: 'I would recommend that you do not go there.' },
+                { tr: 'Bu konuda bir uzmana danışmanızı tavsiye ederim.', en: 'I recommend you consult an expert on this matter.' }
+            ]},
+            { infinitive: 'önermek', stem: 'öner-', english: 'to suggest', examples: [
+                { tr: 'Farklı bir plan önerdi.', en: 'He/she suggested a different plan.' },
+                { tr: 'Sinemaya gitmeyi öneriyorum.', en: 'I suggest going to the cinema.' },
+                { tr: 'Bu sorun için bir çözüm önerebilir misiniz?', en: 'Can you suggest a solution for this problem?' },
+                { tr: 'Toplantıyı yarına ertelemeyi önerdi.', en: 'She suggested postponing the meeting until tomorrow.' },
+                { tr: 'Önerinizi dikkate alacağım.', en: 'I will consider your suggestion.' }
+            ]},
+            { infinitive: 'izin vermek', stem: 'izin ver-', english: 'to allow, to permit', examples: [
+                { tr: 'Annem dışarı çıkmama izin vermedi.', en: 'My mother didn\'t allow me to go out.' },
+                { tr: 'Burada fotoğraf çekmeye izin veriliyor mu?', en: 'Is it allowed to take pictures here?' },
+                { tr: 'Lütfen geçmeme izin verin.', en: 'Please allow me to pass.' },
+                { tr: 'Eğer hava izin verirse, yarın piknik yapacağız.', en: 'If the weather permits, we will have a picnic tomorrow.' },
+                { tr: 'Kendine dinlenmek için izin ver.', en: 'Allow yourself to rest.' }
+            ]},
+            { infinitive: 'yasaklamak', stem: 'yasakla-', english: 'to forbid', examples: [
+                { tr: 'Hükümet o kitabı yasakladı.', en: 'The government banned that book.' },
+                { tr: 'Burada sigara içmek yasak.', en: 'Smoking is forbidden here.' },
+                { tr: 'Doktor ona tuzu yasakladı.', en: 'The doctor forbade him salt.' },
+                { tr: 'Parka girmek yasaklanmıştı.', en: 'Entering the park was forbidden.' },
+                { tr: 'Neden yasaklandığını anlamıyorum.', en: 'I don\'t understand why it was banned.' }
+            ]},
+            { infinitive: 'zorunda kalmak', stem: 'zorunda kal-', english: 'to have to, to be forced to', examples: [
+                { tr: 'Eve erken dönmek zorunda kaldım.', en: 'I had to return home early.' },
+                { tr: 'Yağmur yüzünden planlarımızı iptal etmek zorunda kaldık.', en: 'We had to cancel our plans because of the rain.' },
+                { tr: 'Kimse bunu yapmak zorunda kalmasın.', en: 'May no one have to do this.' },
+                { tr: 'Arabası bozulunca yürümek zorunda kaldı.', en: 'He had to walk when his car broke down.' },
+                { tr: 'İstemediği bir işi yapmak zorunda kaldı.', en: 'She was forced to do a job she didn\'t want.' }
+            ]},
+            { infinitive: 'gerekmek', stem: 'gerek-', english: 'to be necessary', examples: [
+                { tr: 'Daha fazla çalışman gerekiyor.', en: 'You need to study more.' },
+                { tr: 'Gitmem gerekiyor.', en: 'I need to go.' },
+                { tr: 'Bu işi bitirmek için zamana gerek var.', en: 'Time is needed to finish this job.' },
+                { tr: 'Pasaportunuzun olması gerekiyor.', en: 'You need to have a passport.' },
+                { tr: 'Söylemeye gerek yok, o çok zeki.', en: 'Needless to say, he is very smart.' }
+            ]},
+            { infinitive: 'devam etmek', stem: 'devam et-', english: 'to continue', examples: [
+                { tr: 'Lütfen okumaya devam et.', en: 'Please continue reading.' },
+                { tr: 'Eğer böyle devam edersen, başaracaksın.', en: 'If you continue like this, you will succeed.' },
+                { tr: 'Yağmur bütün gün yağmaya devam etti.', en: 'The rain continued to fall all day.' },
+                { tr: 'Yolumuza devam etmeliyiz.', en: 'We must continue on our way.' },
+                { tr: 'Dizi gelecek sezon devam edecek mi?', en: 'Will the series continue next season?' }
+            ]},
+            { infinitive: 'bırakmak', stem: 'bırak-', english: 'to quit, to leave', examples: [
+                { tr: 'Sigarayı bıraktım.', en: 'I quit smoking.' },
+                { tr: 'Anahtarlarımı masanın üzerine bıraktım.', en: 'I left my keys on the table.' },
+                { tr: 'Beni yalnız bırak!', en: 'Leave me alone!' },
+                { tr: 'İşini bıraktı ve dünyayı dolaşmaya başladı.', en: 'He quit his job and started to travel the world.' },
+                { tr: 'Bu işi yarına bırakalım.', en: 'Let\'s leave this work for tomorrow.' }
+            ]},
+            { infinitive: 'toplamak', stem: 'topla-', english: 'to gather, to collect', examples: [
+                { tr: 'Çiçek topladık.', en: 'We gathered flowers.' },
+                { tr: 'Odasını toplar mısın?', en: 'Can you tidy up your room?' },
+                { tr: 'Eski pul toplamayı seviyor.', en: 'He likes to collect old stamps.' },
+                { tr: 'Toplantı için veri topluyoruz.', en: 'We are gathering data for the meeting.' },
+                { tr: 'Masadaki boş tabakları topladı.', en: 'She collected the empty plates from the table.' }
+            ]},
+            { infinitive: 'dağıtmak', stem: 'dağıt-', english: 'to distribute, to scatter', examples: [
+                { tr: 'Postacı mektupları dağıttı.', en: 'The postman distributed the letters.' },
+                { tr: 'Öğretmen sınav kağıtlarını dağıttı.', en: 'The teacher handed out the exam papers.' },
+                { tr: 'Yardım kuruluşu yiyecek dağıttı.', en: 'The charity distributed food.' },
+                { tr: 'Çocuk odasını yine dağıtmış.', en: 'The child has messed up his room again.' },
+                { tr: 'Rüzgar yaprakları her yere dağıttı.', en: 'The wind scattered the leaves everywhere.' }
+            ]},
+            { infinitive: 'birleştirmek', stem: 'birleştir-', english: 'to unite, to combine', examples: [
+                { tr: 'İki takımı birleştirdiler.', en: 'They united the two teams.' },
+                { tr: 'Bu iki malzemeyi karıştırıp birleştirin.', en: 'Mix and combine these two ingredients.' },
+                { tr: 'Müzik insanları birleştirir.', en: 'Music unites people.' },
+                { tr: 'Parçaları birleştirerek bir bütün oluşturdu.', en: 'He formed a whole by combining the pieces.' },
+                { tr: 'İki küçük şirketi birleştirerek büyük bir şirket kurdular.', en: 'They established a large company by merging two small companies.' }
+            ]},
+            { infinitive: 'ayırmak', stem: 'ayır-', english: 'to separate', examples: [
+                { tr: 'Beyazları ve renklileri ayır.', en: 'Separate the whites and the colors.' },
+                { tr: 'Kavga eden çocukları ayırdılar.', en: 'They separated the fighting children.' },
+                { tr: 'Bu akşam için size bir masa ayırdım.', en: 'I have reserved a table for you for this evening.' },
+                { tr: 'Zamanımın çoğunu çalışmaya ayırıyorum.', en: 'I devote most of my time to work.' },
+                { tr: 'Yumurtanın sarısını beyazından ayırdı.', en: 'She separated the egg yolk from the white.' }
+            ]},
+            { infinitive: 'eklemek', stem: 'ekle-', english: 'to add', examples: [
+                { tr: 'Çorbaya biraz tuz ekle.', en: 'Add some salt to the soup.' },
+                { tr: 'Listeye adını ekledim.', en: 'I added your name to the list.' },
+                { tr: 'Söylemek istediğin başka bir şey var mı?', en: 'Is there anything else you want to add?' },
+                { tr: 'Bu resim odaya renk ekledi.', en: 'This picture added color to the room.' },
+                { tr: 'Seni sosyal medyada arkadaş olarak ekleyeceğim.', en: 'I will add you as a friend on social media.' }
+            ]},
+            { infinitive: 'çarpmak', stem: 'çarp-', english: 'to multiply, to hit', examples: [
+                { tr: 'Araba duvara çarptı.', en: 'The car hit the wall.' },
+                { tr: 'Beşi üçle çarparsan on beş eder.', en: 'If you multiply five by three, you get fifteen.' },
+                { tr: 'Kapıya çarptım ve başım acıdı.', en: 'I bumped into the door and my head hurts.' },
+                { tr: 'Dalgalar kıyıya çarpıyordu.', en: 'The waves were crashing on the shore.' },
+                { tr: 'Bu haber beni çok çarptı.', en: 'This news hit me hard.' }
+            ]},
+            { infinitive: 'bölmek', stem: 'böl-', english: 'to divide', examples: [
+                { tr: 'Pastayı dört parçaya böldü.', en: 'He/she divided the cake into four pieces.' },
+                { tr: 'Onu ikiye bölersen beş elde edersin.', en: 'If you divide ten by two, you get five.' },
+                { tr: 'Bu nehir ülkeyi ikiye böler.', en: 'This river divides the country in two.' },
+                { tr: 'Dikkatimi bölme lütfen.', en: 'Please don\'t interrupt my concentration.' },
+                { tr: 'Oda bir perdeyle ikiye bölünmüştü.', en: 'The room was divided in two by a curtain.' }
+            ]},
+            { infinitive: 'ölçmek', stem: 'ölç-', english: 'to measure', examples: [
+                { tr: 'Odanın boyunu ölçtü.', en: 'He/she measured the length of the room.' },
+                { tr: 'Terzi, elbiseyi dikmeden önce ölçümü aldı.', en: 'The tailor took my measurements before sewing the dress.' },
+                { tr: 'Ateşini ölçtün mü?', en: 'Did you measure your temperature?' },
+                { tr: 'Başarıyı parayla ölçemezsin.', en: 'You can\'t measure success with money.' },
+                { tr: 'Kekin malzemelerini dikkatlice ölçtü.', en: 'She measured the ingredients for the cake carefully.' }
+            ]},
+            { infinitive: 'tartmak', stem: 'tart-', english: 'to weigh', examples: [
+                { tr: 'Meyveleri tarttı.', en: 'He/she weighed the fruits.' },
+                { tr: 'Her sabah kendimi tartarim.', en: 'I weigh myself every morning.' },
+                { tr: 'Bavulunuzu tartmanız gerekiyor.', en: 'You need to weigh your suitcase.' },
+                { tr: 'Sözlerini tartmadan konuşma.', en: 'Don\'t speak without weighing your words.' },
+                { tr: 'Bu paket tam olarak bir kilo tartıyor.', en: 'This package weighs exactly one kilogram.' }
+            ]},
+            { infinitive: 'saymak', stem: 'say-', english: 'to count', examples: [
+                { tr: 'Ona kadar say.', en: 'Count to ten.' },
+                { tr: 'Paranı saydın mı?', en: 'Did you count your money?' },
+                { tr: 'Günleri sayıyorum tatile çıkmak için.', en: 'I am counting the days to go on holiday.' },
+                { tr: 'Seni aileden sayıyoruz.', en: 'We consider you one of the family.' },
+                { tr: 'Yıldızları saymaya çalıştı.', en: 'He tried to count the stars.' }
+            ]},
+            { infinitive: 'kontrol etmek', stem: 'kontrol et-', english: 'to check', examples: [
+                { tr: 'Cevaplarını kontrol et.', en: 'Check your answers.' },
+                { tr: 'Yola çıkmadan önce lastikleri kontrol etti.', en: 'He checked the tires before setting off.' },
+                { tr: 'E-postalarımı her saat başı kontrol ederim.', en: 'I check my emails every hour.' },
+                { tr: 'Doktor hastanın nabzını kontrol etti.', en: 'The doctor checked the patient\'s pulse.' },
+                { tr: 'Her şeyin yolunda olduğunu kontrol etmek için aradım.', en: 'I called to check that everything is okay.' }
+            ]},
+            { infinitive: 'yönetmek', stem: 'yönet-', english: 'to manage, to direct', examples: [
+                { tr: 'Büyük bir şirketi yönetiyor.', en: 'He/she manages a big company.' },
+                { tr: 'Bu filmi kim yönetti?', en: 'Who directed this movie?' },
+                { tr: 'Duygularını yönetmeyi öğrenmelisin.', en: 'You must learn to manage your emotions.' },
+                { tr: 'Ülkeyi 10 yıl boyunca yönetti.', en: 'He ruled the country for 10 years.' },
+                { tr: 'Orkestrayı başarılı bir şekilde yönetti.', en: 'She successfully conducted the orchestra.' }
+            ]},
+            { infinitive: 'sipariş vermek', stem: 'sipariş ver-', english: 'to order', examples: [
+                { tr: 'İki pizza sipariş verdik.', en: 'We ordered two pizzas.' },
+                { tr: 'İnternetten yeni bir telefon sipariş verdim.', en: 'I ordered a new phone online.' },
+                { tr: 'Garsona sipariş vermek için hazır mısınız?', en: 'Are you ready to order from the waiter?' },
+                { tr: 'Henüz ne sipariş vereceğime karar vermedim.', en: 'I haven\'t decided what to order yet.' },
+                { tr: 'Şirket için yeni ofis malzemeleri sipariş verdi.', en: 'He ordered new office supplies for the company.' }
+            ]},
+            { infinitive: 'iptal etmek', stem: 'iptal et-', english: 'to cancel', examples: [
+                { tr: 'Rezervasyonu iptal ettim.', en: 'I canceled the reservation.' },
+                { tr: 'Kötü hava nedeniyle uçuş iptal edildi.', en: 'The flight was canceled due to bad weather.' },
+                { tr: 'Toplantıyı iptal etmek zorunda kaldık.', en: 'We had to cancel the meeting.' },
+                { tr: 'Aboneliğimi nasıl iptal edebilirim?', en: 'How can I cancel my subscription?' },
+                { tr: 'Maç iptal edildi.', en: 'The match was called off.' }
+            ]},
+            { infinitive: 'tekrar etmek', stem: 'tekrar et-', english: 'to repeat', examples: [
+                { tr: 'Lütfen tekrar eder misiniz?', en: 'Can you repeat, please?' },
+                { tr: 'Aynı hatayı tekrar etme.', en: 'Don\'t repeat the same mistake.' },
+                { tr: 'Öğretmen, önemli noktaları tekrar etti.', en: 'The teacher repeated the important points.' },
+                { tr: 'Tarih tekerrürden ibarettir.', en: 'History repeats itself.' },
+                { tr: 'Anlamanız için kaç kez tekrar etmeliyim?', en: 'How many times do I have to repeat it for you to understand?' }
+            ]},
+            { infinitive: 'pratik yapmak', stem: 'pratik yap-', english: 'to practice', examples: [
+                { tr: 'Her gün pratik yapmalısın.', en: 'You should practice every day.' },
+                { tr: 'İngilizce konuşma pratiği yapmak istiyorum.', en: 'I want to practice speaking English.' },
+                { tr: 'Piyano çalmak için çok pratik yaptı.', en: 'She practiced a lot to play the piano.' },
+                { tr: 'Pratik yapmak mükemmelleştirir.', en: 'Practice makes perfect.' },
+                { tr: 'Yeni öğrendiği kelimelerle pratik yapıyor.', en: 'He is practicing with the new words he learned.' }
+            ]},
+            { infinitive: 'dinlenmek', stem: 'dinlen-', english: 'to rest', examples: [
+                { tr: 'Biraz dinlenmeye ihtiyacım var.', en: 'I need to rest a bit.' },
+                { tr: 'Yorulduysan, biraz dinlen.', en: 'If you are tired, rest a little.' },
+                { tr: 'Hafta sonu dinlenmek için sabırsızlanıyorum.', en: 'I can\'t wait to rest on the weekend.' },
+                { tr: 'Doktor ona birkaç gün dinlenmesini söyledi.', en: 'The doctor told him to rest for a few days.' },
+                { tr: 'Yemekten sonra biraz dinlenmek iyidir.', en: 'It is good to rest a little after a meal.' }
+            ]},
+            { infinitive: 'eğlenmek', stem: 'eğlen-', english: 'to have fun', examples: [
+                { tr: 'Partide çok eğlendik.', en: 'We had a lot of fun at the party.' },
+                { tr: 'Umarım iyi eğlenirsiniz!', en: 'I hope you have fun!' },
+                { tr: 'Çocuklar parkta eğleniyor.', en: 'The children are having fun at the park.' },
+                { tr: 'Tatildeyken çok eğlendik.', en: 'We had a great time while on vacation.' },
+                { tr: 'Hayat eğlenmek için çok kısa.', en: 'Life is too short not to have fun.' }
+            ]},
+            { infinitive: 'sıkılmak', stem: 'sıkıl-', english: 'to get bored', examples: [
+                { tr: 'Bu filmden çok sıkıldım.', en: 'I got very bored of this movie.' },
+                { tr: 'Evde tek başıma oturmaktan sıkıldım.', en: 'I got bored of sitting at home alone.' },
+                { tr: 'Ders o kadar sıkıcıydı ki, sıkıldım.', en: 'The lesson was so boring, I got bored.' },
+                { tr: 'Canım sıkılıyor, ne yapsak?', en: 'I\'m bored, what should we do?' },
+                { tr: 'Her gün aynı şeyi yapmaktan sıkıldı.', en: 'He got tired of doing the same thing every day.' }
+            ]},
+            { infinitive: 'merak etmek', stem: 'merak et-', english: 'to wonder, to be curious', examples: [
+                { tr: 'Sonunu merak ediyorum.', en: 'I wonder about the end.' },
+                { tr: 'Nerede olduğunu merak ediyorum.', en: 'I wonder where she is.' },
+                { tr: 'Benim için merak etme, ben iyiyim.', en: 'Don\'t worry about me, I\'m fine.' },
+                { tr: 'Bu kutunun içinde ne olduğunu merak ediyor.', en: 'He is curious about what is inside this box.' },
+                { tr: 'Merak ettim de, neden sordun?', en: 'I was just wondering, why did you ask?' }
+            ]},
+            { infinitive: 'ilgilenmek', stem: 'ilgilen-', english: 'to be interested in', examples: [
+                { tr: 'Sanatla ilgileniyorum.', en: 'I am interested in art.' },
+                { tr: 'Bu konuyla kim ilgileniyor?', en: 'Who is dealing with this issue?' },
+                { tr: 'Misafirlerle ilgilenir misin?', en: 'Can you take care of the guests?' },
+                { tr: 'Bahçe işleriyle ilgilenmeyi seviyor.', en: 'She likes to deal with gardening.' },
+                { tr: 'Teklifinizle ilgilenmiyorum.', en: 'I am not interested in your offer.' }
+            ]},
+            { infinitive: 'katılmak', stem: 'katıl-', english: 'to join, to agree', examples: [
+                { tr: 'Sana katılıyorum.', en: 'I agree with you.' },
+                { tr: 'Toplantıya katılacak mısın?', en: 'Will you attend the meeting?' },
+                { tr: 'Geziye katılmak için kayıt yaptırdı.', en: 'He registered to join the trip.' },
+                { tr: 'Bu fikre katılmıyorum.', en: 'I don\'t agree with this idea.' },
+                { tr: 'Aramıza katılmak ister misin?', en: 'Would you like to join us?' }
+            ]},
+            { infinitive: 'karşılaşmak', stem: 'karşılaş-', english: 'to encounter', examples: [
+                { tr: 'Eski bir arkadaşımla karşılaştım.', en: 'I encountered an old friend.' },
+                { tr: 'Yolda bir engelle karşılaştık.', en: 'We encountered an obstacle on the road.' },
+                { tr: 'Böyle bir durumla daha önce hiç karşılaşmadım.', en: 'I have never encountered such a situation before.' },
+                { tr: 'Finalde güçlü bir rakiple karşılaşacaklar.', en: 'They will face a strong opponent in the final.' },
+                { tr: 'Beklenmedik bir sorunla karşılaştık.', en: 'We came up against an unexpected problem.' }
+            ]},
+            { infinitive: 'tanımak', stem: 'tanı-', english: 'to know, to recognize', examples: [
+                { tr: 'Onu tanıyor musun?', en: 'Do you know him/her?' },
+                { tr: 'Sizi bir yerden tanıyor gibiyim.', en: 'I feel like I know you from somewhere.' },
+                { tr: 'Yıllar sonra bile onu hemen tanıdım.', en: 'I recognized him immediately even after all these years.' },
+                { tr: 'İnsanın gerçek dostlarını kötü günde tanırsın.', en: 'You recognize one\'s true friends in bad times.' },
+                { tr: 'Bu bölgeyi iyi tanırım.', en: 'I know this area well.' }
+            ]},
+            { infinitive: 'anlaşmak', stem: 'anlaş-', english: 'to get along, to agree on', examples: [
+                { tr: 'Bu konuda anlaştık.', en: 'We agreed on this issue.' },
+                { tr: 'Kardeşimle iyi anlaşırım.', en: 'I get along well with my sibling.' },
+                { tr: 'Fiyat konusunda anlaştılar.', en: 'They agreed on the price.' },
+                { tr: 'Görünüşe göre anlaşamıyoruz.', en: 'Apparently, we can\'t agree.' },
+                { tr: 'Yeni iş arkadaşlarıyla hemen anlaştı.', en: 'He immediately got along with his new colleagues.' }
+            ]},
+            { infinitive: 'etkilemek', stem: 'etkile-', english: 'to influence, to affect', examples: [
+                { tr: 'Onun konuşması beni çok etkiledi.', en: 'His/her speech affected me a lot.' },
+                { tr: 'Hava durumu planlarımızı etkiledi.', en: 'The weather affected our plans.' },
+                { tr: 'Başkalarının seni etkilemesine izin verme.', en: 'Don\'t let others influence you.' },
+                { tr: 'Bu kitap hayatımı olumlu yönde etkiledi.', en: 'This book has positively influenced my life.' },
+                { tr: 'Müzik ruh halimi etkiler.', en: 'Music affects my mood.' }
+            ]},
+            { infinitive: 'hayal etmek', stem: 'hayal et-', english: 'to imagine', examples: [
+                { tr: 'Zengin olduğunu hayal et.', en: 'Imagine that you are rich.' },
+                { tr: 'Sensiz bir hayat hayal edemiyorum.', en: 'I can\'t imagine a life without you.' },
+                { tr: 'Çocukken bir süper kahraman olmayı hayal ederdim.', en: 'When I was a child, I used to dream of being a superhero.' },
+                { tr: 'Hayal ettiğimden daha güzeldi.', en: 'It was more beautiful than I imagined.' },
+                { tr: 'Sadece hayal et, her şey mümkün.', en: 'Just imagine, everything is possible.' }
+            ]},
+            { infinitive: 'gerçekleşmek', stem: 'gerçekleş-', english: 'to come true', examples: [
+                { tr: 'Hayallerim gerçekleşti.', en: 'My dreams came true.' },
+                { tr: 'Tören yarın gerçekleşecek.', en: 'The ceremony will take place tomorrow.' },
+                { tr: 'Umarım tüm dileklerin gerçekleşir.', en: 'I hope all your wishes come true.' },
+                { tr: 'Plan tam olarak beklediğimiz gibi gerçekleşti.', en: 'The plan happened exactly as we expected.' },
+                { tr: 'Bu projenin gerçekleşmesi yıllar aldı.', en: 'It took years for this project to be realized.' }
+            ]},
+            { infinitive: 'dua etmek', stem: 'dua et-', english: 'to pray', examples: [
+                { tr: 'Başarı için dua etti.', en: 'He/she prayed for success.' },
+                { tr: 'Her gece yatmadan önce dua ederim.', en: 'I pray every night before going to bed.' },
+                { tr: 'İyileşmesi için dua ediyoruz.', en: 'We are praying for his recovery.' },
+                { tr: 'Bana dua et, şansa ihtiyacım var.', en: 'Pray for me, I need luck.' },
+                { tr: 'Camiye dua etmeye gittiler.', en: 'They went to the mosque to pray.' }
+            ]},
+            { infinitive: 'şaşırtmak', stem: 'şaşırt-', english: 'to surprise', examples: [
+                { tr: 'Beni çok şaşırttın.', en: 'You surprised me a lot.' },
+                { tr: 'Ona doğum gününde bir parti düzenleyerek şaşırttık.', en: 'We surprised him by throwing a party on his birthday.' },
+                { tr: 'Sonuçlar herkesi şaşırttı.', en: 'The results surprised everyone.' },
+                { tr: 'Bu hediye beni gerçekten şaşırttı.', en: 'This gift really surprised me.' },
+                { tr: 'Zekasıyla öğretmenlerini şaşırttı.', en: 'He surprised his teachers with his intelligence.' }
+            ]},
+            { infinitive: 'kurtarmak', stem: 'kurtar-', english: 'to save, to rescue', examples: [
+                { tr: 'Hayatını kurtardı.', en: 'He/she saved his/her life.' },
+                { tr: 'İtfaiyeciler kediyi ağaçtan kurtardı.', en: 'The firefighters rescued the cat from the tree.' },
+                { tr: 'Bu para bizi zor durumdan kurtaracak.', en: 'This money will save us from a difficult situation.' },
+                { tr: 'Beni bu sıkıcı toplantıdan kurtar.', en: 'Save me from this boring meeting.' },
+                { tr: 'Verileri silinmeden önce kurtarmayı başardılar.', en: 'They managed to recover the data before it was deleted.' }
+            ]},
+            { infinitive: 'cezalandırmak', stem: 'cezalandır-', english: 'to punish', examples: [
+                { tr: 'Öğretmen yaramaz öğrenciyi cezalandırdı.', en: 'The teacher punished the naughty student.' },
+                { tr: 'Yasalara uymayanlar cezalandırılmalıdır.', en: 'Those who do not obey the laws should be punished.' },
+                { tr: 'Kendini bu kadar cezalandırma.', en: 'Don\'t punish yourself so much.' },
+                { tr: 'Hakim suçluyu hapisle cezalandırdı.', en: 'The judge punished the criminal with prison.' },
+                { tr: 'Anne, çocuğunu odasına göndererek cezalandırdı.', en: 'The mother punished her child by sending him to his room.' }
+            ]},
+            { infinitive: 'ödüllendirmek', stem: 'ödüllendir-', english: 'to reward', examples: [
+                { tr: 'Başarısını ödüllendirdiler.', en: 'They rewarded his/her success.' },
+                { tr: 'Çalışanlarını ikramiye ile ödüllendirdi.', en: 'He rewarded his employees with a bonus.' },
+                { tr: 'Kendini bir parça çikolata ile ödüllendir.', en: 'Reward yourself with a piece of chocolate.' },
+                { tr: 'Cesareti için madalya ile ödüllendirildi.', en: 'He was rewarded with a medal for his bravery.' },
+                { tr: 'İyi davranışları ödüllendirmek önemlidir.', en: 'It is important to reward good behavior.' }
+            ]},
+            { infinitive: 'şikayet etmek', stem: 'şikayet et-', english: 'to complain', examples: [
+                { tr: 'Gürültüden şikayet etti.', en: 'He/she complained about the noise.' },
+                { tr: 'Her zaman bir şeylerden şikayet eder.', en: 'He always complains about something.' },
+                { tr: 'Yemek soğuk olduğu için şikayet etti.', en: 'She complained because the food was cold.' },
+                { tr: 'Otel hakkında müdüre şikayet ettik.', en: 'We complained to the manager about the hotel.' },
+                { tr: 'Şikayet etmek yerine bir çözüm bulmaya çalış.', en: 'Try to find a solution instead of complaining.' }
+            ]},
+            { infinitive: 'teşekkür etmek', stem: 'teşekkür et-', english: 'to thank', examples: [
+                { tr: 'Yardımın için teşekkür ederim.', en: 'Thank you for your help.' },
+                { tr: 'Davetiniz için size teşekkür etmek istiyorum.', en: 'I want to thank you for your invitation.' },
+                { tr: 'Herkese destekleri için teşekkür etti.', en: 'She thanked everyone for their support.' },
+                { tr: 'Ona bir hediye ile teşekkür ettim.', en: 'I thanked him with a gift.' },
+                { tr: 'Hayatta olduğum için her gün teşekkür ederim.', en: 'I give thanks every day for being alive.' }
+            ]},
+            { infinitive: 'rica etmek', stem: 'rica et-', english: 'to request', examples: [
+                { tr: 'Bir iyilik rica etti.', en: 'He/she requested a favor.' },
+                { tr: 'Pencereyi kapatmanı rica edebilir miyim?', en: 'Can I ask you to close the window?' },
+                { tr: 'Sessiz olmanızı rica ediyorum.', en: 'I request that you be silent.' },
+                { tr: 'Patronundan izin rica etti.', en: 'He requested a leave of absence from his boss.' },
+                { tr: 'Rica ederim, ne demek.', en: 'You\'re welcome, don\'t mention it.' }
+            ]},
+            { infinitive: 'özür dilemek', stem: 'özür dile-', english: 'to apologize', examples: [
+                { tr: 'Yaptığı hata için özür diledi.', en: 'He/she apologized for the mistake he/she made.' },
+                { tr: 'Geç kaldığım için özür dilerim.', en: 'I apologize for being late.' },
+                { tr: 'Seni kırdıysam özür dilerim.', en: 'I apologize if I hurt you.' },
+                { tr: 'Özür dilemek erdemdir.', en: 'To apologize is a virtue.' },
+                { tr: 'Ondan özür dilemelisin.', en: 'You should apologize to him.' }
+            ]},
+            { infinitive: 'affetmek', stem: 'affet-', english: 'to forgive', examples: [
+                { tr: 'Onu affettim.', en: 'I forgave him/her.' },
+                { tr: 'Beni affet, lütfen.', en: 'Forgive me, please.' },
+                { tr: 'Bazı hataları affetmek zordur.', en: 'Some mistakes are hard to forgive.' },
+                { tr: 'Kendini affetmeyi öğrenmelisin.', en: 'You must learn to forgive yourself.' },
+                { tr: 'Affetmek unutmak demek değildir.', en: 'To forgive does not mean to forget.' }
+            ]},
+            { infinitive: 'tebrik etmek', stem: 'tebrik et-', english: 'to congratulate', examples: [
+                { tr: 'Seni tebrik ederim!', en: 'I congratulate you!' },
+                { tr: 'Mezuniyetin için seni tebrik ederim.', en: 'I congratulate you on your graduation.' },
+                { tr: 'Yeni işin için tebrikler!', en: 'Congratulations on your new job!' },
+                { tr: 'Tüm takımı tebrik etti.', en: 'He congratulated the whole team.' },
+                { tr: 'Başarın için seni kalpten tebrik ederim.', en: 'I sincerely congratulate you on your success.' }
+            ]},
+            { infinitive: 'kutlamak', stem: 'kutla-', english: 'to celebrate', examples: [
+                { tr: 'Doğum gününü kutladık.', en: 'We celebrated his/her birthday.' },
+                { tr: 'Zaferi kutlamak için toplandılar.', en: 'They gathered to celebrate the victory.' },
+                { tr: 'Yeni yılı arkadaşlarımla kutlayacağım.', en: 'I will celebrate the New Year with my friends.' },
+                { tr: 'Anneler günün kutlu olsun!', en: 'Happy Mother\'s Day!' },
+                { tr: 'Bu özel günü nasıl kutlayalım?', en: 'How should we celebrate this special day?' }
+            ]},
+            { infinitive: 'paylaşmak', stem: 'paylaş-', english: 'to share', examples: [
+                { tr: 'Yemeğini benimle paylaştı.', en: 'He/she shared his/her food with me.' },
+                { tr: 'Düşüncelerini bizimle paylaşır mısın?', en: 'Can you share your thoughts with us?' },
+                { tr: 'Bu haberi sosyal medyada paylaştı.', en: 'He shared this news on social media.' },
+                { tr: 'Oyuncaklarını kardeşiyle paylaşıyor.', en: 'She shares her toys with her sibling.' },
+                { tr: 'Paylaşmak güzeldir.', en: 'Sharing is caring.' }
+            ]},
+            { infinitive: 'ithal etmek', stem: 'ithal et-', english: 'to import', examples: [
+                { tr: 'Petrol ithal ediyoruz.', en: 'We import oil.' },
+                { tr: 'Bu araba Almanya\'dan ithal edildi.', en: 'This car was imported from Germany.' },
+                { tr: 'Şirket, hammaddeyi Çin\'den ithal ediyor.', en: 'The company imports raw materials from China.' },
+                { tr: 'Ülke, gıdanın çoğunu ithal etmek zorunda.', en: 'The country has to import most of its food.' },
+                { tr: 'İthal ürünler genellikle daha pahalıdır.', en: 'Imported products are generally more expensive.' }
+            ]},
+            { infinitive: 'ihraç etmek', stem: 'ihraç et-', english: 'to export', examples: [
+                { tr: 'Tekstil ürünleri ihraç ediyorlar.', en: 'They export textile products.' },
+                { tr: 'Bu şirket ürünlerini 50 ülkeye ihraç ediyor.', en: 'This company exports its products to 50 countries.' },
+                { tr: 'Türkiye fındık ihraç eder.', en: 'Turkey exports hazelnuts.' },
+                { tr: 'Daha fazla mal ihraç etmeliyiz.', en: 'We need to export more goods.' },
+                { tr: 'Yazılım ihraç etmek istiyoruz.', en: 'We want to export software.' }
+            ]},
+            { infinitive: 'yatırım yapmak', stem: 'yatırım yap-', english: 'to invest', examples: [
+                { tr: 'Gayrimenkule yatırım yaptı.', en: 'He/she invested in real estate.' },
+                { tr: 'Geleceğin için yatırım yapmalısın.', en: 'You should invest for your future.' },
+                { tr: 'Teknoloji şirketlerine yatırım yapıyor.', en: 'He invests in technology companies.' },
+                { tr: 'Borsaya yatırım yapmak riskli olabilir.', en: 'Investing in the stock market can be risky.' },
+                { tr: 'Eğitime yatırım yapmak en iyisidir.', en: 'Investing in education is the best.' }
+            ]},
+            { infinitive: 'harcamak', stem: 'harca-', english: 'to spend', examples: [
+                { tr: 'Çok para harcadı.', en: 'He/she spent a lot of money.' },
+                { tr: 'Boş zamanımı kitap okuyarak harcarım.', en: 'I spend my free time reading books.' },
+                { tr: 'Enerjini boşa harcama.', en: 'Don\'t waste your energy.' },
+                { tr: 'Tatil için ne kadar para harcadın?', en: 'How much money did you spend on vacation?' },
+                { tr: 'Zamanını akıllıca harca.', en: 'Spend your time wisely.' }
+            ]},
+            { infinitive: 'biriktirmek', stem: 'biriktir-', english: 'to save (money)', examples: [
+                { tr: 'Yeni bir araba için para biriktiriyor.', en: 'He/she is saving money for a new car.' },
+                { tr: 'Her ay maaşımın bir kısmını biriktiririm.', en: 'I save a portion of my salary every month.' },
+                { tr: 'Pul biriktirmeyi seviyor.', en: 'He likes to collect stamps.' },
+                { tr: 'Yeterince para biriktirdiğimizde ev alacağız.', en: 'We will buy a house when we have saved enough money.' },
+                { tr: 'Anı biriktirmek paradan daha önemlidir.', en: 'Collecting memories is more important than money.' }
+            ]},
+            { infinitive: 'ihtiyaç duymak', stem: 'ihtiyaç duy-', english: 'to need', examples: [
+                { tr: 'Yardıma ihtiyaç duyuyorum.', en: 'I need help.' },
+                { tr: 'Biraz dinlenmeye ihtiyaç duyuyorum.', en: 'I need some rest.' },
+                { tr: 'Bu işi bitirmek için daha fazla zamana ihtiyaç duyuyoruz.', en: 'We need more time to finish this job.' },
+                { tr: 'Bitkiler yaşamak için güneşe ve suya ihtiyaç duyar.', en: 'Plants need sun and water to live.' },
+                { tr: 'Neye ihtiyaç duyuyorsun?', en: 'What do you need?' }
+            ]},
+            { infinitive: 'sahip olmak', stem: 'sahip ol-', english: 'to own, to have', examples: [
+                { tr: 'Güzel bir eve sahip.', en: 'He/she has a beautiful house.' },
+                { tr: 'İyi bir liderlik yeteneğine sahip.', en: 'She has good leadership skills.' },
+                { tr: 'Daha fazla bilgiye sahip olmak için araştırma yaptı.', en: 'He did research to have more information.' },
+                { tr: 'Herkesin fikrini söyleme hakkına sahip olması gerekir.', en: 'Everyone should have the right to express their opinion.' },
+                { tr: 'Bu kadar çok şeye sahip olmak onu mutlu etmedi.', en: 'Having so many things did not make him happy.' }
+            ]},
+            { infinitive: 'ait olmak', stem: 'ait ol-', english: 'to belong to', examples: [
+                { tr: 'Bu kitap bana ait.', en: 'This book belongs to me.' },
+                { tr: 'Bu araba kime ait?', en: 'Who does this car belong to?' },
+                { tr: 'O, seçkin bir kulübe aittir.', en: 'He belongs to an exclusive club.' },
+                { tr: 'Herkesin bir yere ait olma ihtiyacı vardır.', en: 'Everyone has a need to belong somewhere.' },
+                { tr: 'Bu eşyalar geçmişe ait.', en: 'These items belong to the past.' }
+            ]},
+            { infinitive: 'içermek', stem: 'içer-', english: 'to contain', examples: [
+                { tr: 'Bu kutu ne içeriyor?', en: 'What does this box contain?' },
+                { tr: 'Rapor, tüm detayları içeriyor.', en: 'The report contains all the details.' },
+                { tr: 'Bu yemek fındık içeriyor, alerjim var.', en: 'This food contains nuts, I am allergic.' },
+                { tr: 'Fiyat, vergileri içermiyor.', en: 'The price does not include taxes.' },
+                { tr: 'Paketin içeriğini kontrol edin.', en: 'Check the contents of the package.' }
+            ]},
+            { infinitive: 'oluşmak', stem: 'oluş-', english: 'to consist of', examples: [
+                { tr: 'Takım on bir oyuncudan oluşur.', en: 'The team consists of eleven players.' },
+                { tr: 'Su, hidrojen ve oksijenden oluşur.', en: 'Water is composed of hydrogen and oxygen.' },
+                { tr: 'Kitap beş bölümden oluşuyor.', en: 'The book consists of five chapters.' },
+                { tr: 'Fikir birliğimiz oluştu.', en: 'A consensus was formed among us.' },
+                { tr: 'Bu sorun nasıl oluştu?', en: 'How did this problem arise?' }
+            ]},
+            { infinitive: 'görünmek', stem: 'görün-', english: 'to seem, to appear', examples: [
+                { tr: 'Yorgun görünüyorsun.', en: 'You seem tired.' },
+                { tr: 'Bu fikir bana iyi görünüyor.', en: 'This idea seems good to me.' },
+                { tr: 'Güneş bulutların arasından göründü.', en: 'The sun appeared from behind the clouds.' },
+                { tr: 'Göründüğü kadar kolay değil.', en: 'It\'s not as easy as it looks.' },
+                { tr: 'Sahnede çok heyecanlı görünüyordu.', en: 'He appeared very excited on stage.' }
+            ]},
+            { infinitive: 'kaybolmak', stem: 'kaybol-', english: 'to get lost', examples: [
+                { tr: 'Ormanda kaybolduk.', en: 'We got lost in the forest.' },
+                { tr: 'Anahtarım kayboldu, onu bulamıyorum.', en: 'My key is lost, I can\'t find it.' },
+                { tr: 'Büyük şehirde kolayca kaybolabilirsin.', en: 'You can easily get lost in a big city.' },
+                { tr: 'Kedi dün gece kayboldu.', en: 'The cat got lost last night.' },
+                { tr: 'Kalabalığın içinde gözden kayboldu.', en: 'He disappeared into the crowd.' }
+            ]},
+            { infinitive: 'benzemek', stem: 'benze-', english: 'to resemble, to look like', examples: [
+                { tr: 'Babasına benziyor.', en: 'He resembles his father.' },
+                { tr: 'Bu iki resim birbirine çok benziyor.', en: 'These two pictures look very similar.' },
+                { tr: 'Sesi ablasınınkine benziyor.', en: 'Her voice resembles her older sister\'s.' },
+                { tr: 'Bu duruma benzeyen bir olay yaşadım.', en: 'I experienced an incident similar to this situation.' },
+                { tr: 'Kime benzediğimi söylüyorlar?', en: 'Who do they say I look like?' }
+            ]}
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const verbsContainer = document.getElementById('verbs-container');
+            const searchInput = document.getElementById('search-input');
+            const noResults = document.getElementById('no-results');
+            
+            // --- Flashcard Elements ---
+            const flashcard = document.getElementById('flashcard');
+            const flashcardFront = document.getElementById('flashcard-front');
+            const flashcardBack = document.getElementById('flashcard-back');
+            const modeTurkishBtn = document.getElementById('mode-turkish');
+            const modeEnglishBtn = document.getElementById('mode-english');
+            const nextCardBtn = document.getElementById('next-card');
+
+            // --- Flashcard State ---
+            let currentVerb = null;
+            let currentMode = 'turkish'; // 'turkish' or 'english'
+
+            // --- Flashcard Functions ---
+            const getRandomVerb = () => {
+                const randomIndex = Math.floor(Math.random() * verbs.length);
+                return verbs[randomIndex];
+            };
+
+            const updateFlashcard = () => {
+                if (!currentVerb) return;
+                
+                // Pick a random example for the flashcard
+                const randomExample = currentVerb.examples[Math.floor(Math.random() * currentVerb.examples.length)];
+
+                flashcard.classList.remove('is-flipped');
+
+                // Using a small timeout to allow the card to flip back before changing content
+                setTimeout(() => {
+                    if (currentMode === 'turkish') {
+                        flashcardFront.innerHTML = `<h3 class="text-4xl font-bold text-blue-600">${currentVerb.infinitive}</h3>`;
+                        flashcardBack.innerHTML = `
+                            <h3 class="text-3xl font-bold text-gray-800">${currentVerb.english}</h3>
+                            <p class="text-lg text-gray-600 mt-2">(Stem: ${currentVerb.stem})</p>
+                            <div class="text-center bg-white p-3 rounded-md mt-4 w-full max-w-sm">
+                                <p class="text-md text-gray-800 italic">"${randomExample.tr}"</p>
+                                <p class="text-sm text-gray-500 mt-1">"${randomExample.en}"</p>
+                            </div>
+                        `;
+                    } else { // English mode
+                        flashcardFront.innerHTML = `<h3 class="text-4xl font-bold text-blue-600">${currentVerb.english}</h3>`;
+                        flashcardBack.innerHTML = `
+                            <h3 class="text-3xl font-bold text-gray-800">${currentVerb.infinitive}</h3>
+                            <p class="text-lg text-gray-600 mt-2">(Stem: ${currentVerb.stem})</p>
+                            <div class="text-center bg-white p-3 rounded-md mt-4 w-full max-w-sm">
+                                <p class="text-md text-gray-800 italic">"${randomExample.tr}"</p>
+                                <p class="text-sm text-gray-500 mt-1">"${randomExample.en}"</p>
+                            </div>
+                        `;
+                    }
+                }, 150);
+            };
+
+            const showNextCard = () => {
+                currentVerb = getRandomVerb();
+                updateFlashcard();
+            };
+            
+            // --- Event Listeners for Flashcard ---
+            flashcard.addEventListener('click', () => {
+                flashcard.classList.toggle('is-flipped');
+            });
+
+            nextCardBtn.addEventListener('click', showNextCard);
+
+            modeTurkishBtn.addEventListener('click', () => {
+                currentMode = 'turkish';
+                modeTurkishBtn.classList.add('bg-blue-600', 'text-white');
+                modeTurkishBtn.classList.remove('bg-white', 'text-gray-700', 'border');
+                modeEnglishBtn.classList.add('bg-white', 'text-gray-700', 'border');
+                modeEnglishBtn.classList.remove('bg-blue-600', 'text-white');
+                updateFlashcard();
+            });
+
+            modeEnglishBtn.addEventListener('click', () => {
+                currentMode = 'english';
+                modeEnglishBtn.classList.add('bg-blue-600', 'text-white');
+                modeEnglishBtn.classList.remove('bg-white', 'text-gray-700', 'border');
+                modeTurkishBtn.classList.add('bg-white', 'text-gray-700', 'border');
+                modeTurkishBtn.classList.remove('bg-blue-600', 'text-white');
+                updateFlashcard();
+            });
+
+
+            // --- Verb List Functions ---
+            const renderVerbs = (verbList) => {
+                verbsContainer.innerHTML = ''; // Clear existing content
+
+                if(verbList.length === 0) {
+                    noResults.classList.remove('hidden');
+                } else {
+                    noResults.classList.add('hidden');
+                }
+
+                verbList.forEach(verb => {
+                    const card = document.createElement('div');
+                    card.className = 'verb-card bg-white p-5 rounded-lg shadow-md border border-gray-200 flex flex-col';
+                    
+                    const examplesHtml = verb.examples.map(ex => `
+                        <li class="mt-2">
+                            <p class="text-md text-gray-800 italic">"${ex.tr}"</p>
+                            <p class="text-sm text-gray-500">"${ex.en}"</p>
+                        </li>
+                    `).join('');
+                    
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h2 class="text-2xl font-bold text-blue-600">${verb.infinitive}</h2>
+                                <span class="text-sm font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-full">${verb.stem}</span>
+                            </div>
+                            <p class="text-lg text-gray-700 font-medium mb-4">${verb.english}</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-md mt-auto">
+                            <h4 class="font-semibold text-gray-700 mb-1">Examples:</h4>
+                            <ul class="list-disc list-inside space-y-1 text-left">
+                                ${examplesHtml}
+                            </ul>
+                        </div>
+                    `;
+                    verbsContainer.appendChild(card);
+                });
+            };
+            
+            // --- Initial Render ---
+            const sortedVerbs = verbs.sort((a, b) => a.infinitive.localeCompare(b.infinitive));
+            renderVerbs(sortedVerbs);
+            showNextCard(); // Show the first flashcard on load
+
+            // Search functionality
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                const filteredVerbs = sortedVerbs.filter(verb => 
+                    verb.infinitive.toLowerCase().includes(searchTerm) ||
+                    verb.english.toLowerCase().includes(searchTerm) ||
+                    verb.stem.toLowerCase().includes(searchTerm)
+                );
+                renderVerbs(filteredVerbs);
+            });
+        });
+
+    </script>
+</body>
+</html>
+
