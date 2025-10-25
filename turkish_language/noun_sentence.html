@@ -1,0 +1,1217 @@
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title will be set by JS -->
+    <title>Turkish Grammar: Noun Sentences</title>
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load Google Font (Inter for EN, Cairo for AR) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Set the base font family */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Use Cairo font for Arabic */
+        [lang="ar"] {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* Custom styles for the sticky nav active state */
+        .nav-link.active {
+            background-color: #eef2ff; /* indigo-50 */
+            color: #4338ca; /* indigo-700 */
+            font-weight: 600;
+        }
+
+        /* Custom styles for tables */
+        .grammar-table th {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+        }
+        .grammar-table td {
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb; /* gray-200 */
+        }
+        .grammar-table tbody tr:nth-child(even) {
+            background-color: #f9fafb; /* gray-50 */
+        }
+        
+        /* Custom class to highlight suffixes */
+        .suffix {
+            font-weight: 700;
+            color: #4338ca; /* indigo-700 */
+        }
+
+        /* Custom scrollbar for sidebar (optional but nice) */
+        .sidebar-nav::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: #cbd5e1; /* slate-300 */
+            border-radius: 10px;
+        }
+        .sidebar-nav::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; /* slate-400 */
+        }
+
+        /* --- RTL STYLES --- */
+        
+        /* Force tables and code to always be LTR */
+        .grammar-table, code, .font-mono, .force-ltr {
+            direction: ltr;
+            text-align: left;
+        }
+
+        [dir="rtl"] {
+            text-align: right;
+        }
+        
+        /* Flip sidebar and main content on desktop in RTL */
+        [dir="rtl"] .lg\:grid-cols-4 {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        [dir="rtl"] .lg\:col-span-1 {
+            grid-column: span 1 / span 1;
+        }
+        [dir="rtl"] .lg\:col-span-3 {
+            grid-column: span 3 / span 3;
+        }
+        [dir="rtl"] .sidebar-nav {
+            @media (min-width: 1024px) {
+                order: 2; /* Move sidebar to the right */
+            }
+        }
+        [dir="rtl"] main {
+            @media (min-width: 1024px) {
+                order: 1; /* Move main content to the left */
+            }
+        }
+
+        /* Adjust navigation for RTL */
+        [dir="rtl"] .nav-link, [dir="rtl"] .sidebar-nav h2 {
+            text-align: right;
+        }
+        [dir="rtl"] .ml-4 { margin-left: 0; margin-right: 1rem; }
+        [dir="rtl"] .border-l { border-left: 0; border-right: 1px solid #e5e7eb; }
+        [dir="rtl"] .border-l-4 { border-left: 0; border-right-width: 4px; }
+        [dir="rtl"] .rounded-r-lg { border-radius: 0 0.5rem 0.5rem 0; }
+        [dir="rtl"] .rounded-l-lg { border-radius: 0.5rem 0 0 0.5rem; }
+        [dir="rtl"] .ml-6 { margin-left: 0; margin-right: 1.5rem; }
+        [dir="rtl"] .list-disc { padding-right: 2.5rem; }
+        
+        /* Language switcher */
+        .lang-switch-btn {
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+        .lang-switch-btn.active {
+            background-color: #4338ca; /* indigo-700 */
+            color: white;
+        }
+        .lang-switch-btn:not(.active):hover {
+            background-color: #e0e7ff; /* indigo-200 */
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <!-- Language Switcher -->
+    <div class="absolute top-4 right-4 z-50 bg-white p-2 rounded-lg shadow-md">
+        <div class="flex space-x-2">
+            <button id="lang-en-btn" class="lang-switch-btn active" data-lang="en">EN</button>
+            <button id="lang-ar-btn" class="lang-switch-btn" data-lang="ar">AR</button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="max-w-screen-xl mx-auto p-4 sm:p-8">
+        
+        <!-- Header -->
+        <header class="mb-8 pt-12 lg:pt-0">
+            <h1 class="text-4xl md:text-5xl font-bold text-center text-indigo-700">
+                <span lang="en" data-lang="en">Turkish Noun Sentences</span>
+                <span lang="ar" data-lang="ar" class="hidden">الجمل الاسمية التركية</span>
+            </h1>
+            <p class="text-xl text-center text-slate-600 mt-2">
+                <span lang="en" data-lang="en">İsim Cümleleri (The "To Be" Verb)</span>
+                <span lang="ar" data-lang="ar" class="hidden">İsim Cümleleri (فعل الكينونة "To Be")</span>
+            </p>
+        </header>
+
+        <!-- Layout Grid: Sidebar + Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <!-- Navigation Sidebar -->
+            <nav class="lg:col-span-1 lg:sticky lg:top-8 h-full lg:max-h-[90vh] lg:overflow-y-auto sidebar-nav bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-lg font-semibold text-slate-900 mb-4 border-b pb-2">
+                    <span data-lang="en">Navigation</span>
+                    <span data-lang="ar" class="hidden">التنقل</span>
+                </h2>
+                <ul class="space-y-2" id="nav-links">
+                    <li><a href="#concept" class="nav-link block p-3 rounded-md text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150">
+                        <span data-lang="en">Core Concept</span>
+                        <span data-lang="ar" class="hidden">المفهوم الأساسي</span>
+                    </a></li>
+                    
+                    <!-- Present Tense Nav -->
+                    <li>
+                        <a href="#present-tense" class="nav-link block p-3 rounded-md text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150 font-medium">
+                            <span data-lang="en">1. Present Tense</span>
+                            <span data-lang="ar" class="hidden">١. الزمن الحاضر</span>
+                        </a>
+                        <ul class="ml-4 mt-1 space-y-1 border-l border-slate-200">
+                            <li><a href="#present-affirmative" class="nav-link block p-2 pl-4 rounded-md text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150">
+                                <span data-lang="en">Affirmative</span>
+                                <span data-lang="ar" class="hidden">الإثبات</span>
+                            </a></li>
+                            <li><a href="#present-negative" class="nav-link block p-2 pl-4 rounded-md text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150">
+                                <span data-lang="en">Negative</span>
+                                <span data-lang="ar" class="hidden">النفي</span>
+                            </a></li>
+                            <li><a href="#present-question" class="nav-link block p-2 pl-4 rounded-md text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150">
+                                <span data-lang="en">Question</span>
+                                <span data-lang="ar" class="hidden">السؤال</span>
+                            </a></li>
+                            <li><a href="#present-neg-question" class="nav-link block p-2 pl-4 rounded-md text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150">
+                                <span data-lang="en">Negative Question</span>
+                                <span data-lang="ar" class="hidden">السؤال المنفي</span>
+                            </a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Past Tense (-di) Nav -->
+                    <li>
+                        <a href="#past-tense-di" class="nav-link block p-3 rounded-md text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150 font-medium">
+                            <span data-lang="en">2. Past Tense (-di)</span>
+                            <span data-lang="ar" class="hidden">٢. الزمن الماضي (-di)</span>
+                        </a>
+                        <ul class="ml-4 mt-1 space-y-1 border-l border-slate-200">
+                            <li><a href="#past-di-affirmative" class="nav-link block p-2 pl-4 rounded-md text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150"><span data-lang="en">Affirmative</span><span data-lang="ar" class="hidden">الإثبات</span></a></li>
+                            <li><a href="#past-di-negative" class="nav-link block p-2 pl-4 rounded-md text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150"><span data-lang="en">Negative</span><span data-lang="ar" class="hidden">النفي</span></a></li>
+                            <li><a href="#past-di-question" class="nav-link block p-2 pl-4 rounded-md text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150"><span data-lang="en">Question</span><span data-lang="ar" class="hidden">السؤال</span></a></li>
+                            <li><a href="#past-di-neg-question" class="nav-link block p-2 pl-4 rounded-md text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150"><span data-lang="en">Negative Question</span><span data-lang="ar" class="hidden">السؤال المنفي</span></a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Inferential Past (-miş) Nav -->
+                    <li>
+                        <a href="#past-tense-mis" class="nav-link block p-3 rounded-md text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150 font-medium">
+                            <span data-lang="en">3. Inferential Past (-miş)</span>
+                            <span data-lang="ar" class="hidden">٣. الماضي النقلي/السماعي (-miş)</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Conditional Nav -->
+                    <li>
+                        <a href="#conditional" class="nav-link block p-3 rounded-md text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150 font-medium">
+                            <span data-lang="en">4. Conditional (-se/sa)</span>
+                            <span data-lang="ar" class="hidden">٤. الشرط (-se/sa)</span>
+                        </a>
+                        <ul class="ml-4 mt-1 space-y-1 border-l border-slate-200">
+                            <li><a href="#conditional-affirmative" class="nav-link block p-2 pl-4 rounded-md text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150"><span data-lang="en">Affirmative</span><span data-lang="ar" class="hidden">الإثبات</span></a></li>
+                            <li><a href="#conditional-negative" class="nav-link block p-2 pl-4 rounded-md text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150"><span data-lang="en">Negative</span><span data-lang="ar" class="hidden">النفي</span></a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Other Forms Nav -->
+                    <li>
+                        <a href="#other-forms" class="nav-link block p-3 rounded-md text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150 font-medium">
+                            <span data-lang="en">5. Other Forms</span>
+                            <span data-lang="ar" class="hidden">٥. صيغ أخرى</span>
+                        </a>
+                        <ul class="ml-4 mt-1 space-y-1 border-l border-slate-200">
+                            <li><a href="#other-iken" class="nav-link block p-2 pl-4 rounded-md text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150">
+                                <span data-lang="en">-iken (while)</span>
+                                <span data-lang="ar" class="hidden">-iken (بينما)</span>
+                            </a></li>
+                            <li><a href="#other-var-yok" class="nav-link block p-2 pl-4 rounded-md text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150">
+                                <span data-lang="en">var / yok System</span>
+                                <span data-lang="ar" class="hidden">نظام var / yok</span>
+                            </a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="lg:col-span-3 space-y-12">
+
+                <!-- Section: Core Concept -->
+                <section id="concept" class="scroll-mt-24 bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-semibold text-slate-900 mb-6 pb-2 border-b border-slate-200">
+                        <span data-lang="en">Core Concept: The "To Be" Verb</span>
+                        <span data-lang="ar" class="hidden">المفهوم الأساسي: فعل الكينونة</span>
+                        <code class="text-2xl text-indigo-600 force-ltr">imek</code>
+                    </h2>
+                    <p class="text-lg leading-relaxed">
+                        <span data-lang="en">In Turkish, "to be" (am, is, are) is not a standalone verb. Instead, it's a "copula" (<code class="font-medium text-indigo-700 force-ltr">imek</code>) that mostly exists as <strong class="font-semibold text-indigo-700">suffixes attached directly to nouns, adjectives, or pronouns.</strong></span>
+                        <span data-lang="ar" class="hidden" dir="rtl">في اللغة التركية، فعل الكينونة "to be" (am, is, are) ليس فعلاً مستقلاً. بدلاً من ذلك، هو "رابط" (<code class="font-medium text-indigo-700 force-ltr">imek</code>) يوجد غالبًا على شكل <strong class="font-semibold text-indigo-700">لواحق تتصل مباشرة بالأسماء أو الصفات أو الضمائر.</strong></span>
+                    </p>
+                    <p class="text-lg leading-relaxed mt-4">
+                        <span data-lang="en">The core of the noun sentence is the <strong>Predicate</strong> (the noun/adjective) + the <strong>Personal Suffix</strong>.</span>
+                        <span data-lang="ar" class="hidden" dir="rtl">جوهر الجملة الاسمية هو <strong>المسند</strong> (الاسم/الصفة) + <strong>اللاحقة الشخصية</strong>.</span>
+                    </p>
+                </section>
+
+                <!-- Section: 1. Present Tense -->
+                <section id="present-tense" class="scroll-mt-24 bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-semibold text-slate-900 mb-6 pb-2 border-b border-slate-200">
+                        <span data-lang="en">1. Present Tense (Geniş Zaman)</span>
+                        <span data-lang="ar" class="hidden">١. الزمن الحاضر (Geniş Zaman)</span>
+                    </h2>
+                    <p class="text-lg">
+                        <span data-lang="en">This is the most common form, used for "I am," "you are," etc.</span>
+                        <span data-lang="ar" class="hidden" dir="rtl">هذه هي الصيغة الأكثر شيوعًا، وتُستخدم للتعبير عن "أنا أكون"، "أنت تكون"، إلخ.</span>
+                    </p>
+
+                    <!-- Present: Affirmative -->
+                    <article id="present-affirmative" class="scroll-mt-24 mt-8">
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-4">
+                            <span data-lang="en">Affirmative ("I am...")</span>
+                            <span data-lang="ar" class="hidden">الإثبات ("أنا أكون...")</span>
+                        </h3>
+                        <p class="mb-4">
+                            <span data-lang="en">The personal suffixes are attached directly to the predicate, following vowel harmony. The buffer <code class="font-medium">(y)</code> is used if the predicate ends in a vowel.</span>
+                            <span data-lang="ar" class="hidden" dir="rtl">تتصل اللواحق الشخصية مباشرة بالمسند، متبعةً قاعدة الانسجام الصوتي. يُستخدم الحرف <code class="font-medium">(y)</code> كعازل إذا انتهى المسند بحرف صوتي.</span>
+                        </p>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg font-mono text-slate-800 border border-slate-200 my-4">
+                            <strong><span data-lang="en">Rule:</span><span data-lang="ar" class="hidden" dir="rtl">القاعدة:</span></strong>
+                            <span class="text-indigo-700"><span data-lang="en">Predicate</span><span data-lang="ar" class="hidden" dir="rtl">المسند</span></span> + 
+                            <span class="text-cyan-700">(y)</span> + 
+                            <span class="text-purple-700"><span data-lang="en">Personal Suffix</span><span data-lang="ar" class="hidden" dir="rtl">اللاحقة الشخصية</span></span>
+                        </div>
+
+                        <div class="rounded-lg shadow-md overflow-x-auto">
+                            <table class="w-full min-w-[600px] grammar-table">
+                                <thead>
+                                    <tr>
+                                        <th><span data-lang="en">Pronoun</span><span data-lang="ar" class="hidden" dir="rtl">الضمير</span></th>
+                                        <th><span data-lang="en">Suffix</span><span data-lang="ar" class="hidden" dir="rtl">اللاحقة</span></th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> <code class="text-indigo-200">doktor</code> (doctor)</th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> <code class="text-indigo-200">mutlu</code> (happy)</th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> <code class="text-indigo-200">öğrenci</code> (student)</th>
+                                    </tr>
+                                <thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>Ben</code></td>
+                                        <td><code>-(y)im, -(y)ım, -(y)um, -(y)üm</code></td>
+                                        <td>Ben doktor<span class="suffix">um</span>.</td>
+                                        <td>Ben mutlu<span class="suffix">yum</span>.</td>
+                                        <td>Ben öğrenci<span class="suffix">yim</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Sen</code></td>
+                                        <td><code>-sin, -sın, -sun, -sün</code></td>
+                                        <td>Sen doktor<span class="suffix">sun</span>.</td>
+                                        <td>Sen mutlu<span class="suffix">sun</span>.</td>
+                                        <td>Sen öğrenci<span class="suffix">sin</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>O</code></td>
+                                        <td><span data-lang="en">(none)</span><span data-lang="ar" class="hidden" dir="rtl">(لا يوجد)</span></td>
+                                        <td>O doktor.</td>
+                                        <td>O mutlu.</td>
+                                        <td>O öğrenci.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Biz</code></td>
+                                        <td><code>-(y)iz, -(y)ız, -(y)uz, -(y)üz</code></td>
+                                        <td>Biz doktor<span class="suffix">uz</span>.</td>
+                                        <td>Biz mutlu<span class="suffix">yuz</span>.</td>
+                                        <td>Biz öğrenci<span class="suffix">yiz</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Siz</code></td>
+                                        <td><code>-siniz, -sınız, -sunuz, -sünüz</code></td>
+                                        <td>Siz doktor<span class="suffix">sunuz</span>.</td>
+                                        <td>Siz mutlu<span class="suffix">sunuz</span>.</td>
+                                        <td>Siz öğrenci<span class="suffix">siniz</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Onlar</code></td>
+                                        <td><code>-ler/lar</code> (<span data-lang="en">optional</span><span data-lang="ar" class="hidden" dir="rtl">اختياري</span>)</td>
+                                        <td>Onlar doktor(<span class="suffix">lar</span>).</td>
+                                        <td>Onlar mutlu(<span class="suffix">lar</span>).</td>
+                                        <td>Onlar öğrenci(<span class="suffix">ler</span>).</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 my-6 rounded-r-lg">
+                            <h4 class="font-bold text-blue-800">
+                                <span data-lang="en">Key Notes on 3rd Person (`O` / `Onlar`)</span>
+                                <span data-lang="ar" class="hidden" dir="rtl">ملاحظات هامة حول الغائب (`O` / `Onlar`)</span>
+                            </h4>
+                            <ul class="list-disc list-inside text-blue-700 mt-2 space-y-1">
+                                <li>
+                                    <span data-lang="en">The <code>-ler/lar</code> suffix for <code>Onlar</code> is optional if the subject is present.</span>
+                                    <span data-lang="ar" class="hidden" dir="rtl">اللاحقة <code>-ler/lar</code> للضمير <code>Onlar</code> اختيارية إذا كان الفاعل (الضمير) موجودًا.</span>
+                                </li>
+                                <li>
+                                    <span data-lang="en">You can add <code>-dir / -dır / -dur / -dür</code> to the 3rd person (<code>O doktordur</code>). This adds formality, states a fact, or makes an assumption. It's often dropped in casual speech.</span>
+                                    <span data-lang="ar" class="hidden" dir="rtl">يمكنك إضافة <code>-dir / -dır / -dur / -dür</code> للغائب (<code>O doktordur</code>). هذا يضيف طابعًا رسميًا، أو يفيد تأكيد حقيقة، أو تخمينًا. غالبًا ما تُحذف في الكلام العادي.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </article>
+
+                    <!-- Present: Negative -->
+                    <article id="present-negative" class="scroll-mt-24 mt-12">
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-4">
+                            <span data-lang="en">Negative ("I am not...")</span>
+                            <span data-lang="ar" class="hidden">النفي ("أنا لست...")</span>
+                        </h3>
+                        <p class="mb-4">
+                            <span data-lang="en">The personal suffixes move to the word <code>değil</code> (not).</span>
+                            <span data-lang="ar" class="hidden" dir="rtl">تنتقل اللواحق الشخصية إلى كلمة النفي <code>değil</code> (ليس).</span>
+                        </p>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg font-mono text-slate-800 border border-slate-200 my-4">
+                            <strong><span data-lang="en">Rule:</span><span data-lang="ar" class="hidden" dir="rtl">القاعدة:</span></strong>
+                            <span class="text-indigo-700"><span data-lang="en">Predicate</span><span data-lang="ar" class="hidden" dir="rtl">المسند</span></span> + 
+                            <span class="text-red-700">değil</span> + 
+                            <span class="text-purple-700"><span data-lang="en">Personal Suffix</span><span data-lang="ar" class="hidden" dir="rtl">اللاحقة الشخصية</span></span>
+                        </div>
+                        
+                        <div class="rounded-lg shadow-md overflow-x-auto">
+                            <table class="w-full min-w-[400px] grammar-table">
+                                <thead>
+                                    <tr>
+                                        <th><span data-lang="en">Pronoun</span><span data-lang="ar" class="hidden" dir="rtl">الضمير</span></th>
+                                        <th><span data-lang="en">Form</span><span data-lang="ar" class="hidden" dir="rtl">الصيغة</span></th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> `yorgun` (tired)</th>
+                                    </tr>
+                                <thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>Ben</code></td>
+                                        <td><code>... değilim</code></td>
+                                        <td>Ben yorgun <span class="suffix">değilim</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Sen</code></td>
+                                        <td><code>... değilsin</code></td>
+                                        <td>Sen yorgun <span class="suffix">değilsin</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>O</code></td>
+                                        <td><code>... değil</code></td>
+                                        <td>O yorgun <span class="suffix">değil</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Biz</code></td>
+                                        <td><code>... değiliz</code></td>
+                                        <td>Biz yorgun <span class="suffix">değiliz</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Siz</code></td>
+                                        <td><code>... değilsiniz</code></td>
+                                        <td>Siz yorgun <span class="suffix">değilsiniz</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Onlar</code></td>
+                                        <td><code>... değiller</code></td>
+                                        <td>Onlar yorgun <span class="suffix">değiller</span>.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <!-- Present: Question -->
+                    <article id="present-question" class="scroll-mt-24 mt-12">
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-4">
+                            <span data-lang="en">Question ("Am I...?")</span>
+                            <span data-lang="ar" class="hidden">السؤال ("هل أنا...؟")</span>
+                        </h3>
+                        <p class="mb-4">
+                            <span data-lang="en">The personal suffixes move to the question particle <code>mi?</code> (which follows vowel harmony).</span>
+                            <span data-lang="ar" class="hidden" dir="rtl">تنتقل اللواحق الشخصية إلى أداة الاستفهام <code>mi?</code> (والتي تتبع الانسجام الصوتي).</span>
+                        </p>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg font-mono text-slate-800 border border-slate-200 my-4">
+                            <strong><span data-lang="en">Rule:</span><span data-lang="ar" class="hidden" dir="rtl">القاعدة:</span></strong>
+                            <span class="text-indigo-700"><span data-lang="en">Predicate</span><span data-lang="ar" class="hidden" dir="rtl">المسند</span></span> + 
+                            <span class="text-red-700">mi?</span> + <span class="text-cyan-700">(y)</span> + 
+                            <span class="text-purple-700"><span data-lang="en">Personal Suffix</span><span data-lang="ar" class="hidden" dir="rtl">اللاحقة الشخصية</span></span>
+                        </div>
+                        
+                        <div class="rounded-lg shadow-md overflow-x-auto">
+                            <table class="w-full min-w-[400px] grammar-table">
+                                <thead>
+                                    <tr>
+                                        <th><span data-lang="en">Pronoun</span><span data-lang="ar" class="hidden" dir="rtl">الضمير</span></th>
+                                        <th><span data-lang="en">Form</span><span data-lang="ar" class="hidden" dir="rtl">الصيغة</span></th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> `akıllı` (smart)</th>
+                                    </tr>
+                                <thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>Ben</code></td>
+                                        <td><code>... miyim? / mıyım?</code> etc.</td>
+                                        <td>Ben akıllı <span class="suffix">mıyım</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Sen</code></td>
+                                        <td><code>... misin? / mısın?</code> etc.</td>
+                                        <td>Sen akıllı <span class="suffix">mısın</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>O</code></td>
+                                        <td><code>... mi? / mı?</code> etc.</td>
+                                        <td>O akıllı <span class="suffix">mı</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Biz</code></td>
+                                        <td><code>... miyiz? / mıyız?</code> etc.</td>
+                                        <td>Biz akıllı <span class="suffix">mıyız</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Siz</code></td>
+                                        <td><code>... misiniz? / mısınız?</code> etc.</td>
+                                        <td>Siz akıllı <span class="suffix">mısınız</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Onlar</code></td>
+                                        <td><code>... (lar) mı?</code></td>
+                                        <td>Onlar akıllı <span class="suffix">mı</span>? / Onlar akıllı<span class="suffix">lar mı</span>?</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <!-- Present: Negative Question -->
+                    <article id="present-neg-question" class="scroll-mt-24 mt-12">
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-4">
+                            <span data-lang="en">Negative Question ("Am I not...?")</span>
+                            <span data-lang="ar" class="hidden">السؤال المنفي ("ألا أكون...؟")</span>
+                        </h3>
+                        <p class="mb-4">
+                            <span data-lang="en">This combines the negative and question forms.</span>
+                            <span data-lang="ar" class="hidden" dir="rtl">هذه الصيغة تجمع بين النفي والاستفهام.</span>
+                        </p>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg font-mono text-slate-800 border border-slate-200 my-4">
+                            <strong><span data-lang="en">Rule:</span><span data-lang="ar" class="hidden" dir="rtl">القاعدة:</span></strong>
+                            <span class="text-indigo-700"><span data-lang="en">Predicate</span><span data-lang="ar" class="hidden" dir="rtl">المسند</span></span> + 
+                            <span class="text-red-700">değil</span> + <span class="text-red-700">mi?</span> + <span class="text-cyan-700">(y)</span> + 
+                            <span class="text-purple-700"><span data-lang="en">Personal Suffix</span><span data-lang="ar" class="hidden" dir="rtl">اللاحقة الشخصية</span></span>
+                        </div>
+                        
+                        <div class="rounded-lg shadow-md overflow-x-auto">
+                            <table class="w-full min-w-[400px] grammar-table">
+                                <thead>
+                                    <tr>
+                                        <th><span data-lang="en">Pronoun</span><span data-lang="ar" class="hidden" dir="rtl">الضمير</span></th>
+                                        <th><span data-lang="en">Form</span><span data-lang="ar" class="hidden" dir="rtl">الصيغة</span></th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> `haklı` (right)</th>
+                                    </tr>
+                                <thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>Ben</code></td>
+                                        <td><code>... değil miyim?</code></td>
+                                        <td>Ben haklı <span class="suffix">değil miyim</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Sen</code></td>
+                                        <td><code>... değil misin?</code></td>
+                                        <td>Sen haklı <span class="suffix">değil misin</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>O</code></td>
+                                        <td><code>... değil mi?</code></td>
+                                        <td>O haklı <span class="suffix">değil mi</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Biz</code></td>
+                                        <td><code>... değil miyiz?</code></td>
+                                        <td>Biz haklı <span class="suffix">değil miyiz</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Siz</code></td>
+                                        <td><code>... değil misiniz?</code></td>
+                                        <td>Siz haklı <span class="suffix">değil misiniz</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Onlar</code></td>
+                                        <td><code>... değiller mi?</code></td>
+                                        <td>Onlar haklı <span class="suffix">değiller mi</span>?</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+                </section>
+                
+                <!-- Section: 2. Past Tense (-di) -->
+                <section id="past-tense-di" class="scroll-mt-24 bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-semibold text-slate-900 mb-6 pb-2 border-b border-slate-200">
+                        <span data-lang="en">2. Past Tense (-di) ("I was...")</span>
+                        <span data-lang="ar" class="hidden">٢. الزمن الماضي (-di) ("كنت...")</span>
+                    </h2>
+                    <p class="text-lg">
+                        <span data-lang="en">The past tense of <code>imek</code> is <code>idi</code>. This suffix combines with the predicate. The personal suffixes for past tense are slightly different.</span>
+                        <span data-lang="ar" class="hidden" dir="rtl">الزمن الماضي من <code>imek</code> هو <code>idi</code>. تتصل هذه اللاحقة بالمسند. اللواحق الشخصية للزمن الماضي تختلف قليلاً.</span>
+                    </p>
+
+                    <!-- Past (-di): Affirmative -->
+                    <article id="past-di-affirmative" class="scroll-mt-24 mt-8">
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-4">
+                            <span data-lang="en">Affirmative ("I was...")</span>
+                            <span data-lang="ar" class="hidden">الإثبات ("كنت...")</span>
+                        </h3>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg font-mono text-slate-800 border border-slate-200 my-4">
+                            <strong><span data-lang="en">Rule:</span><span data-lang="ar" class="hidden" dir="rtl">القاعدة:</span></strong>
+                            <span class="text-indigo-700"><span data-lang="en">Predicate</span><span data-lang="ar" class="hidden" dir="rtl">المسند</span></span> + <span class="text-cyan-700">(y)</span> + <span class="text-red-700">di</span> + 
+                            <span class="text-purple-700"><span data-lang="en">Personal Suffix (Past)</span><span data-lang="ar" class="hidden" dir="rtl">لاحقة شخصية (ماضي)</span></span>
+                        </div>
+
+                        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 my-6 rounded-r-lg">
+                            <h4 class="font-bold text-blue-800">
+                                <span data-lang="en">Consonant Mutation!</span>
+                                <span data-lang="ar" class="hidden" dir="rtl">انتبه لتقلب الحروف الساكنة!</span>
+                            </h4>
+                            <p class="text-blue-700 mt-1">
+                                <span data-lang="en">Remember consonant mutation (sertleşme): if the predicate ends in <code>f, s, t, k, ç, ş, h, p</code>, then <code>-di</code> becomes <code>-ti</code>. (e.g., <code>genç</code> -> <code>genç<span class="suffix">tim</span></code>)</span>
+                                <span data-lang="ar" class="hidden" dir="rtl">تذكر قاعدة (sertleşme): إذا انتهى المسند بأحد الحروف <code>f, s, t, k, ç, ş, h, p</code>، فإن <code>-di</code> تصبح <code>-ti</code>. (مثال: <code>genç</code> -> <code>genç<span class="suffix">tim</span></code>)</span>
+                            </p>
+                        </div>
+                        
+                        <div class="rounded-lg shadow-md overflow-x-auto">
+                            <table class="w-full min-w-[600px] grammar-table">
+                                <thead>
+                                    <tr>
+                                        <th><span data-lang="en">Pronoun</span><span data-lang="ar" class="hidden" dir="rtl">الضمير</span></th>
+                                        <th><span data-lang="en">Suffix</span><span data-lang="ar" class="hidden" dir="rtl">اللاحقة</span></th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> <code class="text-indigo-200">doktor</code></th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> <code class="text-indigo-200">mutlu</code></th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> <code class="text-indigo-200">genç</code> (young)</th>
+                                    </tr>
+                                <thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>Ben</code></td>
+                                        <td><code>-(y)dim / -(y)tım</code></td>
+                                        <td>Ben doktor<span class="suffix">dum</span>.</td>
+                                        <td>Ben mutlu<span class="suffix">ydum</span>.</td>
+                                        <td>Ben genç<span class="suffix">tim</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Sen</code></td>
+                                        <td><code>-(y)din / -(y)tın</code></td>
+                                        <td>Sen doktor<span class="suffix">dun</span>.</td>
+                                        <td>Sen mutlu<span class="suffix">ydun</span>.</td>
+                                        <td>Sen genç<span class="suffix">tin</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>O</code></td>
+                                        <td><code>-(y)di / -(y)tı</code></td>
+                                        <td>O doktor<span class="suffix">du</span>.</td>
+                                        <td>O mutlu<span class="suffix">ydu</span>.</td>
+                                        <td>O genç<span class="suffix">ti</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Biz</code></td>
+                                        <td><code>-(y)dik / -(y)tık</code></td>
+                                        <td>Biz doktor<span class="suffix">duk</span>.</td>
+                                        <td>Biz mutlu<span class="suffix">yduk</span>.</td>
+                                        <td>Biz genç<span class="suffix">tik</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Siz</code></td>
+                                        <td><code>-(y)diniz / -(y)tınız</code></td>
+                                        <td>Siz doktor<span class="suffix">dunuz</span>.</td>
+                                        <td>Siz mutlu<span class="suffix">ydunuz</span>.</td>
+                                        <td>Siz genç<span class="suffix">tiniz</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Onlar</code></td>
+                                        <td><code>-(y)diler / -(y)tılar</code></td>
+                                        <td>Onlar doktor<span class="suffix">dular</span>.</td>
+                                        <td>Onlar mutlu<span class="suffix">ydular</span>.</td>
+                                        <td>Onlar genç<span class="suffix">tiler</span>.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <!-- Past (-di): Negative -->
+                    <article id="past-di-negative" class="scroll-mt-24 mt-12">
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-4">
+                            <span data-lang="en">Negative ("I was not...")</span>
+                            <span data-lang="ar" class="hidden">النفي ("لم أكن...")</span>
+                        </h3>
+                        <p class="mb-4">
+                            <span data-lang="en"><code>değil</code> + <code>idi</code> becomes <code>değildi</code>. The personal suffixes attach to this.</span>
+                            <span data-lang="ar" class="hidden" dir="rtl"><code>değil</code> + <code>idi</code> تصبح <code>değildi</code>. وتتصل بها اللواحق الشخصية.</span>
+                        </p>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg font-mono text-slate-800 border border-slate-200 my-4">
+                            <strong><span data-lang="en">Rule:</span><span data-lang="ar" class="hidden" dir="rtl">القاعدة:</span></strong>
+                            <span class="text-indigo-700"><span data-lang="en">Predicate</span><span data-lang="ar" class="hidden" dir="rtl">المسند</span></span> + 
+                            <span class="text-red-700">değildi</span> + 
+                            <span class="text-purple-700"><span data-lang="en">Personal Suffix (Past)</span><span data-lang="ar" class="hidden" dir="rtl">لاحقة شخصية (ماضي)</span></span>
+                        </div>
+                        
+                        <div class="rounded-lg shadow-md overflow-x-auto">
+                            <table class="w-full min-w-[400px] grammar-table">
+                                <thead>
+                                    <tr>
+                                        <th><span data-lang="en">Pronoun</span><span data-lang="ar" class="hidden" dir="rtl">الضمير</span></th>
+                                        <th><span data-lang="en">Form</span><span data-lang="ar" class="hidden" dir="rtl">الصيغة</span></th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> `yorgun` (tired)</th>
+                                    </tr>
+                                <thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>Ben</code></td>
+                                        <td><code>... değildim</code></td>
+                                        <td>Ben yorgun <span class="suffix">değildim</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Sen</code></td>
+                                        <td><code>... değildin</code></td>
+                                        <td>Sen yorgun <span class="suffix">değildin</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>O</code></td>
+                                        <td><code>... değildi</code></td>
+                                        <td>O yorgun <span class="suffix">değildi</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Biz</code></td>
+                                        <td><code>... değildik</code></td>
+                                        <td>Biz yorgun <span class="suffix">değildik</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Siz</code></td>
+                                        <td><code>... değildiniz</code></td>
+                                        <td>Siz yorgun <span class="suffix">değildiniz</span>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Onlar</code></td>
+                                        <td><code>... değildiler</code></td>
+                                        <td>Onlar yorgun <span class="suffix">değildiler</span>.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <!-- Past (-di): Question -->
+                    <article id="past-di-question" class="scroll-mt-24 mt-12">
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-4">
+                            <span data-lang="en">Question ("Was I...?")</span>
+                            <span data-lang="ar" class="hidden">السؤال ("هل كنت...؟")</span>
+                        </h3>
+                        <p class="mb-4">
+                            <span data-lang="en"><code>mi?</code> + <code>idi</code> becomes <code>miydi? / mıydı? / muydu? / müydü?</code></span>
+                            <span data-lang="ar" class="hidden" dir="rtl"><code>mi?</code> + <code>idi</code> تصبح <code>miydi? / mıydı? / muydu? / müydü?</code></span>
+                        </p>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg font-mono text-slate-800 border border-slate-200 my-4">
+                            <strong><span data-lang="en">Rule:</span><span data-lang="ar" class="hidden" dir="rtl">القاعدة:</span></strong>
+                            <span class="text-indigo-700"><span data-lang="en">Predicate</span><span data-lang="ar" class="hidden" dir="rtl">المسند</span></span> + 
+                            <span class="text-red-700">miydi?</span> + 
+                            <span class="text-purple-700"><span data-lang="en">Personal Suffix (Past)</span><span data-lang="ar" class="hidden" dir="rtl">لاحقة شخصية (ماضي)</span></span>
+                        </div>
+                        
+                        <div class="rounded-lg shadow-md overflow-x-auto">
+                            <table class="w-full min-w-[400px] grammar-table">
+                                <thead>
+                                    <tr>
+                                        <th><span data-lang="en">Pronoun</span><span data-lang="ar" class="hidden" dir="rtl">الضمير</span></th>
+                                        <th><span data-lang="en">Form</span><span data-lang="ar" class="hidden" dir="rtl">الصيغة</span></th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> `hasta` (sick)</th>
+                                    </tr>
+                                <thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>Ben</code></td>
+                                        <td><code>... miydim? / mıydım?</code> etc.</td>
+                                        <td>Ben hasta <span class="suffix">mıydım</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Sen</code></td>
+                                        <td><code>... miydin? / mıydın?</code> etc.</td>
+                                        <td>Sen hasta <span class="suffix">mıydın</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>O</code></td>
+                                        <td><code>... miydi? / mıydı?</code> etc.</td>
+                                        <td>O hasta <span class="suffix">mıydı</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Biz</code></td>
+                                        <td><code>... miydik? / mıydık?</code> etc.</td>
+                                        <td>Biz hasta <span class="suffix">mıydık</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Siz</code></td>
+                                        <td><code>... miydiniz? / mıydınız?</code> etc.</td>
+                                        <td>Siz hasta <span class="suffix">mıydınız</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Onlar</code></td>
+                                        <td><code>... miydiler? / mıydılar?</code> etc.</td>
+                                        <td>Onlar hasta <span class="suffix">mıydılar</span>?</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <!-- Past (-di): Negative Question -->
+                    <article id="past-di-neg-question" class="scroll-mt-24 mt-12">
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-4">
+                            <span data-lang="en">Negative Question ("Wasn't I...?")</span>
+                            <span data-lang="ar" class="hidden">السؤال المنفي ("ألم أكن...؟")</span>
+                        </h3>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg font-mono text-slate-800 border border-slate-200 my-4">
+                            <strong><span data-lang="en">Rule:</span><span data-lang="ar" class="hidden" dir="rtl">القاعدة:</span></strong>
+                            <span class="text-indigo-700"><span data-lang="en">Predicate</span><span data-lang="ar" class="hidden" dir="rtl">المسند</span></span> + 
+                            <span class="text-red-700">değil miydi?</span> + 
+                            <span class="text-purple-700"><span data-lang="en">Personal Suffix (Past)</span><span data-lang="ar" class="hidden" dir="rtl">لاحقة شخصية (ماضي)</span></span>
+                        </div>
+                        
+                        <div class="rounded-lg shadow-md overflow-x-auto">
+                            <table class="w-full min-w-[400px] grammar-table">
+                                <thead>
+                                    <tr>
+                                        <th><span data-lang="en">Pronoun</span><span data-lang="ar" class="hidden" dir="rtl">الضمير</span></th>
+                                        <th><span data-lang="en">Form</span><span data-lang="ar" class="hidden" dir="rtl">الصيغة</span></th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> `orada` (there)</th>
+                                    </tr>
+                                <thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>Ben</code></td>
+                                        <td><code>... değil miydim?</code></td>
+                                        <td>Ben orada <span class="suffix">değil miydim</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Sen</code></td>
+                                        <td><code>... değil miydin?</code></td>
+                                        <td>Sen orada <span class="suffix">değil miydin</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>O</code></td>
+                                        <td><code>... değil miydi?</code></td>
+                                        <td>O orada <span class="suffix">değil miydi</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Biz</code></td>
+                                        <td><code>... değil miydik?</code></td>
+                                        <td>Biz orada <span class="suffix">değil miydik</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Siz</code></td>
+                                        <td><code>... değil miydiniz?</code></td>
+                                        <td>Siz orada <span class="suffix">değil miydiniz</span>?</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Onlar</code></td>
+                                        <td><code>... değiller miydi?</code>*</td>
+                                        <td>Onlar orada <span class="suffix">değiller miydi</span>?</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+                </section>
+                
+                <!-- Section: 3. Inferential Past (-miş) -->
+                <section id="past-tense-mis" class="scroll-mt-24 bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-semibold text-slate-900 mb-6 pb-2 border-b border-slate-200">
+                        <span data-lang="en">3. Inferential Past (-miş) ("Apparently, I was...")</span>
+                        <span data-lang="ar" class="hidden">٣. الماضي النقلي/السماعي (-miş) ("يُقال أنني كنت...")</span>
+                    </h2>
+                    <p class="text-lg leading-relaxed">
+                        <span data-lang="en">This follows the <strong class="font-semibold">exact same logic</strong> as the <code>-di</code> past tense, but uses <code>imiş</code> instead of <code>idi</code>. It's used when you learned something secondhand, are just realizing it, or are telling a story.</span>
+                        <span data-lang="ar" class="hidden" dir="rtl">هذه الصيغة تتبع <strong class="font-semibold">نفس المنطق تمامًا</strong> كالزمن الماضي <code>-di</code>، ولكنها تستخدم <code>imiş</code> بدلاً من <code>idi</code>. تُستخدم عندما تَعلم شيئًا بشكل غير مباشر (سماعًا)، أو عندما تدرك شيئًا للتو، أو عند سرد قصة.</span>
+                    </p>
+                    <ul class="list-disc list-inside space-y-3 mt-6 text-lg">
+                        <li>
+                            <strong><span data-lang="en">Affirmative:</span><span data-lang="ar" class="hidden" dir="rtl">الإثبات:</span></strong> <code class="text-indigo-700 force-ltr">Predicate + (y)miş + Personal Suffix</code><br>
+                            <span class="text-slate-600 ml-6 force-ltr">Example: O çok zengin<span class="suffix">miş</span>. (They say he is very rich.)</span><br>
+                            <span class="text-slate-600 ml-6 force-ltr">Example: Ben öğrenci<span class="suffix">ymişim</span>. (Apparently, I was a student.)</span>
+                        </li>
+                        <li>
+                            <strong><span data-lang="en">Negative:</span><span data-lang="ar" class="hidden" dir="rtl">النفي:</span></strong> <code class="text-indigo-700 force-ltr">Predicate + değil + miş + Personal Suffix</code><br>
+                            <span class="text-slate-600 ml-6 force-ltr">Example: Ben öğrenci <span class="suffix">değilmişim</span>. (Apparently, I was not a student.)</span>
+                        </li>
+                        <li>
+                            <strong><span data-lang="en">Question:</span><span data-lang="ar" class="hidden" dir="rtl">السؤال:</span></strong> <code class="text-indigo-700 force-ltr">Predicate + mi + (y)miş + Personal Suffix?</code><br>
+                            <span class="text-slate-600 ml-6 force-ltr">Example: Ben öğrenci <span class="suffix">miymişim</span>? (Was I a student (and I didn't know)?)</span>
+                        </li>
+                        <li>
+                            <strong><span data-lang="en">Negative Question:</span><span data-lang="ar" class="hidden" dir="rtl">السؤال المنفي:</span></strong> <code class="text-indigo-700 force-ltr">Predicate + değil + miymiş + Personal Suffix?</code><br>
+                            <span class="text-slate-600 ml-6 force-ltr">Example: Ben öğrenci <span class="suffix">değil miymişim</span>? (Wasn't I a student (apparently)?)</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <!-- Section: 4. Conditional (-se/sa) -->
+                <section id="conditional" class="scroll-mt-24 bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-semibold text-slate-900 mb-6 pb-2 border-b border-slate-200">
+                        <span data-lang="en">4. Conditional (-se/sa) ("If I am...")</span>
+                        <span data-lang="ar" class="hidden">٤. الشرط (-se/sa) ("إذا كنت...")</span>
+                    </h2>
+                    <p class="text-lg">
+                        <span data-lang="en">This uses the conditional form <code>ise</code>, which attaches to the predicate.</span>
+                        <span data-lang="ar" class="hidden" dir="rtl">تُستخدم صيغة الشرط <code>ise</code>، وتتصل بالمسند.</span>
+                    </p>
+
+                    <!-- Conditional: Affirmative -->
+                    <article id="conditional-affirmative" class="scroll-mt-24 mt-8">
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-4">
+                            <span data-lang="en">Affirmative ("If I am...")</span>
+                            <span data-lang="ar" class="hidden">الإثبات ("إذا كنت...")</span>
+                        </h3>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg font-mono text-slate-800 border border-slate-200 my-4">
+                            <strong><span data-lang="en">Rule:</span><span data-lang="ar" class="hidden" dir="rtl">القاعدة:</span></strong>
+                            <span class="text-indigo-700"><span data-lang="en">Predicate</span><span data-lang="ar" class="hidden" dir="rtl">المسند</span></span> + <span class="text-cyan-700">(y)</span> + <span class="text-red-700">se</span> + 
+                            <span class="text-purple-700"><span data-lang="en">Personal Suffix</span><span data-lang="ar" class="hidden" dir="rtl">اللاحقة الشخصية</span></span>
+                        </div>
+                        
+                        <div class="rounded-lg shadow-md overflow-x-auto">
+                            <table class="w-full min-w-[600px] grammar-table">
+                                <thead>
+                                    <tr>
+                                        <th><span data-lang="en">Pronoun</span><span data-lang="ar" class="hidden" dir="rtl">الضمير</span></th>
+                                        <th><span data-lang="en">Suffix</span><span data-lang="ar" class="hidden" dir="rtl">اللاحقة</span></th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> <code class="text-indigo-200">hasta</code> (sick)</th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> <code class="text-indigo-200">evde</code> (at home)</th>
+                                    </tr>
+                                <thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>Ben</code></td>
+                                        <td><code>-(y)sem / -(y)sam</code></td>
+                                        <td>Ben hasta<span class="suffix">ysam</span>... (If I am sick...)</td>
+                                        <td>Ben evde<span class="suffix">ysem</span>...</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Sen</code></td>
+                                        <td><code>-(y)sen / -(y)san</code></td>
+                                        <td>Sen hasta<span class="suffix">ysan</span>...</td>
+                                        <td>Sen evde<span class="suffix">ysen</span>...</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>O</code></td>
+                                        <td><code>-(y)se / -(y)sa</code></td>
+                                        <td>O hasta<span class="suffix">ysa</span>...</td>
+                                        <td>O evde<span class="suffix">yse</span>...</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Biz</code></td>
+                                        <td><code>-(y)sek / -(y)sak</code></td>
+                                        <td>Biz hasta<span class="suffix">ysak</span>...</td>
+                                        <td>Biz evde<span class="suffix">ysek</span>...</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Siz</code></td>
+                                        <td><code>-(y)seniz / -(y)sanız</code></td>
+                                        <td>Siz hasta<span class="suffix">ysanız</span>...</td>
+                                        <td>Siz evde<span class="suffix">yseniz</span>...</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Onlar</code></td>
+                                        <td><code>-(y)seler / -(y)salar</code></td>
+                                        <td>Onlar hasta<span class="suffix">ysalar</span>...</td>
+                                        <td>Onlar evde<span class="suffix">yseler</span>...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <!-- Conditional: Negative -->
+                    <article id="conditional-negative" class="scroll-mt-24 mt-12">
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-4">
+                            <span data-lang="en">Negative ("If I am not...")</span>
+                            <span data-lang="ar" class="hidden">النفي ("إذا لم أكن...")</span>
+                        </h3>
+                        <p class="mb-4">
+                            <span data-lang="en"><code>değil</code> + <code>ise</code> becomes <code>değilse</code>.</span>
+                            <span data-lang="ar" class="hidden" dir="rtl"><code>değil</code> + <code>ise</code> تصبح <code>değilse</code>.</span>
+                        </p>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg font-mono text-slate-800 border border-slate-200 my-4">
+                            <strong><span data-lang="en">Rule:</span><span data-lang="ar" class="hidden" dir="rtl">القاعدة:</span></strong>
+                            <span class="text-indigo-700"><span data-lang="en">Predicate</span><span data-lang="ar" class="hidden" dir="rtl">المسند</span></span> + 
+                            <span class="text-red-700">değilse</span> + 
+                            <span class="text-purple-700"><span data-lang="en">Personal Suffix</span><span data-lang="ar" class="hidden" dir="rtl">اللاحقة الشخصية</span></span>
+                        </div>
+                        
+                        <div class="rounded-lg shadow-md overflow-x-auto">
+                            <table class="w-full min-w-[400px] grammar-table">
+                                <thead>
+                                    <tr>
+                                        <th><span data-lang="en">Pronoun</span><span data-lang="ar" class="hidden" dir="rtl">الضمير</span></th>
+                                        <th><span data-lang="en">Form</span><span data-lang="ar" class="hidden" dir="rtl">الصيغة</span></th>
+                                        <th><span data-lang="en">Example:</span><span data-lang="ar" class="hidden" dir="rtl">مثال:</span> `hazır` (ready)</th>
+                                    </tr>
+                                <thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>Ben</code></td>
+                                        <td><code>... değilsem</code></td>
+                                        <td>Ben hazır <span class="suffix">değilsem</span>... (If I am not ready...)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Sen</code></td>
+                                        <td><code>... değilsen</code></td>
+                                        <td>Sen hazır <span class="suffix">değilsen</span>...</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>O</code></td>
+                                        <td><code>... değilse</code></td>
+                                        <td>O hazır <span class="suffix">değilse</span>...</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Biz</code></td>
+                                        <td><code>... değilsek</code></td>
+                                        <td>Biz hazır <span class="suffix">değilsek</span>...</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Siz</code></td>
+                                        <td><code>... değilseniz</code></td>
+                                        <td>Siz hazır <span class="suffix">değilseniz</span>...</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Onlar</code></td>
+                                        <td><code>... değillerse</code></td>
+                                        <td>Onlar hazır <span class="suffix">değillerse</span>...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+                </section>
+
+                <!-- Section: 5. Other Forms -->
+                <section id="other-forms" class="scroll-mt-24 bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-semibold text-slate-900 mb-6 pb-2 border-b border-slate-200">
+                        <span data-lang="en">5. Other Forms of</span>
+                        <span data-lang="ar" class="hidden">٥. صيغ أخرى للفعل</span>
+                         <code class="text-indigo-600 force-ltr">imek</code>
+                    </h2>
+
+                    <!-- Other: -iken -->
+                    <article id="other-iken" class="scroll-mt-24 mt-8">
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-4">
+                            <span data-lang="en">The Adverbial <code class="text-indigo-600">-iken</code> ("While")</span>
+                            <span data-lang="ar" class="hidden">صيغة الظرف <code class="text-indigo-600 force-ltr">-iken</code> ("بينما")</span>
+                        </h3>
+                        <p class="mb-4 text-lg">
+                            <span data-lang="en">This form means "while being" and does <strong class="font-semibold">not</strong> take personal suffixes. It attaches directly to the predicate.</span>
+                            <span data-lang="ar" class="hidden" dir="rtl">هذه الصيغة تعني "بينما يكون" و<strong class="font-semibold">لا</strong> تأخذ لواحق شخصية. تتصل مباشرة بالمسند.</span>
+                        </p>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg font-mono text-slate-800 border border-slate-200 my-4">
+                            <strong><span data-lang="en">Rule:</span><span data-lang="ar" class="hidden" dir="rtl">القاعدة:</span></strong>
+                            <span class="text-indigo-700"><span data-lang="en">Predicate</span><span data-lang="ar" class="hidden" dir="rtl">المسند</span></span> + <span class="text-cyan-700">(y)</span> + <span class="text-red-700">ken</span>
+                        </div>
+                        
+                        <ul class="list-disc list-inside space-y-2 text-lg text-slate-700 force-ltr">
+                            <li>Ben öğrenci<span class="suffix">yken</span>... (While I was a student...)</li>
+                            <li>Sen evde<span class="suffix">yken</span>... (While you are at home...)</li>
+                            <li>O genç<span class="suffix">ken</span>... (While he was young...)</li>
+                            <li>Orada değil<span class="suffix">ken</span>... (While not being there...)</li>
+                        </ul>
+                    </article>
+
+                    <!-- Other: var/yok -->
+                    <article id="other-var-yok" class="scroll-mt-24 mt-12">
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-4">
+                            <span data-lang="en">The <code class="text-indigo-600">var</code> / <code class="text-indigo-600">yok</code> System</span>
+                            <span data-lang="ar" class="hidden">نظام <code class="text-indigo-600 force-ltr">var</code> / <code class="text-indigo-600 force-ltr">yok</code> (يوجد / لا يوجد)</span>
+                        </h3>
+                        <p class="mb-4 text-lg">
+                            <span data-lang="en"><code>var</code> (there is / existent) and <code>yok</code> (there isn't / non-existent) are adjectives and follow all the noun sentence rules.</span>
+                            <span data-lang="ar" class="hidden" dir="rtl"><code>var</code> (يوجد / موجود) و <code>yok</code> (لا يوجد / غير موجود) هما صفتان وتتبعان جميع قواعد الجملة الاسمية.</span>
+                        </p>
+
+                        <ul class="list-disc list-inside space-y-3 mt-6 text-lg force-ltr">
+                            <li>
+                                <strong>Present:</strong> <code>Param <span class="suffix">var</span>.</code> (I have money. <em class="text-slate-500">lit. My money is existent.</em>)
+                            </li>
+                            <li>
+                                <strong>Present Negative:</strong> <code>Param <span class="suffix">yok</span>.</code> (I don't have money.)
+                            </li>
+                            <li>
+                                <strong>Past:</strong> <code>Param var<span class="suffix">dı</span>.</code> (I had money.)
+                            </li>
+                            <li>
+                                <strong>Past Negative:</strong> <code>Param yok<span class="suffix">tu</span>.</code> (I didn't have money.)
+                            </li>
+                            <li>
+                                <strong>Conditional:</strong> <code>Param var<span class="suffix">sa</span>...</code> (If I have money...)
+                            </li>
+                             <li>
+                                <strong>Conditional Negative:</strong> <code>Param yok<span class="suffix">sa</span>...</code> (If I don't have money...)
+                            </li>
+                            <li>
+                                <strong>Inferential Past:</strong> <code>Parası var<span class="suffix">mış</span>.</code> (Apparently, he has/had money.)
+                            </li>
+                            <li>
+                                <strong>Inferential Past Negative:</strong> <code>Parası yok<span class="suffix">muş</span>.</code> (Apparently, he doesn't/didn't have money.)
+                            </li>
+                        </ul>
+
+                        <div class="bg-red-50 border-l-4 border-red-400 p-4 my-6 rounded-r-lg">
+                            <h4 class="font-bold text-red-800">
+                                <span data-lang="en">Crucial Point!</span>
+                                <span data-lang="ar" class="hidden" dir="rtl">نقطة حاسمة!</span>
+                            </h4>
+                            <p class="text-red-700 mt-1">
+                                <span data-lang="en">The negative of <code>vardı</code> (had) is <code>yoktu</code> (didn't have), <strong>NOT</strong> <code class="line-through">var değildi</code>.</span>
+                                <span data-lang="ar" class="hidden" dir="rtl">النفي من <code>vardı</code> (كان يوجد) هو <code>yoktu</code> (لم يكن يوجد)، <strong>وليس</strong> <code class="line-through force-ltr">var değildi</code>.</span>
+                            </p>
+                        </div>
+                    </article>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- JavaScript for Active Nav Link Highlighting & Language Switching -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Language Switching Logic ---
+            const htmlEl = document.documentElement;
+            const enBtn = document.getElementById('lang-en-btn');
+            const arBtn = document.getElementById('lang-ar-btn');
+            const langElements = document.querySelectorAll('span[data-lang]');
+            const enTitle = 'Turkish Grammar: Noun Sentences';
+            const arTitle = 'قواعد اللغة التركية: الجمل الاسمية';
+
+            function setLanguage(lang) {
+                if (lang === 'ar') {
+                    // Set attributes for Arabic
+                    htmlEl.setAttribute('lang', 'ar');
+                    htmlEl.setAttribute('dir', 'rtl');
+                    document.title = arTitle;
+                    
+                    // Update button active state
+                    arBtn.classList.add('active');
+                    enBtn.classList.remove('active');
+                    
+                    // Show/hide language elements
+                    langElements.forEach(el => {
+                        if (el.getAttribute('data-lang') === 'ar') {
+                            el.classList.remove('hidden');
+                        } else {
+                            el.classList.add('hidden');
+                        }
+                    });
+                    
+                } else { // Default to English
+                    // Set attributes for English
+                    htmlEl.setAttribute('lang', 'en');
+                    htmlEl.setAttribute('dir', 'ltr');
+                    document.title = enTitle;
+                    
+                    // Update button active state
+                    enBtn.classList.add('active');
+                    arBtn.classList.remove('active');
+                    
+                    // Show/hide language elements
+                    langElements.forEach(el => {
+                        if (el.getAttribute('data-lang') === 'en') {
+                            el.classList.remove('hidden');
+                        } else {
+                            el.classList.add('hidden');
+                        }
+                    });
+                }
+            }
+
+            // Add event listeners to buttons
+            enBtn.addEventListener('click', () => setLanguage('en'));
+            arBtn.addEventListener('click', () => setLanguage('ar'));
+
+            // Set initial language (default to English)
+            setLanguage('en');
+
+            
+            // --- Active Nav Link Highlighting Logic ---
+            const sections = document.querySelectorAll('section[id], article[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            const observerOptions = {
+                root: null, // relative to viewport
+                rootMargin: '0px',
+                threshold: 0.3 // 30% of the item must be visible
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                let activeId = '';
+                
+                // Get the topmost visible section's ID
+                const visibleSections = Array.from(sections).filter(section => {
+                     const rect = section.getBoundingClientRect();
+                     // Find first section that is within the top 50% of the viewport
+                     return rect.top >= 0 && rect.top < (window.innerHeight / 2);
+                });
+
+                if (visibleSections.length > 0) {
+                    activeId = visibleSections[0].id;
+                } else {
+                    // Fallback for scrolling up or fast scrolls
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            if (!activeId) {
+                                activeId = entry.target.id;
+                            }
+                        }
+                    });
+                }
+                
+                if (activeId) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${activeId}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+
+</body>
+</html>
+

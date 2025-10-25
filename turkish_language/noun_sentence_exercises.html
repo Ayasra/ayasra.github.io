@@ -1,0 +1,1427 @@
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title will be set by JS -->
+    <title>Turkish Grammar: Noun Sentence Examples</title>
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load Google Font (Inter for EN, Tajawal for AR) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Set the base font family */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+
+        /* Use Tajawal font for Arabic */
+        [lang="ar"] {
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        /* Custom styles for tables */
+        .grammar-table th {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+        }
+        .grammar-table td {
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb; /* gray-200 */
+        }
+        .grammar-table tbody tr:nth-child(even) {
+            background-color: #f9fafb; /* gray-50 */
+        }
+        
+        /* Custom class to highlight suffixes */
+        .suffix {
+            font-weight: 700;
+            color: #4338ca; /* indigo-700 */
+        }
+        
+        /* Force LTR for Turkish examples */
+        .force-ltr {
+            direction: ltr;
+            text-align: left;
+        }
+        
+        /* Example list styling */
+        .example-list li {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb; /* gray-200 */
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .example-list li .turkish-example {
+            font-size: 1.05em;
+            font-weight: 500;
+            color: #1e293b; /* slate-800 */
+        }
+        .example-list li .translation {
+            font-size: 0.9em;
+            color: #64748b; /* slate-500 */
+        }
+        
+        /* Collapsible section styling */
+        details > summary {
+            padding: 1rem;
+            background-color: #eef2ff; /* indigo-50 */
+            color: #3730a3; /* indigo-800 */
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        details > summary:hover {
+            background-color: #e0e7ff; /* indigo-100 */
+        }
+        details[open] > summary {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        details > .content-box {
+            background-color: #ffffff;
+            border: 1px solid #e0e7ff; /* indigo-100 */
+            border-top: none;
+            padding: 1.5rem;
+            border-bottom-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+        }
+        
+        /* --- FLIP CARD STYLES --- */
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 250px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            border: 1px solid #e5e7eb;
+        }
+        .flip-card-front {
+            background-color: #ffffff;
+        }
+        .flip-card-back {
+            background-color: #f0fdf4; /* green-50 */
+            border-color: #bbf7d0; /* green-200 */
+            transform: rotateY(180deg);
+        }
+        .question-text {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .answer-text {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #166534; /* green-800 */
+        }
+        .flip-instruction {
+            margin-top: 1rem;
+            font-style: italic;
+            color: #64748b;
+        }
+
+        /* --- RTL STYLES --- */
+        [dir="rtl"] { text-align: right; }
+        [dir="rtl"] .force-ltr { direction: rtl; text-align: right; }
+        [dir="rtl"] .translation { text-align: right; }
+        [dir="rtl"] .example-list li .turkish-example {
+            /* Keep Turkish LTR but align text right for RTL context */
+            direction: ltr; 
+            text-align: right;
+        }
+        [dir="rtl"] .flip-card-front, [dir="rtl"] .flip-card-back {
+             /* Keep Turkish LTR */
+            direction: ltr;
+        }
+        [dir="rtl"] .question-text, [dir="rtl"] .answer-text {
+             /* Keep Turkish LTR */
+            direction: ltr;
+        }
+        
+        /* Language switcher */
+        .lang-switch-btn {
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+        .lang-switch-btn.active {
+            background-color: #4338ca; /* indigo-700 */
+            color: white;
+        }
+        .lang-switch-btn:not(.active):hover {
+            background-color: #e0e7ff; /* indigo-200 */
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Language Switcher -->
+    <div class="fixed top-4 right-4 z-50 bg-white p-2 rounded-lg shadow-md">
+        <div class="flex space-x-2">
+            <button id="lang-en-btn" class="lang-switch-btn active" data-lang="en">EN</button>
+            <button id="lang-ar-btn" class="lang-switch-btn" data-lang="ar">AR</button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="max-w-screen-lg mx-auto p-4 sm:p-8">
+        
+        <!-- Header -->
+        <header class="mb-8 pt-12 lg:pt-0">
+            <h1 class="text-4xl md:text-5xl font-bold text-center text-indigo-700">
+                <span lang="en" data-lang="en">Noun Sentence Practice</span>
+                <span lang="ar" data-lang="ar" class="hidden">تمارين الجمل الاسمية</span>
+            </h1>
+            <p class="text-xl text-center text-slate-600 mt-2">
+                <span lang="en" data-lang="en">Test your knowledge of <code class="text-indigo-600">İsim Cümleleri</code>.</span>
+                <span lang="ar" data-lang="ar" class="hidden">اختبر معرفتك في <code class="force-ltr text-indigo-600">İsim Cümleleri</code>.</span>
+            </p>
+            <div class="text-center mt-4">
+                <a href="turkish_noun_sentences.html" class="text-indigo-600 hover:text-indigo-800 hover:underline">
+                    <span lang="en" data-lang="en">&larr; Back to Grammar Reference</span>
+                    <span lang="ar" data-lang="ar" class="hidden">&rarr; العودة إلى صفحة القواعد</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="space-y-12">
+
+            <!-- Section: Flip Card Practice -->
+            <section id="practice-card" class="scroll-mt-24 bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-semibold text-slate-900 mb-6 pb-2 border-b border-slate-200">
+                    <span data-lang="en">Practice Card</span>
+                    <span data-lang="ar" class="hidden">بطاقة التمرين</span>
+                </h2>
+                
+                <div class="flip-card" id="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="question-text force-ltr" id="question-text-tr">
+                                Ben bir doktor____.
+                            </div>
+                            <div class="question-text" id="question-text-lang" data-lang="en" lang="en">
+                                (I am a doctor.)
+                            </div>
+                            <div class="question-text hidden" id="question-text-lang" data-lang="ar" lang="ar">
+                                (أنا طبيب.)
+                            </div>
+                            <div class="flip-instruction">
+                                <span data-lang="en">Click to flip</span>
+                                <span data-lang="ar" class="hidden">انقر للقلب</span>
+                            </div>
+                        </div>
+                        <div class="flip-card-back">
+                            <div class="answer-text force-ltr" id="answer-text-tr">
+                                Ben bir doktor<span class="suffix">um</span>.
+                            </div>
+                            <div class="answer-text" id="answer-text-lang" data-lang="en" lang="en">
+                                (I am a doctor.)
+                            </div>
+                            <div class="answer-text hidden" id="answer-text-lang" data-lang="ar" lang="ar">
+                                (أنا طبيب.)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <button id="next-question-btn" class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
+                        <span data-lang="en">Next Question</span>
+                        <span data-lang="ar" class="hidden">السؤال التالي</span>
+                    </button>
+                </div>
+
+            </section>
+
+            <!-- Section: Example Library -->
+            <section id="example-library" class="scroll-mt-24">
+                <h2 class="text-3xl font-semibold text-slate-900 mb-6 text-center">
+                    <span data-lang="en">Comprehensive Example Library</span>
+                    <span data-lang="ar" class="hidden">مكتبة الأمثلة الشاملة</span>
+                </h2>
+
+                <!-- 1. Present Tense -->
+                <details class="mb-4" open>
+                    <summary>
+                        <span data-lang="en">1. Present Tense (Geniş Zaman)</span>
+                        <span data-lang="ar" class="hidden">١. الزمن الحاضر (Geniş Zaman)</span>
+                    </summary>
+                    <div class="content-box space-y-8">
+                        
+                        <!-- Present Affirmative -->
+                        <article>
+                            <h3 class="text-xl font-semibold text-slate-800 mb-4">
+                                <span data-lang="en">Affirmative ("I am...")</span>
+                                <span data-lang="ar" class="hidden">الإثبات ("أنا أكون...")</span>
+                            </h3>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 example-list">
+                                <!-- Set 1: Ben -->
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben öğretmen<span class="suffix">im</span>.</span>
+                                    <span class="translation" data-lang="en">(I am a teacher.)</span>
+                                    <span class="translation hidden" data-lang="ar">(أنا معلم.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben mutlu<span class="suffix">yum</span>.</span>
+                                    <span class="translation" data-lang="en">(I am happy.)</span>
+                                    <span class="translation hidden" data-lang="ar">(أنا سعيد.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben öğrenci<span class="suffix">yim</span>.</span>
+                                    <span class="translation" data-lang="en">(I am a student.)</span>
+                                    <span class="translation hidden" data-lang="ar">(أنا طالب.)</span>
+                                </li>
+                                <!-- Set 2: Sen -->
+                                <li>
+                                    <span class="turkish-example force-ltr">Sen mühendis<span class="suffix">sin</span>.</span>
+                                    <span class="translation" data-lang="en">(You are an engineer.)</span>
+                                    <span class="translation hidden" data-lang="ar">(أنت مهندس.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Sen yorgun<span class="suffix">sun</span>.</span>
+                                    <span class="translation" data-lang="en">(You are tired.)</span>
+                                    <span class="translation hidden" data-lang="ar">(أنت متعب.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Sen evde<span class="suffix">sin</span>.</span>
+                                    <span class="translation" data-lang="en">(You are at home.)</span>
+                                    <span class="translation hidden" data-lang="ar">(أنت في البيت.)</span>
+                                </li>
+                                <!-- Set 3: O -->
+                                <li>
+                                    <span class="turkish-example force-ltr">O doktor.</span>
+                                    <span class="translation" data-lang="en">(He/She is a doctor.)</span>
+                                    <span class="translation hidden" data-lang="ar">(هو/هي طبيب.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">O hasta.</span>
+                                    <span class="translation" data-lang="en">(He/She is sick.)</span>
+                                    <span class="translation hidden" data-lang="ar">(هو/هي مريض.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">O akıllı.</span>
+                                    <span class="translation" data-lang="en">(He/She is smart.)</span>
+                                    <span class="translation hidden" data-lang="ar">(هو/هي ذكي.)</span>
+                                </li>
+                                <!-- Set 4: Biz -->
+                                <li>
+                                    <span class="turkish-example force-ltr">Biz arkadaş<span class="suffix">ız</span>.</span>
+                                    <span class="translation" data-lang="en">(We are friends.)</span>
+                                    <span class="translation hidden" data-lang="ar">(نحن أصدقاء.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Biz hazır<span class="suffix">ız</span>.</span>
+                                    <span class="translation" data-lang="en">(We are ready.)</span>
+                                    <span class="translation hidden" data-lang="ar">(نحن جاهزون.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Biz öğrenci<span class="suffix">yiz</span>.</span>
+                                    <span class="translation" data-lang="en">(We are students.)</span>
+                                    <span class="translation hidden" data-lang="ar">(نحن طلاب.)</span>
+                                </li>
+                                <!-- Set 5: Siz -->
+                                <li>
+                                    <span class="turkish-example force-ltr">Siz avukat<span class="suffix">sınız</span>.</span>
+                                    <span class="translation" data-lang="en">(You (pl.) are lawyers.)</span>
+                                    <span class="translation hidden" data-lang="ar">(أنتم محامون.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Siz meşgul<span class="suffix">sünüz</span>.</span>
+                                    <span class="translation" data-lang="en">(You (pl.) are busy.)</span>
+                                    <span class="translation hidden" data-lang="ar">(أنتم مشغولون.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Siz ofiste<span class="suffix">siniz</span>.</span>
+                                    <span class="translation" data-lang="en">(You (pl.) are at the office.)</span>
+                                    <span class="translation hidden" data-lang="ar">(أنتم في المكتب.)</span>
+                                </li>
+                                <!-- Set 6: Onlar -->
+                                <li>
+                                    <span class="turkish-example force-ltr">Onlar evli(ler).</span>
+                                    <span class="translation" data-lang="en">(They are married.)</span>
+                                    <span class="translation hidden" data-lang="ar">(هم متزوجون.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Onlar iyi(ler).</span>
+                                    <span class="translation" data-lang="en">(They are good.)</span>
+                                    <span class="translation hidden" data-lang="ar">(هم بخير.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Onlar Türk(ler).</span>
+                                    <span class="translation" data-lang="en">(They are Turkish.)</span>
+                                    <span class="translation hidden" data-lang="ar">(هم أتراك.)</span>
+                                </li>
+                            </ul>
+                        </article>
+                        
+                        <!-- Present Negative -->
+                        <article>
+                            <h3 class="text-xl font-semibold text-slate-800 mb-4">
+                                <span data-lang="en">Negative ("I am not...")</span>
+                                <span data-lang="ar" class="hidden">النفي ("أنا لست...")</span>
+                            </h3>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 example-list">
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben öğretmen <span class="suffix">değilim</span>.</span>
+                                    <span class="translation" data-lang="en">(I am not a teacher.)</span>
+                                    <span class="translation hidden" data-lang="ar">(أنا لست معلماً.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Sen yorgun <span class="suffix">değilsin</span>.</span>
+                                    <span class="translation" data-lang="en">(You are not tired.)</span>
+                                    <span class="translation hidden" data-lang="ar">(أنت لست متعباً.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">O evde <span class="suffix">değil</span>.</span>
+                                    <span class="translation" data-lang="en">(He/She is not at home.)</span>
+                                    <span class="translation hidden" data-lang="ar">(هو/هي ليس في البيت.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Biz hazır <span class="suffix">değiliz</span>.</span>
+                                    <span class="translation" data-lang="en">(We are not ready.)</span>
+                                    <span class="translation hidden" data-lang="ar">(نحن لسنا جاهزين.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Siz doktor <span class="suffix">değilsiniz</span>.</span>
+                                    <span class="translation" data-lang="en">(You (pl.) are not doctors.)</span>
+                                    <span class="translation hidden" data-lang="ar">(أنتم لستم أطباء.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Onlar mutlu <span class="suffix">değiller</span>.</span>
+                                    <span class="translation" data-lang="en">(They are not happy.)</span>
+                                    <span class="translation hidden" data-lang="ar">(هم ليسوا سعداء.)</span>
+                                </li>
+                            </ul>
+                        </article>
+
+                        <!-- Present Question -->
+                        <article>
+                            <h3 class="text-xl font-semibold text-slate-800 mb-4">
+                                <span data-lang="en">Question ("Am I...?")</span>
+                                <span data-lang="ar" class="hidden">السؤال ("هل أنا...؟")</span>
+                            </h3>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 example-list">
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben öğrenci <span class="suffix">miyim</span>?</span>
+                                    <span class="translation" data-lang="en">(Am I a student?)</span>
+                                    <span class="translation hidden" data-lang="ar">(هل أنا طالب؟)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Sen meşgul <span class="suffix">müsün</span>?</span>
+                                    <span class="translation" data-lang="en">(Are you busy?)</span>
+                                    <span class="translation hidden" data-lang="ar">(هل أنت مشغول؟)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">O hasta <span class="suffix">mı</span>?</span>
+                                    <span class="translation" data-lang="en">(Is he/she sick?)</span>
+                                    <span class="translation hidden" data-lang="ar">(هل هو/هي مريض؟)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Biz akıllı <span class="suffix">mıyız</span>?</span>
+                                    <span class="translation" data-lang="en">(Are we smart?)</span>
+                                    <span class="translation hidden" data-lang="ar">(هل نحن أذكياء؟)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Siz evli <span class="suffix">misiniz</span>?</span>
+                                    <span class="translation" data-lang="en">(Are you (pl.) married?)</span>
+                                    <span class="translation hidden" data-lang="ar">(هل أنتم متزوجون؟)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Onlar burada <span class="suffix">mı</span>?</span>
+                                    <span class="translation" data-lang="en">(Are they here?)</span>
+                                    <span class="translation hidden" data-lang="ar">(هل هم هنا؟)</span>
+                                </li>
+                            </ul>
+                        </article>
+
+                        <!-- Present Negative Question -->
+                        <article>
+                            <h3 class="text-xl font-semibold text-slate-800 mb-4">
+                                <span data-lang="en">Negative Question ("Am I not...?")</span>
+                                <span data-lang="ar" class="hidden">السؤال المنفي ("ألا أكون...؟")</span>
+                            </h3>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 example-list">
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben haklı <span class="suffix">değil miyim</span>?</span>
+                                    <span class="translation" data-lang="en">(Am I not right?)</span>
+                                    <span class="translation hidden" data-lang="ar">(ألست على حق؟)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Sen öğrenci <span class="suffix">değil misin</span>?</span>
+                                    <span class="translation" data-lang="en">(Aren't you a student?)</span>
+                                    <span class="translation hidden" data-lang="ar">(ألست طالباً؟)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">O evde <span class="suffix">değil mi</span>?</span>
+                                    <span class="translation" data-lang="en">(Isn't he/she at home?)</span>
+                                    <span class="translation hidden" data-lang="ar">(أليس هو/هي في البيت؟)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Biz arkadaş <span class="suffix">değil miyiz</span>?</span>
+                                    <span class="translation" data-lang="en">(Aren't we friends?)</span>
+                                    <span class="translation hidden" data-lang="ar">(ألسنا أصدقاء؟)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Siz yorgun <span class="suffix">değil misiniz</span>?</span>
+                                    <span class="translation" data-lang="en">(Aren't you (pl.) tired?)</span>
+                                    <span class="translation hidden" data-lang="ar">(ألستم متعبين؟)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Onlar hazır <span class="suffix">değiller mi</span>?</span>
+                                    <span class="translation" data-lang="en">(Aren't they ready?)</span>
+                                    <span class="translation hidden" data-lang="ar">(أليسوا جاهزين؟)</span>
+                                </li>
+                            </ul>
+                        </article>
+
+                    </div>
+                </details>
+
+                <!-- 2. Past Tense (-di) -->
+                <details class="mb-4">
+                    <summary>
+                        <span data-lang="en">2. Past Tense (-di)</span>
+                        <span data-lang="ar" class="hidden">٢. الزمن الماضي (-di)</span>
+                    </summary>
+                    <div class="content-box space-y-8">
+                        
+                        <!-- Past Affirmative -->
+                        <article>
+                            <h3 class="text-xl font-semibold text-slate-800 mb-4">
+                                <span data-lang="en">Affirmative ("I was...")</span>
+                                <span data-lang="ar" class="hidden">الإثبات ("كنت...")</span>
+                            </h3>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 example-list">
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben öğrenci<span class="suffix">ydim</span>.</span>
+                                    <span class="translation" data-lang="en">(I was a student.)</span>
+                                    <span class="translation hidden" data-lang="ar">(كنت طالباً.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Sen mutlu<span class="suffix">ydun</span>.</span>
+                                    <span class="translation" data-lang="en">(You were happy.)</span>
+                                    <span class="translation hidden" data-lang="ar">(كنت سعيداً.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">O doktor<span class="suffix">du</span>.</span>
+                                    <span class="translation" data-lang="en">(He/She was a doctor.)</span>
+                                    <span class="translation hidden" data-lang="ar">(كان/كانت طبيباً.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Biz yorgun<span class="suffix">duk</span>.</span>
+                                    <span class="translation" data-lang="en">(We were tired.)</span>
+                                    <span class="translation hidden" data-lang="ar">(كنا متعبين.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Siz evde<span class="suffix">ydiniz</span>.</span>
+                                    <span class="translation" data-lang="en">(You (pl.) were at home.)</span>
+                                    <span class="translation hidden" data-lang="ar">(كنتم في البيت.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Onlar hasta<span class="suffix">ydılar</span>.</span>
+                                    <span class="translation" data-lang="en">(They were sick.)</span>
+                                    <span class="translation hidden" data-lang="ar">(كانوا مرضى.)</span>
+                                </li>
+                                <!-- Consonant Mutation Examples -->
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben genç<span class="suffix">tim</span>.</span>
+                                    <span class="translation" data-lang="en">(I was young.)</span>
+                                    <span class="translation hidden" data-lang="ar">(كنت شاباً.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">O çok aç<span class="suffix">tı</span>.</span>
+                                    <span class="translation" data-lang="en">(He/She was very hungry.)</span>
+                                    <span class="translation hidden" data-lang="ar">(كان/كانت جائعاً جداً.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Biz öğrenci<span class="suffix">ydik</span>.</span>
+                                    <span class="translation" data-lang="en">(We were students.)</span>
+                                    <span class="translation hidden" data-lang="ar">(كنا طلاباً.)</span>
+                                </li>
+                            </ul>
+                        </article>
+                        
+                        <!-- Past Negative -->
+                        <article>
+                            <h3 class="text-xl font-semibold text-slate-800 mb-4">
+                                <span data-lang="en">Negative ("I was not...")</span>
+                                <span data-lang="ar" class="hidden">النفي ("لم أكن...")</span>
+                            </h3>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 example-list">
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben öğrenci <span class="suffix">değildim</span>.</span>
+                                    <span class="translation" data-lang="en">(I was not a student.)</span>
+                                    <span class="translation hidden" data-lang="ar">(لم أكن طالباً.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Sen mutlu <span class="suffix">değildin</span>.</span>
+                                    <span class="translation" data-lang="en">(You were not happy.)</span>
+                                    <span class="translation hidden" data-lang="ar">(لم تكن سعيداً.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">O doktor <span class="suffix">değildi</span>.</span>
+                                    <span class="translation" data-lang="en">(He/She was not a doctor.)</span>
+                                    <span class="translation hidden" data-lang="ar">(لم يكن/تكن طبيباً.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Biz yorgun <span class="suffix">değildik</span>.</span>
+                                    <span class="translation" data-lang="en">(We were not tired.)</span>
+                                    <span class="translation hidden" data-lang="ar">(لم نكن متعبين.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Siz evde <span class="suffix">değildiniz</span>.</span>
+                                    <span class="translation" data-lang="en">(You (pl.) were not at home.)</span>
+                                    <span class="translation hidden" data-lang="ar">(لم تكونوا في البيت.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Onlar hasta <span class="suffix">değildiler</span>.</span>
+                                    <span class="translation" data-lang="en">(They were not sick.)</span>
+                                    <span class="translation hidden" data-lang="ar">(لم يكونوا مرضى.)</span>
+                                </li>
+                            </ul>
+                        </article>
+
+                        <!-- Past Question -->
+                        <article>
+                            <h3 class="text-xl font-semibold text-slate-800 mb-4">
+                                <span data-lang="en">Question ("Was I...?")</span>
+                                <span data-lang="ar" class="hidden">السؤال ("هل كنت...؟")</span>
+                            </h3>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 example-list">
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben öğrenci <span class="suffix">miydim</span>?</span>
+                                    <span class="translation" data-lang="en">(Was I a student?)</span>
+                                    <span class="translation hidden" data-lang="ar">(هل كنت طالباً؟)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Sen mutlu <span class="suffix">muydu</span>?</span>
+                                    <span class="translation" data-lang="en">(Were you happy?)</span>
+                                    <span class="translation hidden" data-lang="ar">(هل كنت سعيداً؟)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">O doktor <span class="suffix">muydu</span>?</span>
+                                    <span class="translation" data-lang="en">(Was he/she a doctor?)</span>
+                                    <span class="translation hidden" data-lang="ar">(هل كان/كانت طبيباً؟)</span>
+                                </li>
+                            </ul>
+                        </article>
+
+                        <!-- Past Negative Question -->
+                        <article>
+                            <h3 class="text-xl font-semibold text-slate-800 mb-4">
+                                <span data-lang="en">Negative Question ("Wasn't I...?")</span>
+                                <span data-lang="ar" class="hidden">السؤال المنفي ("ألم أكن...؟")</span>
+                            </h3>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 example-list">
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben orada <span class="suffix">değil miydim</span>?</span>
+                                    <span class="translation" data-lang="en">(Wasn't I there?)</span>
+                                    <span class="translation hidden" data-lang="ar">(ألم أكن هناك؟)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Sen yorgun <span class="suffix">değil miydin</span>?</span>
+                                    <span class="translation" data-lang="en">(Aren't you tired?)</span>
+                                    <span class="translation hidden" data-lang="ar">(ألم تكن متعباً؟)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">O evli <span class="suffix">değil miydi</span>?</span>
+                                    <span class="translation" data-lang="en">(Wasn't he/she married?)</span>
+                                    <span class="translation hidden" data-lang="ar">(ألم يكن/تكن متزوجاً؟)</span>
+                                </li>
+                            </ul>
+                        </article>
+
+                    </div>
+                </details>
+
+                <!-- 3. Inferential Past (-miş) -->
+                <details class="mb-4">
+                    <summary>
+                        <span data-lang="en">3. Inferential Past (-miş)</span>
+                        <span data-lang="ar" class="hidden">٣. الماضي النقلي (-miş)</span>
+                    </summary>
+                    <div class="content-box space-y-8">
+                        <article>
+                            <h3 class="text-xl font-semibold text-slate-800 mb-4">
+                                <span data-lang="en">Affirmative ("Apparently, I was...")</span>
+                                <span data-lang="ar" class="hidden">الإثبات ("يُقال أنني كنت...")</span>
+                            </h3>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 example-list">
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben çok akıllı<span class="suffix">ymışım</span>.</span>
+                                    <span class="translation" data-lang="en">(Apparently, I am very smart.)</span>
+                                    <span class="translation hidden" data-lang="ar">(يُقال أنني ذكي جداً.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Sen eskiden öğrenci<span class="suffix">ymişsin</span>.</span>
+                                    <span class="translation" data-lang="en">(Apparently, you used to be a student.)</span>
+                                    <span class="translation hidden" data-lang="ar">(يُقال أنك كنت طالباً في الماضي.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">O çok zengin<span class="suffix">miş</span>.</span>
+                                    <span class="translation" data-lang="en">(They say he/she is very rich.)</span>
+                                    <span class="translation hidden" data-lang="ar">(يُقال أنه/أنها غني جداً.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Biz dün yorgun<span class="suffix">muşuz</span>.</span>
+                                    <span class="translation" data-lang="en">(Apparently, we were tired yesterday.)</span>
+                                    <span class="translation hidden" data-lang="ar">(يبدو أننا كنا متعبين البارحة.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Siz evli<span class="suffix">ymişsiniz</span>.</span>
+                                    <span class="translation" data-lang="en">(I just learned that you (pl.) are married.)</span>
+                                    <span class="translation hidden" data-lang="ar">(علمت للتو أنكم متزوجون.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Onlar öğretmen<span class="suffix">mişler</span>.</span>
+                                    <span class="translation" data-lang="en">(They are apparently teachers.)</span>
+                                    <span class="translation hidden" data-lang="ar">(يُقال أنهم معلمون.)</span>
+                                </li>
+                            </ul>
+                        </article>
+                        
+                        <article>
+                            <h3 class="text-xl font-semibold text-slate-800 mb-4">
+                                <span data-lang="en">Negative ("Apparently, I was not...")</span>
+                                <span data-lang="ar" class="hidden">النفي ("يُقال أنني لم أكن...")</span>
+                            </h3>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 example-list">
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben orada <span class="suffix">değilmişim</span>.</span>
+                                    <span class="translation" data-lang="en">(Apparently, I was not there.)</span>
+                                    <span class="translation hidden" data-lang="ar">(يبدو أنني لم أكن هناك.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">O o kadar da zengin <span class="suffix">değilmiş</span>.</span>
+                                    <span class="translation" data-lang="en">(Apparently, he is not that rich.)</span>
+                                    <span class="translation hidden" data-lang="ar">(يبدو أنه ليس غنياً لتلك الدرجة.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Onlar evli <span class="suffix">değillermiş</span>.</span>
+                                    <span class="translation" data-lang="en">(They are apparently not married.)</span>
+                                    <span class="translation hidden" data-lang="ar">(يُقال أنهم ليسوا متزوجين.)</span>
+                                </li>
+                            </ul>
+                        </article>
+                    </div>
+                </details>
+                
+                <!-- 4. Conditional (-se/sa) -->
+                <details class="mb-4">
+                    <summary>
+                        <span data-lang="en">4. Conditional (-se/sa)</span>
+                        <span data-lang="ar" class="hidden">٤. الشرط (-se/sa)</span>
+                    </summary>
+                    <div class="content-box space-y-8">
+                        
+                        <article>
+                            <h3 class="text-xl font-semibold text-slate-800 mb-4">
+                                <span data-lang="en">Affirmative ("If I am...")</span>
+                                <span data-lang="ar" class="hidden">الإثبات ("إذا كنت...")</span>
+                            </h3>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 example-list">
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben evde<span class="suffix">ysem</span>, ara.</span>
+                                    <span class="translation" data-lang="en">(If I am at home, call.)</span>
+                                    <span class="translation hidden" data-lang="ar">(إذا كنت في البيت، اتصل.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Sen hazır<span class="suffix">san</span>, gidelim.</span>
+                                    <span class="translation" data-lang="en">(If you are ready, let's go.)</span>
+                                    <span class="translation hidden" data-lang="ar">(إذا كنت جاهزاً، فلنذهب.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">O mutlu<span class="suffix">ysa</span>, sorun yok.</span>
+                                    <span class="translation" data-lang="en">(If he/she is happy, no problem.)</span>
+                                    <span class="translation hidden" data-lang="ar">(إذا كان/كانت سعيداً، لا مشكلة.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Biz yorgun<span class="suffix">sak</span>, dinlenelim.</span>
+                                    <span class="translation" data-lang="en">(If we are tired, let's rest.)</span>
+                                    <span class="translation hidden" data-lang="ar">(إذا كنا متعبين، فلنرتح.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Siz öğretmenseniz, bunu bilirsiniz.</span>
+                                    <span class="translation" data-lang="en">(If you (pl.) are teachers, you know this.)</span>
+                                    <span class="translation hidden" data-lang="ar">(إذا كنتم معلمين، فأنتم تعرفون هذا.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Onlar öğrenci<span class="suffix">yseler</span>, indirim var.</span>
+                                    <span class="translation" data-lang="en">(If they are students, there is a discount.)</span>
+                                    <span class="translation hidden" data-lang="ar">(إذا كانوا طلاباً، يوجد خصم.)</span>
+                                </li>
+                            </ul>
+                        </article>
+                        
+                        <article>
+                            <h3 class="text-xl font-semibold text-slate-800 mb-4">
+                                <span data-lang="en">Negative ("If I am not...")</span>
+                                <span data-lang="ar" class="hidden">النفي ("إذا لم أكن...")</span>
+                            </h3>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 example-list">
+                                <li>
+                                    <span class="turkish-example force-ltr">Ben hazır <span class="suffix">değilsem</span>, bekle.</span>
+                                    <span class="translation" data-lang="en">(If I am not ready, wait.)</span>
+                                    <span class="translation hidden" data-lang="ar">(إذا لم أكن جاهزاً، انتظر.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Sen evde <span class="suffix">değilsen</span>, dışarı çıkalım.</span>
+                                    <span class="translation" data-lang="en">(If you are not at home, let's go out.)</span>
+                                    <span class="translation hidden" data-lang="ar">(إذا لم تكن في البيت، فلنخرج.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">O mutlu <span class="suffix">değilse</span>, konuş.</span>
+                                    <span class="translation" data-lang="en">(If he/she is not happy, talk.)</span>
+                                    <span class="translation hidden" data-lang="ar">(إذا لم يكن/تكن سعيداً، تحدث.)</span>
+                                </li>
+                            </ul>
+                        </article>
+                    </div>
+                </details>
+                
+                <!-- 5. Var / Yok -->
+                <details class="mb-4">
+                    <summary>
+                        <span data-lang="en">5. The `var` / `yok` System</span>
+                        <span data-lang="ar" class="hidden">٥. نظام `var` / `yok`</span>
+                    </summary>
+                    <div class="content-box space-y-8">
+                        <article>
+                            <h3 class="text-xl font-semibold text-slate-800 mb-4">
+                                <span data-lang="en">`var` (is/are existent) / `yok` (is/are not existent)</span>
+                                <span data-lang="ar" class="hidden">`var` (يوجد) / `yok` (لا يوجد)</span>
+                            </h3>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 example-list">
+                                <!-- Present -->
+                                <li>
+                                    <span class="turkish-example force-ltr">Evde ekmek <span class="suffix">var</span>.</span>
+                                    <span class="translation" data-lang="en">(There is bread at home.)</span>
+                                    <span class="translation hidden" data-lang="ar">(يوجد خبز في البيت.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Evde süt <span class="suffix">yok</span>.</span>
+                                    <span class="translation" data-lang="en">(There is no milk at home.)</span>
+                                    <span class="translation hidden" data-lang="ar">(لا يوجد حليب في البيت.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Param <span class="suffix">var</span>.</span>
+                                    <span class="translation" data-lang="en">(I have money. lit: My money exists.)</span>
+                                    <span class="translation hidden" data-lang="ar">(لدي مال.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Zamanım <span class="suffix">yok</span>.</span>
+                                    <span class="translation" data-lang="en">(I don't have time. lit: My time doesn't exist.)</span>
+                                    <span class="translation hidden" data-lang="ar">(ليس لدي وقت.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Sorun <span class="suffix">yok</span>.</span>
+                                    <span class="translation" data-lang="en">(There is no problem.)</span>
+                                    <span class="translation hidden" data-lang="ar">(لا توجد مشكلة.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Arabam <span class="suffix">var</span>.</span>
+                                    <span class="translation" data-lang="en">(I have a car.)</span>
+                                    <span class="translation hidden" data-lang="ar">(لدي سيارة.)</span>
+                                </li>
+                                
+                                <!-- Past -->
+                                <li>
+                                    <span class="turkish-example force-ltr">Param var<span class="suffix">dı</span>.</span>
+                                    <span class="translation" data-lang="en">(I had money.)</span>
+                                    <span class="translation hidden" data-lang="ar">(كان لدي مال.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Param yok<span class="suffix">tu</span>.</span>
+                                    <span class="translation" data-lang="en">(I did not have money.)</span>
+                                    <span class="translation hidden" data-lang="ar">(لم يكن لدي مال.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Zamanımız var<span class="suffix">dı</span>.</span>
+                                    <span class="translation" data-lang="en">(We had time.)</span>
+                                    <span class="translation hidden" data-lang="ar">(كان لدينا وقت.)</span>
+                                </li>
+                                
+                                <!-- Conditional -->
+                                <li>
+                                    <span class="turkish-example force-ltr">Paran var<span class="suffix">sa</span>, al.</span>
+                                    <span class="translation" data-lang="en">(If you have money, buy it.)</span>
+                                    <span class="translation hidden" data-lang="ar">(إذا كان لديك مال، اشترِ.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Zamanın yok<span class="suffix">sa</span>, gelme.</span>
+                                    <span class="translation" data-lang="en">(If you don't have time, don't come.)</span>
+                                    <span class="translation hidden" data-lang="ar">(إذا لم يكن لديك وقت، لا تأتِ.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Sorun var<span class="suffix">sa</span>, söyle.</span>
+                                    <span class="translation" data-lang="en">(If there is a problem, say so.)</span>
+                                    <span class="translation hidden" data-lang="ar">(إذا كانت هناك مشكلة، قل.)</span>
+                                </li>
+                                
+                                <!-- Inferential -->
+                                <li>
+                                    <span class="turkish-example force-ltr">Parası var<span class="suffix">mış</span>.</span>
+                                    <span class="translation" data-lang="en">(Apparently, he has money.)</span>
+                                    <span class="translation hidden" data-lang="ar">(يُقال أن لديه مال.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Zamanı yok<span class="suffix">muş</span>.</span>
+                                    <span class="translation" data-lang="en">(Apparently, he doesn't have time.)</span>
+                                    <span class="translation hidden" data-lang="ar">(يُقال أن ليس لديه وقت.)</span>
+                                </li>
+                                <li>
+                                    <span class="turkish-example force-ltr">Evde kimse yok<span class="suffix">muş</span>.</span>
+                                    <span class="translation" data-lang="en">(Apparently, there is no one at home.)</span>
+                                    <span class="translation hidden" data-lang="ar">(يبدو أنه لا يوجد أحد في البيت.)</span>
+                                </li>
+                            </ul>
+                        </article>
+                    </div>
+                </details>
+
+            </section>
+
+        </main>
+    </div>
+
+    <!-- JavaScript for Active Nav Link Highlighting & Language Switching -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Practice Card Data ---
+            // Note: We use "lang_q" and "lang_a" for the translations of the *sentence*
+            // We use "tr_q" and "tr_a" for the Turkish fill-in-the-blank and answer
+            const practiceQuestions = [
+                // --- 1. PRESENT TENSE ---
+                
+                // 1a. Present Affirmative: Ben
+                { tr_q: "Ben bir öğrenci____.", tr_a: "Ben bir öğrenciyim.", en_q: "(I am a student.)", en_a: "(I am a student.)", ar_q: "(أنا طالب.)", ar_a: "(أنا طالب.)" },
+                { tr_q: "Ben mutlu____.", tr_a: "Ben mutluyum.", en_q: "(I am happy.)", en_a: "(I am happy.)", ar_q: "(أنا سعيد.)", ar_a: "(أنا سعيد.)" },
+                { tr_q: "Ben doktor____.", tr_a: "Ben doktorum.", en_q: "(I am a doctor.)", en_a: "(I am a doctor.)", ar_q: "(أنا طبيب.)", ar_a: "(أنا طبيب.)" },
+                { tr_q: "Ben yorgun____.", tr_a: "Ben yorgunum.", en_q: "(I am tired.)", en_a: "(I am tired.)", ar_q: "(أنا متعب.)", ar_a: "(أنا متعب.)" },
+                { tr_q: "Ben evde____.", tr_a: "Ben evdeyim.", en_q: "(I am at home.)", en_a: "(I am at home.)", ar_q: "(أنا في البيت.)", ar_a: "(أنا في البيت.)" },
+                { tr_q: "Ben hazır____.", tr_a: "Ben hazırım.", en_q: "(I am ready.)", en_a: "(I am ready.)", ar_q: "(أنا جاهز.)", ar_a: "(أنا جاهز.)" },
+                { tr_q: "Ben ofiste____.", tr_a: "Ben ofisteyim.", en_q: "(I am at the office.)", en_a: "(I am at the office.)", ar_q: "(أنا في المكتب.)", ar_a: "(أنا في المكتب.)" },
+                { tr_q: "Ben emin____.", tr_a: "Ben eminim.", en_q: "(I am sure.)", en_a: "(I am sure.)", ar_q: "(أنا متأكد.)", ar_a: "(أنا متأكد.)" },
+
+                // 1b. Present Affirmative: Sen
+                { tr_q: "Sen çok yorgun____.", tr_a: "Sen çok yorgunsun.", en_q: "(You are very tired.)", en_a: "(You are very tired.)", ar_q: "(أنت متعب جداً.)", ar_a: "(أنت متعب جداً.)" },
+                { tr_q: "Sen mühendis____.", tr_a: "Sen mühendissin.", en_q: "(You are an engineer.)", en_a: "(You are an engineer.)", ar_q: "(أنت مهندس.)", ar_a: "(أنت مهندس.)" },
+                { tr_q: "Sen akıllı____.", tr_a: "Sen akıllısın.", en_q: "(You are smart.)", en_a: "(You are smart.)", ar_q: "(أنت ذكي.)", ar_a: "(أنت ذكي.)" },
+                { tr_q: "Sen üzgün____.", tr_a: "Sen üzgünsün.", en_q: "(You are sad.)", en_a: "(You are sad.)", ar_q: "(أنت حزين.)", ar_a: "(أنت حزين.)" },
+                { tr_q: "Sen dışarıda____.", tr_a: "Sen dışarıdasın.", en_q: "(You are outside.)", en_a: "(You are outside.)", ar_q: "(أنت في الخارج.)", ar_a: "(أنت في الخارج.)" },
+                { tr_q: "Sen iyi bir insan____.", tr_a: "Sen iyi bir insansın.", en_q: "(You are a good person.)", en_a: "(You are a good person.)", ar_q: "(أنت شخص جيد.)", ar_a: "(أنت شخص جيد.)" },
+                { tr_q: "Sen güçlü____.", tr_a: "Sen güçlüsün.", en_q: "(You are strong.)", en_a: "(You are strong.)", ar_q: "(أنت قوي.)", ar_a: "(أنت قوي.)" },
+                { tr_q: "Sen haklı____.", tr_a: "Sen haklısın.", en_q: "(You are right.)", en_a: "(You are right.)", ar_q: "(أنت على حق.)", ar_a: "(أنت على حق.)" },
+
+                // 1c. Present Affirmative: O
+                { tr_q: "O bir öğretmen____.", tr_a: "O bir öğretmen.", en_q: "(He/She is a teacher.)", en_a: "(He/She is a teacher.)", ar_q: "(هو/هي معلم.)", ar_a: "(هو/هي معلم.)" },
+                { tr_q: "O hasta____.", tr_a: "O hasta.", en_q: "(He/She is sick.)", en_a: "(He/She is sick.)", ar_q: "(هو/هي مريض.)", ar_a: "(هو/هي مريض.)" },
+                { tr_q: "O meşgul____.", tr_a: "O meşgul.", en_q: "(He/She is busy.)", en_a: "(He/She is busy.)", ar_q: "(هو/هي مشغول.)", ar_a: "(هو/هي مشغول.)" },
+                { tr_q: "O parkta____.", tr_a: "O parkta.", en_q: "(He/She is at the park.)", en_a: "(He/She is at the park.)", ar_q: "(هو/هي في الحديقة.)", ar_a: "(هو/هي في الحديقة.)" },
+                { tr_q: "Hava bugün güzel____.", tr_a: "Hava bugün güzel.", en_q: "(The weather is nice today.)", en_a: "(The weather is nice today.)", ar_q: "(الطقس جميل اليوم.)", ar_a: "(الطقس جميل اليوم.)" },
+                { tr_q: "Bu zor____.", tr_a: "Bu zor.", en_q: "(This is difficult.)", en_a: "(This is difficult.)", ar_q: "(هذا صعب.)", ar_a: "(هذا صعب.)" },
+                { tr_q: "O dürüst____. (formal)", tr_a: "O dürüsttür.", en_q: "(He/She is honest. (formal))", en_a: "(He/She is honest. (formal))", ar_q: "(هو/هي أمين. (رسمي))", ar_a: "(هو/هي أمين. (رسمي))" },
+                { tr_q: "Bu mümkün____. (formal)", tr_a: "Bu mümkündür.", en_q: "(This is possible. (formal))", en_a: "(This is possible. (formal))", ar_q: "(هذا ممكن. (رسمي))", ar_a: "(هذا ممكن. (رسمي))" },
+
+                // 1d. Present Affirmative: Biz
+                { tr_q: "Biz arkadaş____.", tr_a: "Biz arkadaşız.", en_q: "(We are friends.)", en_a: "(We are friends.)", ar_q: "(نحن أصدقاء.)", ar_a: "(نحن أصدقاء.)" },
+                { tr_q: "Biz öğrenci____.", tr_a: "Biz öğrenciyiz.", en_q: "(We are students.)", en_a: "(We are students.)", ar_q: "(نحن طلاب.)", ar_a: "(نحن طلاب.)" },
+                { tr_q: "Biz hazır____.", tr_a: "Biz hazırız.", en_q: "(We are ready.)", en_a: "(We are ready.)", ar_q: "(نحن جاهزون.)", ar_a: "(نحن جاهزون.)" },
+                { tr_q: "Biz yorgun____.", tr_a: "Biz yorgunuz.", en_q: "(We are tired.)", en_a: "(We are tired.)", ar_q: "(نحن متعبون.)", ar_a: "(نحن متعبون.)" },
+                { tr_q: "Biz evde____.", tr_a: "Biz evdeyiz.", en_q: "(We are at home.)", en_a: "(We are at home.)", ar_q: "(نحن في البيت.)", ar_a: "(نحن في البيت.)" },
+                { tr_q: "Biz Türk____.", tr_a: "Biz Türk'üz.", en_q: "(We are Turkish.)", en_a: "(We are Turkish.)", ar_q: "(نحن أتراك.)", ar_a: "(نحن أتراك.)" },
+                { tr_q: "Biz aynı fikirde____.", tr_a: "Biz aynı fikirdeyiz.", en_q: "(We are of the same opinion.)", en_a: "(We are of the same opinion.)", ar_q: "(نحن متفقون في الرأي.)", ar_a: "(نحن متفقون في الرأي.)" },
+
+                // 1e. Present Affirmative: Siz
+                { tr_q: "Siz doktor____.", tr_a: "Siz doktorsunuz.", en_q: "(You (pl.) are doctors.)", en_a: "(You (pl.) are doctors.)", ar_q: "(أنتم أطباء.)", ar_a: "(أنتم أطباء.)" },
+                { tr_q: "Siz meşgul____.", tr_a: "Siz meşgulsünüz.", en_q: "(You (pl.) are busy.)", en_a: "(You (pl.) are busy.)", ar_q: "(أنتم مشغولون.)", ar_a: "(أنتم مشغولون.)" },
+                { tr_q: "Siz öğrenci____.", tr_a: "Siz öğrencisiniz.", en_q: "(You (pl.) are students.)", en_a: "(You (pl.) are students.)", ar_q: "(أنتم طلاب.)", ar_a: "(أنتم طلاب.)" },
+                { tr_q: "Siz kibar____.", tr_a: "Siz kibarsınız.", en_q: "(You (pl.) are polite.)", en_a: "(You (pl.) are polite.)", ar_q: "(أنتم مهذبون.)", ar_a: "(أنتم مهذبون.)" },
+                { tr_q: "Siz burada____.", tr_a: "Siz buradasınız.", en_q: "(You (pl.) are here.)", en_a: "(You (pl.) are here.)", ar_q: "(أنتم هنا.)", ar_a: "(أنتم هنا.)" },
+                { tr_q: "Siz haklı____.", tr_a: "Siz haklısınız.", en_q: "(You (pl.) are right.)", en_a: "(You (pl.) are right.)", ar_q: "(أنتم على حق.)", ar_a: "(أنتم على حق.)" },
+
+                // 1f. Present Affirmative: Onlar
+                { tr_q: "Onlar evli____.", tr_a: "Onlar evliler.", en_q: "(They are married.)", en_a: "(They are married.)", ar_q: "(هم متزوجون.)", ar_a: "(هم متزوجون.)" },
+                { tr_q: "Onlar yorgun____.", tr_a: "Onlar yorgunlar.", en_q: "(They are tired.)", en_a: "(They are tired.)", ar_q: "(هم متعبون.)", ar_a: "(هم متعبون.)" },
+                { tr_q: "Onlar öğrenci____.", tr_a: "Onlar öğrenciler.", en_q: "(They are students.)", en_a: "(They are students.)", ar_q: "(هم طلاب.)", ar_a: "(هم طلاب.)" },
+                { tr_q: "Onlar ofiste____.", tr_a: "Onlar ofisteler.", en_q: "(They are at the office.)", en_a: "(They are at the office.)", ar_q: "(هم في المكتب.)", ar_a: "(هم في المكتب.)" },
+                { tr_q: "Onlar Alman____.", tr_a: "Onlar Almanlar.", en_q: "(They are German.)", en_a: "(They are German.)", ar_q: "(هم ألمان.)", ar_a: "(هم ألمان.)" },
+                { tr_q: "Onlar iyi____. (short)", tr_a: "Onlar iyi.", en_q: "(They are good.)", en_a: "(They are good.)", ar_q: "(هم بخير.)", ar_a: "(هم بخير.)" },
+                
+                // 2a. Present Negative: Ben
+                { tr_q: "Ben öğrenci ____.", tr_a: "Ben öğrenci değilim.", en_q: "(I am not a student.)", en_a: "(I am not a student.)", ar_q: "(أنا لست طالباً.)", ar_a: "(أنا لست طالباً.)" },
+                { tr_q: "Ben mutlu ____.", tr_a: "Ben mutlu değilim.", en_q: "(I am not happy.)", en_a: "(I am not happy.)", ar_q: "(أنا لست سعيداً.)", ar_a: "(أنا لست سعيداً.)" },
+                { tr_q: "Ben doktor ____.", tr_a: "Ben doktor değilim.", en_q: "(I am not a doctor.)", en_a: "(I am not a doctor.)", ar_q: "(أنا لست طبيباً.)", ar_a: "(أنا لست طبيباً.)" },
+                { tr_q: "Ben yorgun ____.", tr_a: "Ben yorgun değilim.", en_q: "(I am not tired.)", en_a: "(I am not tired.)", ar_q: "(أنا لست متعباً.)", ar_a: "(أنا لست متعباً.)" },
+                { tr_q: "Ben evde ____.", tr_a: "Ben evde değilim.", en_q: "(I am not at home.)", en_a: "(I am not at home.)", ar_q: "(أنا لست في البيت.)", ar_a: "(أنا لست في البيت.)" },
+                { tr_q: "Ben emin ____.", tr_a: "Ben emin değilim.", en_q: "(I am not sure.)", en_a: "(I am not sure.)", ar_q: "(أنا لست متأكداً.)", ar_a: "(أنا لست متأكداً.)" },
+
+                // 2b. Present Negative: Sen
+                { tr_q: "Sen yorgun ____.", tr_a: "Sen yorgun değilsin.", en_q: "(You are not tired.)", en_a: "(You are not tired.)", ar_q: "(أنت لست متعباً.)", ar_a: "(أنت لست متعباً.)" },
+                { tr_q: "Sen mühendis ____.", tr_a: "Sen mühendis değilsin.", en_q: "(You are not an engineer.)", en_a: "(You are not an engineer.)", ar_q: "(أنت لست مهندساً.)", ar_a: "(أنت لست مهندساً.)" },
+                { tr_q: "Sen akıllı ____.", tr_a: "Sen akıllı değilsin.", en_q: "(You are not smart.)", en_a: "(You are not smart.)", ar_q: "(أنت لست ذكياً.)", ar_a: "(أنت لست ذكياً.)" },
+                { tr_q: "Sen üzgün ____.", tr_a: "Sen üzgün değilsin.", en_q: "(You are not sad.)", en_a: "(You are not sad.)", ar_q: "(أنت لست حزيناً.)", ar_a: "(أنت لست حزيناً.)" },
+                { tr_q: "Sen dışarıda ____.", tr_a: "Sen dışarıda değilsin.", en_q: "(You are not outside.)", en_a: "(You are not outside.)", ar_q: "(أنت لست في الخارج.)", ar_a: "(أنت لست في الخارج.)" },
+                { tr_q: "Sen haklı ____.", tr_a: "Sen haklı değilsin.", en_q: "(You are not right.)", en_a: "(You are not right.)", ar_q: "(أنت لست على حق.)", ar_a: "(أنت لست على حق.)" },
+
+                // 2c. Present Negative: O
+                { tr_q: "O evde ____.", tr_a: "O evde değil.", en_q: "(He is not at home.)", en_a: "(He is not at home.)", ar_q: "(هو ليس في البيت.)", ar_a: "(هو ليس في البيت.)" },
+                { tr_q: "O öğretmen ____.", tr_a: "O öğretmen değil.", en_q: "(He/She is not a teacher.)", en_a: "(He/She is not a teacher.)", ar_q: "(هو/هي ليس معلماً.)", ar_a: "(هو/هي ليس معلماً.)" },
+                { tr_q: "O hasta ____.", tr_a: "O hasta değil.", en_q: "(He/She is not sick.)", en_a: "(He/She is not sick.)", ar_q: "(هو/هي ليس مريضاً.)", ar_a: "(هو/هي ليس مريضاً.)" },
+                { tr_q: "O meşgul ____.", tr_a: "O meşgul değil.", en_q: "(He/She is not busy.)", en_a: "(He/She is not busy.)", ar_q: "(هو/هي ليس مشغولاً.)", ar_a: "(هو/هي ليس مشغولاً.)" },
+                { tr_q: "Hava bugün güzel ____.", tr_a: "Hava bugün güzel değil.", en_q: "(The weather is not nice today.)", en_a: "(The weather is not nice today.)", ar_q: "(الطقس ليس جميلاً اليوم.)", ar_a: "(الطقس ليس جميلاً اليوم.)" },
+                { tr_q: "Bu zor ____.", tr_a: "Bu zor değil.", en_q: "(This is not difficult.)", en_a: "(This is not difficult.)", ar_q: "(هذا ليس صعباً.)", ar_a: "(هذا ليس صعباً.)" },
+                { tr_q: "Bu mümkün ____.", tr_a: "Bu mümkün değil.", en_q: "(This is not possible.)", en_a: "(This is not possible.)", ar_q: "(هذا ليس ممكناً.)", ar_a: "(هذا ليس ممكناً.)" },
+
+                // 2d. Present Negative: Biz
+                { tr_q: "Biz arkadaş ____.", tr_a: "Biz arkadaş değiliz.", en_q: "(We are not friends.)", en_a: "(We are not friends.)", ar_q: "(نحن لسنا أصدقاء.)", ar_a: "(نحن لسنا أصدقاء.)" },
+                { tr_q: "Biz öğrenci ____.", tr_a: "Biz öğrenci değiliz.", en_q: "(We are not students.)", en_a: "(We are not students.)", ar_q: "(نحن لسنا طلاباً.)", ar_a: "(نحن لسنا طلاباً.)" },
+                { tr_q: "Biz hazır ____.", tr_a: "Biz hazır değiliz.", en_q: "(We are not ready.)", en_a: "(We are not ready.)", ar_q: "(نحن لسنا جاهزين.)", ar_a: "(نحن لسنا جاهزين.)" },
+                { tr_q: "Biz yorgun ____.", tr_a: "Biz yorgun değiliz.", en_q: "(We are not tired.)", en_a: "(We are not tired.)", ar_q: "(نحن لسنا متعبين.)", ar_a: "(نحن لسنا متعبين.)" },
+                { tr_q: "Biz evde ____.", tr_a: "Biz evde değiliz.", en_q: "(We are not at home.)", en_a: "(We are not at home.)", ar_q: "(نحن لسنا في البيت.)", ar_a: "(نحن لسنا في البيت.)" },
+
+                // 2e. Present Negative: Siz
+                { tr_q: "Siz doktor ____.", tr_a: "Siz doktor değilsiniz.", en_q: "(You (pl.) are not doctors.)", en_a: "(You (pl.) are not doctors.)", ar_q: "(أنتم لستم أطباء.)", ar_a: "(أنتم لستم أطباء.)" },
+                { tr_q: "Siz meşgul ____.", tr_a: "Siz meşgul değilsiniz.", en_q: "(You (pl.) are not busy.)", en_a: "(You (pl.) are not busy.)", ar_q: "(أنتم لستم مشغولين.)", ar_a: "(أنتم لستم مشغولين.)" },
+                { tr_q: "Siz öğrenci ____.", tr_a: "Siz öğrenci değilsiniz.", en_q: "(You (pl.) are not students.)", en_a: "(You (pl.) are not students.)", ar_q: "(أنتم لستم طلاباً.)", ar_a: "(أنتم لستم طلاباً.)" },
+                { tr_q: "Siz kibar ____.", tr_a: "Siz kibar değilsiniz.", en_q: "(You (pl.) are not polite.)", en_a: "(You (pl.) are not polite.)", ar_q: "(أنتم لستم مهذبين.)", ar_a: "(أنتم لستم مهذبين.)" },
+                { tr_q: "Siz burada ____.", tr_a: "Siz burada değilsiniz.", en_q: "(You (pl.) are not here.)", en_a: "(You (pl.) are not here.)", ar_q: "(أنتم لستم هنا.)", ar_a: "(أنتم لستم هنا.)" },
+
+                // 2f. Present Negative: Onlar
+                { tr_q: "Onlar evli ____.", tr_a: "Onlar evli değiller.", en_q: "(They are not married.)", en_a: "(They are not married.)", ar_q: "(هم ليسوا متزوجين.)", ar_a: "(هم ليسوا متزوجين.)" },
+                { tr_q: "Onlar yorgun ____.", tr_a: "Onlar yorgun değiller.", en_q: "(They are not tired.)", en_a: "(They are not tired.)", ar_q: "(هم ليسوا متعبين.)", ar_a: "(هم ليسوا متعبين.)" },
+                { tr_q: "Onlar öğrenci ____.", tr_a: "Onlar öğrenci değiller.", en_q: "(They are not students.)", en_a: "(They are not students.)", ar_q: "(هم ليسوا طلاباً.)", ar_a: "(هم ليسوا طلاباً.)" },
+                { tr_q: "Onlar ofiste ____.", tr_a: "Onlar ofiste değiller.", en_q: "(They are not at the office.)", en_a: "(They are not at the office.)", ar_q: "(هم ليسوا في المكتب.)", ar_a: "(هم ليسوا في المكتب.)" },
+                { tr_q: "Onlar Alman ____.", tr_a: "Onlar Alman değiller.", en_q: "(They are not German.)", en_a: "(They are not German.)", ar_q: "(هم ليسوا ألماناً.)", ar_a: "(هم ليسوا ألماناً.)" },
+                { tr_q: "Onlar iyi ____.", tr_a: "Onlar iyi değiller.", en_q: "(They are not good.)", en_a: "(They are not good.)", ar_q: "(هم ليسوا بخير.)", ar_a: "(هم ليسوا بخير.)" },
+
+                // 3a. Present Question: Ben
+                { tr_q: "Ben öğrenci ____ ____?", tr_a: "Ben öğrenci miyim?", en_q: "(Am I a student?)", en_a: "(Am I a student?)", ar_q: "(هل أنا طالب؟)", ar_a: "(هل أنا طالب؟)" },
+                { tr_q: "Ben mutlu ____ ____?", tr_a: "Ben mutlu muyum?", en_q: "(Am I happy?)", en_a: "(Am I happy?)", ar_q: "(هل أنا سعيد؟)", ar_a: "(هل أنا سعيد؟)" },
+                { tr_q: "Ben doktor ____ ____?", tr_a: "Ben doktor muyum?", en_q: "(Am I a doctor?)", en_a: "(Am I a doctor?)", ar_q: "(هل أنا طبيب؟)", ar_a: "(هل أنا طبيب؟)" },
+                { tr_q: "Ben yorgun ____ ____?", tr_a: "Ben yorgun muyum?", en_q: "(Am I tired?)", en_a: "(Am I tired?)", ar_q: "(هل أنا متعب؟)", ar_a: "(هل أنا متعب؟)" },
+                { tr_q: "Ben evde ____ ____?", tr_a: "Ben evde miyim?", en_q: "(Am I at home?)", en_a: "(Am I at home?)", ar_q: "(هل أنا في البيت؟)", ar_a: "(هل أنا في البيت؟)" },
+                { tr_q: "Ben haklı ____ ____?", tr_a: "Ben haklı mıyım?", en_q: "(Am I right?)", en_a: "(Am I right?)", ar_q: "(هل أنا على حق؟)", ar_a: "(هل أنا على حق؟)" },
+
+                // 3b. Present Question: Sen
+                { tr_q: "Sen öğrenci ____ ____?", tr_a: "Sen öğrenci misin?", en_q: "(Are you a student?)", en_a: "(Are you a student?)", ar_q: "(هل أنت طالب؟)", ar_a: "(هل أنت طالب؟)" },
+                { tr_q: "Sen mutlu ____ ____?", tr_a: "Sen mutlu musun?", en_q: "(Are you happy?)", en_a: "(Are you happy?)", ar_q: "(هل أنت سعيد؟)", ar_a: "(هل أنت سعيد؟)" },
+                { tr_q: "Sen doktor ____ ____?", tr_a: "Sen doktor musun?", en_q: "(Are you a doctor?)", en_a: "(Are you a doctor?)", ar_q: "(هل أنت طبيب؟)", ar_a: "(هل أنت طبيب؟)" },
+                { tr_q: "Sen yorgun ____ ____?", tr_a: "Sen yorgun musun?", en_q: "(Are you tired?)", en_a: "(Are you tired?)", ar_q: "(هل أنت متعب؟)", ar_a: "(هل أنت متعب؟)" },
+                { tr_q: "Sen evde ____ ____?", tr_a: "Sen evde misin?", en_q: "(Are you at home?)", en_a: "(Are you at home?)", ar_q: "(هل أنت في البيت؟)", ar_a: "(هل أنت في البيت؟)" },
+                { tr_q: "Sen emin ____ ____?", tr_a: "Sen emin misin?", en_q: "(Are you sure?)", en_a: "(Are you sure?)", ar_q: "(هل أنت متأكد؟)", ar_a: "(هل أنت متأكد؟)" },
+
+                // 3c. Present Question: O
+                { tr_q: "O öğrenci ____?", tr_a: "O öğrenci mi?", en_q: "(Is he/she a student?)", en_a: "(Is he/she a student?)", ar_q: "(هل هو/هي طالب؟)", ar_a: "(هل هو/هي طالب؟)" },
+                { tr_q: "O mutlu ____?", tr_a: "O mutlu mu?", en_q: "(Is he/she happy?)", en_a: "(Is he/she happy?)", ar_q: "(هل هو/هي سعيد؟)", ar_a: "(هل هو/هي سعيد؟)" },
+                { tr_q: "O doktor ____?", tr_a: "O doktor mu?", en_q: "(Is he/she a doctor?)", en_a: "(Is he/she a doctor?)", ar_q: "(هل هو/هي طبيب؟)", ar_a: "(هل هو/هي طبيب؟)" },
+                { tr_q: "O yorgun ____?", tr_a: "O yorgun mu?", en_q: "(Is he/she tired?)", en_a: "(Is he/she tired?)", ar_q: "(هل هو/هي متعب؟)", ar_a: "(هل هو/هي متعب؟)" },
+                { tr_q: "O evde ____?", tr_a: "O evde mi?", en_q: "(Is he/she at home?)", en_a: "(Is he/she at home?)", ar_q: "(هل هو/هي في البيت؟)", ar_a: "(هل هو/هي في البيت؟)" },
+                { tr_q: "Bu zor ____?", tr_a: "Bu zor mu?", en_q: "(Is this difficult?)", en_a: "(Is this difficult?)", ar_q: "(هل هذا صعب؟)", ar_a: "(هل هذا صعب؟)" },
+
+                // 3d. Present Question: Biz
+                { tr_q: "Biz öğrenci ____ ____?", tr_a: "Biz öğrenci miyiz?", en_q: "(Are we students?)", en_a: "(Are we students?)", ar_q: "(هل نحن طلاب؟)", ar_a: "(هل نحن طلاب؟)" },
+                { tr_q: "Biz mutlu ____ ____?", tr_a: "Biz mutlu muyuz?", en_q: "(Are we happy?)", en_a: "(Are we happy?)", ar_q: "(هل نحن سعداء؟)", ar_a: "(هل نحن سعداء؟)" },
+                { tr_q: "Biz doktor ____ ____?", tr_a: "Biz doktor muyuz?", en_q: "(Are we doctors?)", en_a: "(Are we doctors?)", ar_q: "(هل نحن أطباء؟)", ar_a: "(هل نحن أطباء؟)" },
+                { tr_q: "Biz yorgun ____ ____?", tr_a: "Biz yorgun muyuz?", en_q: "(Are we tired?)", en_a: "(Are we tired?)", ar_q: "(هل نحن متعبون؟)", ar_a: "(هل نحن متعبون؟)" },
+                { tr_q: "Biz evde ____ ____?", tr_a: "Biz evde miyiz?", en_q: "(Are we at home?)", en_a: "(Are we at home())", ar_q: "(هل نحن في البيت؟)", ar_a: "(هل نحن في البيت؟)" },
+                { tr_q: "Biz haklı ____ ____?", tr_a: "Biz haklı mıyız?", en_q: "(Are we right?)", en_a: "(Are we right?)", ar_q: "(هل نحن على حق؟)", ar_a: "(هل نحن على حق؟)" },
+
+                // 3e. Present Question: Siz
+                { tr_q: "Siz öğrenci ____ ____?", tr_a: "Siz öğrenci misiniz?", en_q: "(Are you (pl.) students?)", en_a: "(Are you (pl.) students?)", ar_q: "(هل أنتم طلاب؟)", ar_a: "(هل أنتم طلاب؟)" },
+                { tr_q: "Siz mutlu ____ ____?", tr_a: "Siz mutlu musunuz?", en_q: "(Are you (pl.) happy?)", en_a: "(Are you (pl.) happy?)", ar_q: "(هل أنتم سعداء؟)", ar_a: "(هل أنتم سعداء؟)" },
+                { tr_q: "Siz doktor ____ ____?", tr_a: "Siz doktor musunuz?", en_q: "(Are you (pl.) doctors?)", en_a: "(Are you (pl.) doctors?)", ar_q: "(هل أنتم أطباء؟)", ar_a: "(هل أنتم أطباء؟)" },
+                { tr_q: "Siz yorgun ____ ____?", tr_a: "Siz yorgun musunuz?", en_q: "(Are you (pl.) tired?)", en_a: "(Are you (pl.) tired?)", ar_q: "(هل أنتم متعبون؟)", ar_a: "(هل أنتم متعبون؟)" },
+                { tr_q: "Siz evde ____ ____?", tr_a: "Siz evde misiniz?", en_q: "(Are you (pl.) at home?)", en_a: "(Are you (pl.) at home?)", ar_q: "(هل أنتم في البيت؟)", ar_a: "(هل أنتم في البيت؟)" },
+                { tr_q: "Siz emin ____ ____?", tr_a: "Siz emin misiniz?", en_q: "(Are you (pl.) sure?)", en_a: "(Are you (pl.) sure?)", ar_q: "(هل أنتم متأكدون؟)", ar_a: "(هل أنتم متأكدون؟)" },
+
+                // 3f. Present Question: Onlar
+                { tr_q: "Onlar öğrenci ____?", tr_a: "Onlar öğrenci mi?", en_q: "(Are they students?)", en_a: "(Are they students?)", ar_q: "(هل هم طلاب؟)", ar_a: "(هل هم طلاب؟)" },
+                { tr_q: "Onlar mutlu ____?", tr_a: "Onlar mutlu mu?", en_q: "(Are they happy?)", en_a: "(Are they happy?)", ar_q: "(هل هم سعداء؟)", ar_a: "(هل هم سعداء؟)" },
+                { tr_q: "Onlar doktor ____?", tr_a: "Onlar doktor mu?", en_q: "(Are they doctors?)", en_a: "(Are they doctors?)", ar_q: "(هل هم أطباء؟)", ar_a: "(هل هم أطباء؟)" },
+                { tr_q: "Onlar yorgun ____?", tr_a: "Onlar yorgun mu?", en_q: "(Are they tired?)", en_a: "(Are they tired?)", ar_q: "(هل هم متعبون؟)", ar_a: "(هل هم متعبون؟)" },
+                { tr_q: "Onlar evde ____?", tr_a: "Onlar evde mi?", en_q: "(Are they at home?)", en_a: "(Are they at home?)", ar_q: "(هل هم في البيت؟)", ar_a: "(هل هم في البيت؟)" },
+                { tr_q: "Onlar öğrenci____ ____?", tr_a: "Onlar öğrenciler mi?", en_q: "(Are they students? (long form))", en_a: "(Are they students? (long form))", ar_q: "(هل هم طلاب؟ (صيغة طويلة))", ar_a: "(هل هم طلاب؟ (صيغة طويلة))" },
+
+                // 4a. Present Negative Question: Ben
+                { tr_q: "Ben öğrenci ____ ____?", tr_a: "Ben öğrenci değil miyim?", en_q: "(Am I not a student?)", en_a: "(Am I not a student?)", ar_q: "(ألست طالباً؟)", ar_a: "(ألست طالباً؟)" },
+                { tr_q: "Ben mutlu ____ ____?", tr_a: "Ben mutlu değil miyim?", en_q: "(Am I not happy?)", en_a: "(Am I not happy?)", ar_q: "(ألست سعيداً؟)", ar_a: "(ألست سعيداً؟)" },
+                { tr_q: "Ben doktor ____ ____?", tr_a: "Ben doktor değil miyim?", en_q: "(Am I not a doctor?)", en_a: "(Am I not a doctor?)", ar_q: "(ألست طبيباً؟)", ar_a: "(ألست طبيباً؟)" },
+                { tr_q: "Ben yorgun ____ ____?", tr_a: "Ben yorgun değil miyim?", en_q: "(Am I not tired?)", en_a: "(Am I not tired?)", ar_q: "(ألست متعباً؟)", ar_a: "(ألست متعباً؟)" },
+                { tr_q: "Ben evde ____ ____?", tr_a: "Ben evde değil miyim?", en_q: "(Am I not at home?)", en_a: "(Am I not at home?)", ar_q: "(ألست في البيت؟)", ar_a: "(ألست في البيت؟)" },
+                { tr_q: "Ben haklı ____ ____?", tr_a: "Ben haklı değil miyim?", en_q: "(Am I not right?)", en_a: "(Am I not right?)", ar_q: "(ألست على حق؟)", ar_a: "(ألست على حق؟)" },
+
+                // 4b. Present Negative Question: Sen
+                { tr_q: "Sen öğrenci ____ ____?", tr_a: "Sen öğrenci değil misin?", en_q: "(Aren't you a student?)", en_a: "(Aren't you a student?)", ar_q: "(ألست طالباً؟)", ar_a: "(ألست طالباً؟)" },
+                { tr_q: "Sen mutlu ____ ____?", tr_a: "Sen mutlu değil misin?", en_q: "(Aren't you happy?)", en_a: "(Aren't you happy?)", ar_q: "(ألست سعيداً؟)", ar_a: "(ألست سعيداً؟)" },
+                { tr_q: "Sen doktor ____ ____?", tr_a: "Sen doktor değil misin?", en_q: "(Aren't you a doctor?)", en_a: "(Aren't you a doctor?)", ar_q: "(ألست طبيباً؟)", ar_a: "(ألست طبيباً؟)" },
+                { tr_q: "Sen yorgun ____ ____?", tr_a: "Sen yorgun değil misin?", en_q: "(Aren't you tired?)", en_a: "(Aren't you tired?)", ar_q: "(ألست متعباً؟)", ar_a: "(ألست متعباً؟)" },
+                { tr_q: "Sen evde ____ ____?", tr_a: "Sen evde değil misin?", en_q: "(Aren't you at home?)", en_a: "(Aren't you at home?)", ar_q: "(ألست في البيت؟)", ar_a: "(ألست في البيت؟)" },
+                { tr_q: "Sen emin ____ ____?", tr_a: "Sen emin değil misin?", en_q: "(Aren't you sure?)", en_a: "(Aren't you sure?)", ar_q: "(ألست متأكداً؟)", ar_a: "(ألست متأكداً؟)" },
+
+                // 4c. Present Negative Question: O
+                { tr_q: "O öğrenci ____ ____?", tr_a: "O öğrenci değil mi?", en_q: "(Isn't he/she a student?)", en_a: "(Isn't he/she a student?)", ar_q: "(أليس/أليست طالباً؟)", ar_a: "(أليس/أليست طالباً؟)" },
+                { tr_q: "O mutlu ____ ____?", tr_a: "O mutlu değil mi?", en_q: "(Isn't he/she happy?)", en_a: "(Isn't he/she happy?)", ar_q: "(أليس/أليست سعيداً؟)", ar_a: "(أليس/أليست سعيداً؟)" },
+                { tr_q: "O doktor ____ ____?", tr_a: "O doktor değil mi?", en_q: "(Isn't he/she a doctor?)", en_a: "(Isn't he/she a doctor?)", ar_q: "(أليس/أليست طبيباً؟)", ar_a: "(أليس/أليست طبيباً؟)" },
+                { tr_q: "O yorgun ____ ____?", tr_a: "O yorgun değil mi?", en_q: "(Isn't he/she tired?)", en_a: "(Isn't he/she tired?)", ar_q: "(أليس/أليست متعباً؟)", ar_a: "(أليس/أليست متعباً؟)" },
+                { tr_q: "O evde ____ ____?", tr_a: "O evde değil mi?", en_q: "(Isn't he/she at home?)", en_a: "(Isn't he/she at home?)", ar_q: "(أليس/أليست في البيت؟)", ar_a: "(أليس/أليست في البيت؟)" },
+                { tr_q: "Bu zor ____ ____?", tr_a: "Bu zor değil mi?", en_q: "(Isn't this difficult?)", en_a: "(Isn't this difficult?)", ar_q: "(أليس هذا صعباً؟)", ar_a: "(أليس هذا صعباً؟)" },
+
+                // 4d. Present Negative Question: Biz
+                { tr_q: "Biz öğrenci ____ ____?", tr_a: "Biz öğrenci değil miyiz?", en_q: "(Aren't we students?)", en_a: "(Aren't we students?)", ar_q: "(ألسنا طلاباً؟)", ar_a: "(ألسنا طلاباً؟)" },
+                { tr_q: "Biz mutlu ____ ____?", tr_a: "Biz mutlu değil miyiz?", en_q: "(Aren't we happy?)", en_a: "(Aren't we happy?)", ar_q: "(ألسنا سعداء؟)", ar_a: "(ألسنا سعداء؟)" },
+                { tr_q: "Biz doktor ____ ____?", tr_a: "Biz doktor değil miyiz?", en_q: "(Aren't we doctors?)", en_a: "(Aren't we doctors?)", ar_q: "(ألسنا أطباء؟)", ar_a: "(ألسنا أطباء؟)" },
+                { tr_q: "Biz yorgun ____ ____?", tr_a: "Biz yorgun değil miyiz?", en_q: "(Aren't we tired?)", en_a: "(Aren't we tired?)", ar_q: "(ألسنا متعبين؟)", ar_a: "(ألسنا متعبين؟)" },
+                { tr_q: "Biz evde ____ ____?", tr_a: "Biz evde değil miyiz?", en_q: "(Aren't we at home?)", en_a: "(Aren't we at home?)", ar_q: "(ألسنا في البيت؟)", ar_a: "(ألسنا في البيت؟)" },
+                { tr_q: "Biz haklı ____ ____?", tr_a: "Biz haklı değil miyiz?", en_q: "(Aren't we right?)", en_a: "(Aren't we right?)", ar_q: "(ألسنا على حق؟)", ar_a: "(ألسنا على حق؟)" },
+
+                // 4e. Present Negative Question: Siz
+                { tr_q: "Siz öğrenci ____ ____?", tr_a: "Siz öğrenci değil misiniz?", en_q: "(Aren't you (pl.) students?)", en_a: "(Aren't you (pl.) students?)", ar_q: "(ألستم طلاباً؟)", ar_a: "(ألستم طلاباً؟)" },
+                { tr_q: "Siz mutlu ____ ____?", tr_a: "Siz mutlu değil misiniz?", en_q: "(Aren't you (pl.) happy?)", en_a: "(Aren't you (pl.) happy?)", ar_q: "(ألستم سعداء؟)", ar_a: "(ألستم سعداء؟)" },
+                { tr_q: "Siz doktor ____ ____?", tr_a: "Siz doktor değil misiniz?", en_q: "(Aren't you (pl.) doctors?)", en_a: "(Aren't you (pl.) doctors?)", ar_q: "(ألستم أطباء؟)", ar_a: "(ألستم أطباء؟)" },
+                { tr_q: "Siz yorgun ____ ____?", tr_a: "Siz yorgun değil misiniz?", en_q: "(Aren't you (pl.) tired?)", en_a: "(Aren't you (pl.) tired?)", ar_q: "(ألستم متعبين؟)", ar_a: "(ألستم متعبين؟)" },
+                { tr_q: "Siz evde ____ ____?", tr_a: "Siz evde değil misiniz?", en_q: "(Aren't you (pl.) at home?)", en_a: "(Aren't you (pl.) at home?)", ar_q: "(ألستم في البيت؟)", ar_a: "(ألستم في البيت؟)" },
+                { tr_q: "Siz emin ____ ____?", tr_a: "Siz emin değil misiniz?", en_q: "(Aren't you (pl.) sure?)", en_a: "(Aren't you (pl.) sure?)", ar_q: "(ألستم متأكدين؟)", ar_a: "(ألستم متأكدين؟)" },
+
+                // 4f. Present Negative Question: Onlar
+                { tr_q: "Onlar öğrenci ____ ____?", tr_a: "Onlar öğrenci değiller mi?", en_q: "(Aren't they students?)", en_a: "(Aren't they students?)", ar_q: "(أليسوا طلاباً؟)", ar_a: "(أليسوا طلاباً؟)" },
+                { tr_q: "Onlar mutlu ____ ____?", tr_a: "Onlar mutlu değiller mi?", en_q: "(Aren't they happy?)", en_a: "(Aren't they happy?)", ar_q: "(أليسوا سعداء؟)", ar_a: "(أليسوا سعداء؟)" },
+                { tr_q: "Onlar doktor ____ ____?", tr_a: "Onlar doktor değiller mi?", en_q: "(Aren't they doctors?)", en_a: "(Aren't they doctors?)", ar_q: "(أليسوا أطباء؟)", ar_a: "(أليسوا أطباء؟)" },
+                { tr_q: "Onlar yorgun ____ ____?", tr_a: "Onlar yorgun değiller mi?", en_q: "(Aren't they tired?)", en_a: "(Aren't they tired?)", ar_q: "(أليسوا متعبين؟)", ar_a: "(أليسوا متعبين؟)" },
+                { tr_q: "Onlar evde ____ ____?", tr_a: "Onlar evde değiller mi?", en_q: "(Aren't they at home?)", en_a: "(Aren't they at home?)", ar_q: "(أليسوا في البيت؟)", ar_a: "(أليسوا في البيت؟)" },
+                { tr_q: "Onlar hazır ____ ____?", tr_a: "Onlar hazır değiller mi?", en_q: "(Aren't they ready?)", en_a: "(Aren't they ready?)", ar_q: "(أليسوا جاهزين؟)", ar_a: "(أليسوا جاهزين؟)" },
+
+                // --- 2. PAST TENSE (-di) ---
+
+                // 5a. Past Affirmative: Ben
+                { tr_q: "Ben dün hasta____.", tr_a: "Ben dün hastaydım.", en_q: "(I was sick yesterday.)", en_a: "(I was sick yesterday.)", ar_q: "(كنت مريضاً البارحة.)", ar_a: "(كنت مريضاً البارحة.)" },
+                { tr_q: "Ben öğrenci____.", tr_a: "Ben öğrenciydim.", en_q: "(I was a student.)", en_a: "(I was a student.)", ar_q: "(كنت طالباً.)", ar_a: "(كنت طالباً.)" },
+                { tr_q: "Ben yorgun____.", tr_a: "Ben yorgundum.", en_q: "(I was tired.)", en_a: "(I was tired.)", ar_q: "(كنت متعباً.)", ar_a: "(كنت متعباً.)" },
+                { tr_q: "Ben evde____.", tr_a: "Ben evdeydim.", en_q: "(I was at home.)", en_a: "(I was at home.)", ar_q: "(كنت في البيت.)", ar_a: "(كنت في البيت.)" },
+                { tr_q: "Ben genç____.", tr_a: "Ben gençtim.", en_q: "(I was young.)", en_a: "(I was young.)", ar_q: "(كنت شاباً.)", ar_a: "(كنت شاباً.)" },
+                { tr_q: "Ben çocuk____.", tr_a: "Ben çocuktum.", en_q: "(I was a child.)", en_a: "(I was a child.)", ar_q: "(كنت طفلاً.)", ar_a: "(كنت طفلاً.)" },
+
+                // 5b. Past Affirmative: Sen
+                { tr_q: "Sen dün hasta____.", tr_a: "Sen dün hastaydın.", en_q: "(You were sick yesterday.)", en_a: "(You were sick yesterday.)", ar_q: "(كنت مريضاً البارحة.)", ar_a: "(كنت مريضاً البارحة.)" },
+                { tr_q: "Sen öğrenci____.", tr_a: "Sen öğrenciydin.", en_q: "(You were a student.)", en_a: "(You were a student.)", ar_q: "(كنت طالباً.)", ar_a: "(كنت طالباً.)" },
+                { tr_q: "Sen yorgun____.", tr_a: "Sen yorgundun.", en_q: "(You were tired.)", en_a: "(You were tired.)", ar_q: "(كنت متعباً.)", ar_a: "(كنت متعباً.)" },
+                { tr_q: "Sen evde____.", tr_a: "Sen evdeydin.", en_q: "(You were at home.)", en_a: "(You were at home.)", ar_q: "(كنت في البيت.)", ar_a: "(كنت في البيت.)" },
+                { tr_q: "Sen genç____.", tr_a: "Sen gençtin.", en_q: "(You were young.)", en_a: "(You were young.)", ar_q: "(كنت شاباً.)", ar_a: "(كنت شاباً.)" },
+                { tr_q: "Sen aç____.", tr_a: "Sen açtın.", en_q: "(You were hungry.)", en_a: "(You were hungry.)", ar_q: "(كنت جائعاً.)", ar_a: "(كنت جائعاً.)" },
+                
+                // 5c. Past Affirmative: O
+                { tr_q: "O dün hasta____.", tr_a: "O dün hastaydı.", en_q: "(He/She was sick yesterday.)", en_a: "(He/She was sick yesterday.)", ar_q: "(كان مريضاً البارحة.)", ar_a: "(كان مريضاً البارحة.)" },
+                { tr_q: "O öğrenci____.", tr_a: "O öğrenciydi.", en_q: "(He/She was a student.)", en_a: "(He/She was a student.)", ar_q: "(كان طالباً.)", ar_a: "(كان طالباً.)" },
+                { tr_q: "O yorgun____.", tr_a: "O yorgundu.", en_q: "(He/She was tired.)", en_a: "(He/She was tired.)", ar_q: "(كان متعباً.)", ar_a: "(كان متعباً.)" },
+                { tr_q: "O evde____.", tr_a: "O evdeydi.", en_q: "(He/She was at home.)", en_a: "(He/She was at home.)", ar_q: "(كان في البيت.)", ar_a: "(كان في البيت.)" },
+                { tr_q: "O genç____.", tr_a: "O gençti.", en_q: "(He/She was young.)", en_a: "(He/She was young.)", ar_q: "(كان شاباً.)", ar_a: "(كان شاباً.)" },
+                { tr_q: "Hava soğuk____.", tr_a: "Hava soğuktu.", en_q: "(The weather was cold.)", en_a: "(The weather was cold.)", ar_q: "(كان الطقس بارداً.)", ar_a: "(كان الطقس بارداً.)" },
+
+                // 5d. Past Affirmative: Biz
+                { tr_q: "Biz dün hasta____.", tr_a: "Biz dün hastaydık.", en_q: "(We were sick yesterday.)", en_a: "(We were sick yesterday.)", ar_q: "(كنا مرضى البارحة.)", ar_a: "(كنا مرضى البارحة.)" },
+                { tr_q: "Biz öğrenci____.", tr_a: "Biz öğrenciydik.", en_q: "(We were students.)", en_a: "(We were students.)", ar_q: "(كنا طلاباً.)", ar_a: "(كنا طلاباً.)" },
+                { tr_q: "Biz yorgun____.", tr_a: "Biz yorgunduk.", en_q: "(We were tired.)", en_a: "(We were tired.)", ar_q: "(كنا متعبين.)", ar_a: "(كنا متعبين.)" },
+                { tr_q: "Biz evde____.", tr_a: "Biz evdeydik.", en_q: "(We were at home.)", en_a: "(We were at home.)", ar_q: "(كنا في البيت.)", ar_a: "(كنا في البيت.)" },
+                { tr_q: "Biz genç____.", tr_a: "Biz gençtik.", en_q: "(We were young.)", en_a: "(We were young.)", ar_q: "(كنا شباباً.)", ar_a: "(كنا شباباً.)" },
+
+                // 5e. Past Affirmative: Siz
+                { tr_q: "Siz dün hasta____.", tr_a: "Siz dün hastaydınız.", en_q: "(You (pl.) were sick yesterday.)", en_a: "(You (pl.) were sick yesterday.)", ar_q: "(كنتم مرضى البارحة.)", ar_a: "(كنتم مرضى البارحة.)" },
+                { tr_q: "Siz öğrenci____.", tr_a: "Siz öğrenciydiniz.", en_q: "(You (pl.) were students.)", en_a: "(You (pl.) were students.)", ar_q: "(كنتم طلاباً.)", ar_a: "(كنتم طلاباً.)" },
+                { tr_q: "Siz yorgun____.", tr_a: "Siz yorgundunuz.", en_q: "(You (pl.) were tired.)", en_a: "(You (pl.) were tired.)", ar_q: "(كنتم متعبين.)", ar_a: "(كنتم متعبين.)" },
+                { tr_q: "Siz evde____.", tr_a: "Siz evdeydiniz.", en_q: "(You (pl.) were at home.)", en_a: "(You (pl.) were at home.)", ar_q: "(كنتم في البيت.)", ar_a: "(كنتم في البيت.)" },
+                { tr_q: "Siz genç____.", tr_a: "Siz gençtiniz.", en_q: "(You (pl.) were young.)", en_a: "(You (pl.) were young.)", ar_q: "(كنتم شباباً.)", ar_a: "(كنتم شباباً.)" },
+
+                // 5f. Past Affirmative: Onlar
+                { tr_q: "Onlar dün hasta____.", tr_a: "Onlar dün hastaydılar.", en_q: "(They were sick yesterday.)", en_a: "(They were sick yesterday.)", ar_q: "(كانوا مرضى البارحة.)", ar_a: "(كانوا مرضى البارحة.)" },
+                { tr_q: "Onlar öğrenci____.", tr_a: "Onlar öğrenciydiler.", en_q: "(They were students.)", en_a: "(They were students.)", ar_q: "(كانوا طلاباً.)", ar_a: "(كانوا طلاباً.)" },
+                { tr_q: "Onlar yorgun____.", tr_a: "Onlar yorgundular.", en_q: "(They were tired.)", en_a: "(They were tired.)", ar_q: "(كانوا متعبين.)", ar_a: "(كانوا متعبين.)" },
+                { tr_q: "Onlar evde____.", tr_a: "Onlar evdeydiler.", en_q: "(They were at home.)", en_a: "(They were at home())", ar_q: "(كانوا في البيت.)", ar_a: "(كانوا في البيت.)" },
+                { tr_q: "Onlar genç____.", tr_a: "Onlar gençtiler.", en_q: "(They were young.)", en_a: "(They were young.)", ar_q: "(كانوا شباباً.)", ar_a: "(كانوا شباباً.)" },
+                
+                // 6. Past Negative (Mixed)
+                { tr_q: "Ben dün hasta ____.", tr_a: "Ben dün hasta değildim.", en_q: "(I was not sick yesterday.)", en_a: "(I was not sick yesterday.)", ar_q: "(لم أكن مريضاً البارحة.)", ar_a: "(لم أكن مريضاً البارحة.)" },
+                { tr_q: "Sen öğrenci ____.", tr_a: "Sen öğrenci değildin.", en_q: "(You were not a student.)", en_a: "(You were not a student.)", ar_q: "(لم تكن طالباً.)", ar_a: "(لم تكن طالباً.)" },
+                { tr_q: "O yorgun ____.", tr_a: "O yorgun değildi.", en_q: "(He/She was not tired.)", en_a: "(He/She was not tired.)", ar_q: "(لم يكن متعباً.)", ar_a: "(لم يكن متعباً.)" },
+                { tr_q: "Biz evde ____.", tr_a: "Biz evde değildik.", en_q: "(We were not at home.)", en_a: "(We were not at home.)", ar_q: "(لم نكن في البيت.)", ar_a: "(لم نكن في البيت.)" },
+                { tr_q: "Siz genç ____.", tr_a: "Siz genç değildiniz.", en_q: "(You (pl.) were not young.)", en_a: "(You (pl.) were not young.)", ar_q: "(لم تكونوا شباباً.)", ar_a: "(لم تكونوا شباباً.)" },
+                { tr_q: "Onlar hazır ____.", tr_a: "Onlar hazır değildiler.", en_q: "(They were not ready.)", en_a: "(They were not ready.)", ar_q: "(لم يكونوا جاهزين.)", ar_a: "(لم يكونوا جاهزين.)" },
+                { tr_q: "Hava soğuk ____.", tr_a: "Hava soğuk değildi.", en_q: "(The weather was not cold.)", en_a: "(The weather was not cold.)", ar_q: "(لم يكن الطقس بارداً.)", ar_a: "(لم يكن الطقس بارداً.)" },
+
+                // 7. Past Question (Mixed)
+                { tr_q: "Ben dün hasta ____ ____?", tr_a: "Ben dün hasta mıydım?", en_q: "(Was I sick yesterday?)", en_a: "(Was I sick yesterday?)", ar_q: "(هل كنت مريضاً البارحة؟)", ar_a: "(هل كنت مريضاً البارحة؟)" },
+                { tr_q: "Sen öğrenci ____ ____?", tr_a: "Sen öğrenci miydin?", en_q: "(Were you a student?)", en_a: "(Were you a student?)", ar_q: "(هل كنت طالباً؟)", ar_a: "(هل كنت طالباً؟)" },
+                { tr_q: "O yorgun ____ ____?", tr_a: "O yorgun muydu?", en_q: "(Was he/she tired?)", en_a: "(Was he/she tired?)", ar_q: "(هل كان متعباً؟)", ar_a: "(هل كان متعباً؟)" },
+                { tr_q: "Biz evde ____ ____?", tr_a: "Biz evde miydik?", en_q: "(Were we at home?)", en_a: "(Were we at home?)", ar_q: "(هل كنا في البيت؟)", ar_a: "(هل كنا في البيت؟)" },
+                { tr_q: "Siz genç ____ ____?", tr_a: "Siz genç miydiniz?", en_q: "(Were you (pl.) young?)", en_a: "(Were you (pl.) young?)", ar_q: "(هل كنتم شباباً؟)", ar_a: "(هل كنتم شباباً؟)" },
+                { tr_q: "Onlar hazır ____ ____?", tr_a: "Onlar hazır mıydılar?", en_q: "(Were they ready?)", en_a: "(Were they ready?)", ar_q: "(هل كانوا جاهزين؟)", ar_a: "(هل كانوا جاهزين؟)" },
+                { tr_q: "Hava soğuk ____ ____?", tr_a: "Hava soğuk muydu?", en_q: "(Was the weather cold?)", en_a: "(Was the weather cold?)", ar_q: "(هل كان الطقس بارداً؟)", ar_a: "(هل كان الطقس بارداً؟)" },
+
+                // 8. Past Negative Question (Mixed)
+                { tr_q: "Ben dün hasta ____ ____?", tr_a: "Ben dün hasta değil miydim?", en_q: "(Wasn't I sick yesterday?)", en_a: "(Wasn't I sick yesterday?)", ar_q: "(ألم أكن مريضاً البارحة؟)", ar_a: "(ألم أكن مريضاً البارحة؟)" },
+                { tr_q: "Sen öğrenci ____ ____?", tr_a: "Sen öğrenci değil miydin?", en_q: "(Aren't you a student?)", en_a: "(Aren't you a student?)", ar_q: "(ألم تكن طالباً؟)", ar_a: "(ألم تكن طالباً؟)" },
+                { tr_q: "O yorgun ____ ____?", tr_a: "O yorgun değil miydi?", en_q: "(Wasn't he/she tired?)", en_a: "(Wasn't he/she tired?)", ar_q: "(ألم يكن متعباً؟)", ar_a: "(ألم يكن متعباً؟)" },
+                { tr_q: "Biz evde ____ ____?", tr_a: "Biz evde değil miydik?", en_q: "(Aren't we at home?)", en_a: "(Aren't we at home?)", ar_q: "(ألم نكن في البيت؟)", ar_a: "(ألم نكن في البيت؟)" },
+                { tr_q: "Siz genç ____ ____?", tr_a: "Siz genç değil miydiniz?", en_q: "(Aren't you (pl.) young?)", en_a: "(Aren't you (pl.) young?)", ar_q: "(ألم تكونوا شباباً؟)", ar_a: "(ألم تكونوا شباباً؟)" },
+                { tr_q: "Onlar hazır ____ ____?", tr_a: "Onlar hazır değiller miydi?", en_q: "(Aren't they ready?)", en_a: "(Aren't they ready?)", ar_q: "(ألم يكونوا جاهزين؟)", ar_a: "(ألم يكونوا جاهزين؟)" },
+                { tr_q: "Hava soğuk ____ ____?", tr_a: "Hava soğuk değil miydi?", en_q: "(Wasn't the weather cold?)", en_a: "(Wasn't the weather cold?)", ar_q: "(ألم يكن الطقس بارداً؟)", ar_a: "(ألم يكن الطقس بارداً؟)" },
+
+                // --- 3. INFERENTIAL PAST (-miş) ---
+                
+                // 9a. Inferential Affirmative
+                { tr_q: "Ben küçükken çok yaramaz____.", tr_a: "Ben küçükken çok yaramazmışım.", en_q: "(Apparently, I was very naughty when I was little.)", en_a: "(Apparently, I was very naughty when I was little.)", ar_q: "(يُقال أنني كنت شقياً جداً عندما كنت صغيراً.)", ar_a: "(يُقال أنني كنت شقياً جداً عندما كنت صغيراً.)" },
+                { tr_q: "Sen eskiden öğretmen____.", tr_a: "Sen eskiden öğretmenmişsin.", en_q: "(Apparently, you were a teacher in the past.)", en_a: "(Apparently, you were a teacher in the past.)", ar_q: "(يُقال أنك كنت معلماً في الماضي.)", ar_a: "(يُقال أنك كنت معلماً في الماضي.)" },
+                { tr_q: "O çok zengin____.", tr_a: "O çok zenginmiş.", en_q: "(They say he/she is very rich.)", en_a: "(They say he/she is very rich.)", ar_q: "(يُقال أنه غني جداً.)", ar_a: "(يُقال أنه غني جداً.)" },
+                { tr_q: "Biz dün çok komik____.", tr_a: "Biz dün çok komikmişiz.", en_q: "(Apparently, we were very funny yesterday.)", en_a: "(Apparently, we were very funny yesterday.)", ar_q: "(يبدو أننا كنا مضحكين جداً البارحة.)", ar_a: "(يبدو أننا كنا مضحكين جداً البارحة.)" },
+                { tr_q: "Siz evli____.", tr_a: "Siz evliymişsiniz.", en_q: "(I just found out you (pl.) are married.)", en_a: "(I just found out you (pl.) are married.)", ar_q: "(علمت للتو أنكم متزوجون.)", ar_a: "(علمت للتو أنكم متزوجون.)" },
+                { tr_q: "Onlar öğrenci____.", tr_a: "Onlar öğrenciymişler.", en_q: "(Apparently, they are students.)", en_a: "(Apparently, they are students.)", ar_q: "(يُقال أنهم طلاب.)", ar_a: "(يُقال أنهم طلاب.)" },
+                { tr_q: "Film çok güzel____.", tr_a: "Film çok güzelmiş.", en_q: "(I heard the movie is very good.)", en_a: "(I heard the movie is very good.)", ar_q: "(سمعت أن الفيلم جميل جداً.)", ar_a: "(سمعت أن الفيلم جميل جداً.)" },
+
+                // 9b. Inferential Negative
+                { tr_q: "Ben o kadar da iyi ____.", tr_a: "Ben o kadar da iyi değilmişim.", en_q: "(Apparently, I am not that good.)", en_a: "(Apparently, I am not that good.)", ar_q: "(يبدو أنني لست جيداً لتلك الدرجة.)", ar_a: "(يبدو أنني لست جيداً لتلك الدرجة.)" },
+                { tr_q: "Sen yorgun ____.", tr_a: "Sen yorgun değilmişsin.", en_q: "(Apparently, you are not tired.)", en_a: "(Apparently, you are not tired.)", ar_q: "(يبدو أنك لست متعباً.)", ar_a: "(يبدو أنك لست متعباً.)" },
+                { tr_q: "O evli ____.", tr_a: "O evli değilmiş.", en_q: "(Apparently, he/she is not married.)", en_a: "(Apparently, he/she is not married.)", ar_q: "(يُقال أنه ليس متزوجاً.)", ar_a: "(يُقال أنه ليس متزوجاً.)" },
+                { tr_q: "Biz haklı ____.", tr_a: "Biz haklı değilmişiz.", en_q: "(It seems we are not right.)", en_a: "(It seems we are not right.)", ar_q: "(يبدو أننا لسنا على حق.)", ar_a: "(يبدو أننا لسنا على حق.)" },
+                { tr_q: "Siz evde ____.", tr_a: "Siz evde değilmişsiniz.", en_q: "(Apparently, you (pl.) were not at home.)", en_a: "(Apparently, you (pl.) were not at home.)", ar_q: "(يبدو أنكم لم تكونوا في البيت.)", ar_a: "(يبدو أنكم لم تكونوا في البيت.)" },
+                { tr_q: "Onlar öğrenci ____.", tr_a: "Onlar öğrenci değillermiş.", en_q: "(Apparently, they are not students.)", en_a: "(Apparently, they are not students.)", ar_q: "(يُقال أنهم ليسوا طلاباً.)", ar_a: "(يُقال أنهم ليسوا طلاباً.)" },
+
+                // 9c. Inferential Question
+                { tr_q: "Ben yaramaz ____ ____?", tr_a: "Ben yaramaz mıymışım?", en_q: "(Was I naughty, apparently?)", en_a: "(Was I naughty, apparently?)", ar_q: "(هل كنت شقياً، كما يُقال؟)", ar_a: "(هل كنت شقياً، كما يُقال؟)" },
+                { tr_q: "Sen öğrenci ____ ____?", tr_a: "Sen öğrenci miymişsin?", en_q: "(Are you a student, apparently?)", en_a: "(Are you a student, apparently?)", ar_q: "(هل أنت طالب، كما يُقال؟)", ar_a: "(هل أنت طالب، كما يُقال؟)" },
+                { tr_q: "O zengin ____ ____?", tr_a: "O zengin miymiş?", en_q: "(Is he/she rich, I wonder?)", en_a: "(Is he/she rich, I wonder?)", ar_q: "(هل هو غني، يا ترى؟)", ar_a: "(هل هو غني، يا ترى؟)" },
+                { tr_q: "Biz komik ____ ____?", tr_a: "Biz komik miymişiz?", en_q: "(Were we funny, apparently?)", en_a: "(Were we funny, apparently?)", ar_q: "(هل كنا مضحكين، كما يُقال؟)", ar_a: "(هل كنا مضحكين، كما يُقال؟)" },
+                { tr_q: "Siz evli ____ ____?", tr_a: "Siz evli miymişsiniz?", en_q: "(Are you (pl.) married, I hear?)", en_a: "(Are you (pl.) married, I hear?)", ar_q: "(هل أنتم متزوجون، كما سمعت؟)", ar_a: "(هل أنتم متزوجون، كما سمعت؟)" },
+                { tr_q: "Onlar yorgun ____ ____?", tr_a: "Onlar yorgun muymuşlar?", en_q: "(Are they tired, apparently?)", en_a: "(Are they tired, apparently?)", ar_q: "(هل هم متعبون، كما يُقال؟)", ar_a: "(هل هم متعبون، كما يُقال؟)" },
+
+                // 9d. Inferential Negative Question
+                { tr_q: "Ben orada ____ ____?", tr_a: "Ben orada değil miymişim?", en_q: "(Wasn't I there, apparently?)", en_a: "(Wasn't I there, apparently?)", ar_q: "(ألم أكن هناك، كما يُقال؟)", ar_a: "(ألم أكن هناك، كما يُقال؟)" },
+                { tr_q: "Sen mutlu ____ ____?", tr_a: "Sen mutlu değil miymişsin?", en_q: "(Aren't you happy, apparently?)", en_a: "(Aren't you happy, apparently?)", ar_q: "(ألست سعيداً، كما يبدو؟)", ar_a: "(ألست سعيداً، كما يبدو؟)" },
+                { tr_q: "O evli ____ ____?", tr_a: "O evli değil miymiş?", en_q: "(Isn't he/she married, apparently?)", en_a: "(Isn't he/she married, apparently?)", ar_q: "(أليس متزوجاً، كما يُقال؟)", ar_a: "(أليس متزوجاً، كما يُقال؟)" },
+                { tr_q: "Biz haklı ____ ____?", tr_a: "Biz haklı değil miymişiz?", en_q: "(Aren't we right, it seems?)", en_a: "(Aren't we right, it seems?)", ar_q: "(ألسنا على حق، كما يبدو؟)", ar_a: "(ألسنا على حق، كما يبدو؟)" },
+
+                // --- 4. CONDITIONAL (-se) ---
+
+                // 10a. Conditional Affirmative
+                { tr_q: "Ben evde____, ara.", tr_a: "Ben evdeysem, ara.", en_q: "(If I am at home, call.)", en_a: "(If I am at home, call.)", ar_q: "(إذا كنت في البيت، اتصل.)", ar_a: "(إذا كنت في البيت، اتصل.)" },
+                { tr_q: "Ben yorgun____, uyuyacağım.", tr_a: "Ben yorgunsam, uyuyacağım.", en_q: "(If I am tired, I will sleep.)", en_a: "(If I am tired, I will sleep.)", ar_q: "(إذا كنت متعباً، سأنام.)", ar_a: "(إذا كنت متعباً، سأنام.)" },
+                { tr_q: "Sen hazır ____, gidelim.", tr_a: "Sen hazırsan, gidelim.", en_q: "(If you are ready, let's go.)", en_a: "(If you are ready, let's go.)", ar_q: "(إذا كنت جاهزاً، فلنذهب.)", ar_a: "(إذا كنت جاهزاً، فلنذهب.)" },
+                { tr_q: "Sen mutlu____, ben de mutluyum.", tr_a: "Sen mutluysan, ben de mutluyum.", en_q: "(If you are happy, I am happy too.)", en_a: "(If you are happy, I am happy too.)", ar_q: "(إذا كنت سعيداً، فأنا سعيد أيضاً.)", ar_a: "(إذا كنت سعيداً، فأنا سعيد أيضاً.)" },
+                { tr_q: "O mutlu ____, sorun yok.", tr_a: "O mutluysa, sorun yok.", en_q: "(If he/she is happy, no problem.)", en_a: "(If he/she is happy, no problem.)", ar_q: "(إذا كان سعيداً، لا مشكلة.)", ar_a: "(إذا كان سعيداً، لا مشكلة.)" },
+                { tr_q: "O evde____, ziyaret edelim.", tr_a: "O evdeyse, ziyaret edelim.", en_q: "(If he/she is at home, let's visit.)", en_a: "(If he/she is at home, let's visit.)", ar_q: "(إذا كان في البيت، فلنزره.)", ar_a: "(إذا كان في البيت، فلنزره.)" },
+                { tr_q: "Biz haklı____, devam edelim.", tr_a: "Biz haklıysak, devam edelim.", en_q: "(If we are right, let's continue.)", en_a: "(If we are right, let's continue.)", ar_q: "(إذا كنا على حق، فلنستمر.)", ar_a: "(إذا كنا على حق، فلنستمر.)" },
+                { tr_q: "Siz yorgun____, dinlenin.", tr_a: "Siz yorgunsanız, dinlenin.", en_q: "(If you (pl.) are tired, rest.)", en_a: "(If you (pl.) are tired, rest.)", ar_q: "(إذا كنتم متعبين، استريحوا.)", ar_a: "(إذا كنتم متعبين، استريحوا.)" },
+                { tr_q: "Onlar öğrenci____, indirim var.", tr_a: "Onlar öğrenciyseler, indirim var.", en_q: "(If they are students, there is a discount.)", en_a: "(If they are students, there is a discount.)", ar_q: "(إذا كانوا طلاباً، يوجد خصم.)", ar_a: "(إذا كانوا طلاباً، يوجد خصم.)" },
+                { tr_q: "Hava güzel____, dışarı çıkalım.", tr_a: "Hava güzelse, dışarı çıkalım.", en_q: "(If the weather is nice, let's go out.)", en_a: "(If the weather is nice, let's go out.)", ar_q: "(إذا كان الطقس جميلاً، فلنخرج.)", ar_a: "(إذا كان الطقس جميلاً، فلنخرج.)" },
+
+                // 10b. Conditional Negative
+                { tr_q: "Ben evde ____, beni bekleme.", tr_a: "Ben evde değilsem, beni bekleme.", en_q: "(If I am not at home, don't wait for me.)", en_a: "(If I am not at home, don't wait for me.)", ar_q: "(إذا لم أكن في البيت، لا تنتظرني.)", ar_a: "(إذا لم أكن في البيت، لا تنتظرني.)" },
+                { tr_q: "Sen hazır ____, gidemeyiz.", tr_a: "Sen hazır değilsen, gidemeyiz.", en_q: "(If you are not ready, we can't go.)", en_a: "(If you are not ready, we can't go.)", ar_q: "(إذا لم تكن جاهزاً، لا يمكننا الذهاب.)", ar_a: "(إذا لم تكن جاهزاً، لا يمكننا الذهاب.)" },
+                { tr_q: "O mutlu ____, bir sorun var.", tr_a: "O mutlu değilse, bir sorun var.", en_q: "(If he/she is not happy, there is a problem.)", en_a: "(If he/she is not happy, there is a problem.)", ar_q: "(إذا لم يكن سعيداً، فهناك مشكلة.)", ar_a: "(إذا لم يكن سعيداً، فهناك مشكلة.)" },
+                { tr_q: "Biz haklı ____, ne yapacağız?", tr_a: "Biz haklı değilsek, ne yapacağız?", en_q: "(If we are not right, what will we do?)", en_a: "(If we are not right, what will we do?)", ar_q: "(إذا لم نكن على حق، ماذا سنفعل؟)", ar_a: "(إذا لم نكن على حق، ماذا سنفعل؟)" },
+                { tr_q: "Siz yorgun ____, çalışmayın.", tr_a: "Siz yorgun değilseniz, çalışmayın.", en_q: "(If you (pl.) are not tired, don't... wait, this is wrong. It should be 'çalışın'.)", en_a: "(If you (pl.) are not tired, work.)", ar_q: "(إذا لم تكونوا متعبين، اعملوا.)", ar_a: "(إذا لم تكونوا متعبين، اعملوا.)" }, // Kept logical sentence
+                { tr_q: "Onlar öğrenci ____, indirim yok.", tr_a: "Onlar öğrenci değillerse, indirim yok.", en_q: "(If they are not students, there is no discount.)", en_a: "(If they are not students, there is no discount.)", ar_q: "(إذا لم يكونوا طلاباً، لا يوجد خصم.)", ar_a: "(إذا لم يكونوا طلاباً، لا يوجد خصم.)" },
+                { tr_q: "Hava güzel ____, evde kalalım.", tr_a: "Hava güzel değilse, evde kalalım.", en_q: "(If the weather is not nice, let's stay home.)", en_a: "(If the weather is not nice, let's stay home.)", ar_q: "(إذا لم يكن الطقس جميلاً، فلنبق في البيت.)", ar_a: "(إذا لم يكن الطقس جميلاً، فلنبق في البيت.)" },
+
+                // --- 5. VAR / YOK SYSTEM ---
+
+                // 11a. Var/Yok Present
+                { tr_q: "Param ____.", tr_a: "Param var.", en_q: "(I have money.)", en_a: "(I have money.)", ar_q: "(لدي مال.)", ar_a: "(لدي مال.)" },
+                { tr_q: "Zamanım ____.", tr_a: "Zamanım yok.", en_q: "(I don't have time.)", en_a: "(I don't have time.)", ar_q: "(ليس لدي وقت.)", ar_a: "(ليس لدي وقت.)" },
+                { tr_q: "Senin araban ____ ____?", tr_a: "Senin araban var mı?", en_q: "(Do you have a car?)", en_a: "(Do you have a car?)", ar_q: "(هل لديك سيارة؟)", ar_a: "(هل لديك سيارة؟)" },
+                { tr_q: "Evde süt ____ ____?", tr_a: "Evde süt yok mu?", en_q: "(Isn't there any milk at home?)", en_a: "(Isn't there any milk at home?)", ar_q: "(ألا يوجد حليب في البيت؟)", ar_a: "(ألا يوجد حليب في البيت؟)" },
+                { tr_q: "Onun zamanı ____.", tr_a: "Onun zamanı yok.", en_q: "(He/She doesn't have time.)", en_a: "(He/She doesn't have time.)", ar_q: "(ليس لديه/لديها وقت.)", ar_a: "(ليس لديه/لديها وقت.)" },
+                { tr_q: "Bizim paramız ____.", tr_a: "Bizim paramız var.", en_q: "(We have money.)", en_a: "(We have money.)", ar_q: "(لدينا مال.)", ar_a: "(لدينا مال.)" },
+                { tr_q: "Sizin sorununuz ____ ____?", tr_a: "Sizin sorununuz var mı?", en_q: "(Do you (pl.) have a problem?)", en_a: "(Do you (pl.) have a problem?)", ar_q: "(هل لديكم مشكلة؟)", ar_a: "(هل لديكم مشكلة؟)" },
+                { tr_q: "Onların evi ____.", tr_a: "Onların evi yok.", en_q: "(They don't have a house.)", en_a: "(They don't have a house.)", ar_q: "(ليس لديهم بيت.)", ar_a: "(ليس لديهم بيت.)" },
+                { tr_q: "Masada kitap ____.", tr_a: "Masada kitap var.", en_q: "(There is a book on the table.)", en_a: "(There is a book on the table.)", ar_q: "(يوجد كتاب على الطاولة.)", ar_a: "(يوجد كتاب على الطاولة.)" },
+                { tr_q: "Dolapta yiyecek ____.", tr_a: "Dolapta yiyecek yok.", en_q: "(There is no food in the fridge.)", en_a: "(There is no food in the fridge.)", ar_q: "(لا يوجد طعام في الثلاجة.)", ar_a: "(لا يوجد طعام في الثلاجة.)" },
+
+                // 11b. Var/Yok Past
+                { tr_q: "Param ____ (past).", tr_a: "Param vardı.", en_q: "(I had money.)", en_a: "(I had money.)", ar_q: "(كان لدي مال.)", ar_a: "(كان لدي مال.)" },
+                { tr_q: "Arabam ____ (past, neg).", tr_a: "Arabam yoktu.", en_q: "(I didn't have a car.)", en_a: "(I didn't have a car.)", ar_q: "(لم تكن لدي سيارة.)", ar_a: "(لم تكن لدي سيارة.)" },
+                { tr_q: "Senin zamanın ____ ____? (past)", tr_a: "Senin zamanın var mıydı?", en_q: "(Did you have time?)", en_a: "(Did you have time?)", ar_q: "(هل كان لديك وقت؟)", ar_a: "(هل كان لديك وقت؟)" },
+                { tr_q: "Evde süt ____ ____? (past, neg)", tr_a: "Evde süt yok muydu?", en_q: "(Wasn't there any milk at home?)", en_a: "(Wasn't there any milk at home?)", ar_q: "(ألم يكن هناك حليب في البيت؟)", ar_a: "(ألم يكن هناك حليب في البيت؟)" },
+                { tr_q: "Onun parası ____ (past).", tr_a: "Onun parası vardı.", en_q: "(He/She had money.)", en_a: "(He/She had money.)", ar_q: "(كان لديه/لديها مال.)", ar_a: "(كان لديه/لديها مال.)" },
+                { tr_q: "Bizim zamanımız ____ (past, neg).", tr_a: "Bizim zamanımız yoktu.", en_q: "(We didn't have time.)", en_a: "(We didn't have time.)", ar_q: "(لم يكن لدينا وقت.)", ar_a: "(لم يكن لدينا وقت.)" },
+                { tr_q: "Sizin sorununuz ____ ____? (past)", tr_a: "Sizin sorununuz var mıydı?", en_q: "(Did you (pl.) have a problem?)", en_a: "(Did you (pl.) have a problem?)", ar_q: "(هل كانت لديكم مشكلة؟)", ar_a: "(هل كانت لديكم مشكلة؟)" },
+                { tr_q: "Onların evi ____ (past, neg).", tr_a: "Onların evi yoktu.", en_q: "(They didn't have a house.)", en_a: "(They didn't have a house.)", ar_q: "(لم يكن لديهم بيت.)", ar_a: "(لم يكن لديهم بيت.)" },
+                { tr_q: "Masada kitap ____ (past).", tr_a: "Masada kitap vardı.", en_q: "(There was a book on the table.)", en_a: "(There was a book on the table.)", ar_q: "(كان يوجد كتاب على الطاولة.)", ar_a: "(كان يوجد كتاب على الطاولة.)" },
+                { tr_q: "Dolapta yiyecek ____ (past, neg).", tr_a: "Dolapta yiyecek yoktu.", en_q: "(There was no food in the fridge.)", en_a: "(There was no food in the fridge.)", ar_q: "(لم يكن يوجد طعام في الثلاجة.)", ar_a: "(لم يكن يوجد طعام في الثلاجة.)" },
+
+                // 11c. Var/Yok Inferential
+                { tr_q: "Param ____ (inferential).", tr_a: "Param varmış.", en_q: "(Apparently, I have money.)", en_a: "(Apparently, I have money.)", ar_q: "(يبدو أن لدي مال.)", ar_a: "(يبدو أن لدي مال.)" },
+                { tr_q: "Arabam ____ (inferential, neg).", tr_a: "Arabam yokmuş.", en_q: "(Apparently, I don't have a car.)", en_a: "(Apparently, I don't have a car.)", ar_q: "(يبدو أنه ليس لدي سيارة.)", ar_a: "(يبدو أنه ليس لدي سيارة.)" },
+                { tr_q: "Senin zamanın ____ ____? (inferential)", tr_a: "Senin zamanın var mıymış?", en_q: "(Do you have time, apparently?)", en_a: "(Do you have time, apparently?)", ar_q: "(هل لديك وقت، كما يبدو؟)", ar_a: "(هل لديك وقت، كما يبدو؟)" },
+                { tr_q: "Evde süt ____ ____? (inferential, neg)", tr_a: "Evde süt yok muymuş?", en_q: "(Isn't there any milk at home, apparently?)", en_a: "(Isn't there any milk at home, apparently?)", ar_q: "(ألا يوجد حليب في البيت، كما يبدو؟)", ar_a: "(ألا يوجد حليب في البيت، كما يبدو؟)" },
+                { tr_q: "Onun parası ____ (inferential).", tr_a: "Onun parası varmış.", en_q: "(Apparently, he/she has money.)", en_a: "(Apparently, he/she has money.)", ar_q: "(يُقال أن لديه/لديها مال.)", ar_a: "(يُقال أن لديه/لديها مال.)" },
+                { tr_q: "Bizim zamanımız ____ (inferential, neg).", tr_a: "Bizim zamanımız yokmuş.", en_q: "(Apparently, we don't have time.)", en_a: "(Apparently, we don't have time.)", ar_q: "(يبدو أنه ليس لدينا وقت.)", ar_a: "(يبدو أنه ليس لدينا وقت.)" },
+                { tr_q: "Sizin sorununuz ____ (inferential).", tr_a: "Sizin sorununuz varmış.", en_q: "(Apparently, you (pl.) have a problem.)", en_a: "(Apparently, you (pl.) have a problem.)", ar_q: "(يبدو أن لديكم مشكلة.)", ar_a: "(يبدو أن لديكم مشكلة.)" },
+                { tr_q: "Onların evi ____ (inferential, neg).", tr_a: "Onların evi yokmuş.", en_q: "(Apparently, they don't have a house.)", en_a: "(Apparently, they don't have a house.)", ar_q: "(يُقال أنه ليس لديهم بيت.)", ar_a: "(يُقال أنه ليس لديهم بيت.)" },
+
+                // 11d. Var/Yok Conditional
+                { tr_q: "Param ____, alırım.", tr_a: "Param varsa, alırım.", en_q: "(If I have money, I'll buy it.)", en_a: "(If I have money, I'll buy it.)", ar_q: "(إذا كان لدي مال، سأشتريه.)", ar_a: "(إذا كان لدي مال، سأشتريه.)" },
+                { tr_q: "Zamanım ____, gelmem.", tr_a: "Zamanım yoksa, gelmem.", en_q: "(If I don't have time, I won't come.)", en_a: "(If I don't have time, I won't come.)", ar_q: "(إذا لم يكن لدي وقت، لن آتي.)", ar_a: "(إذا لم يكن لدي وقت، لن آتي.)" },
+                { tr_q: "Senin araban ____, gidelim.", tr_a: "Senin araban varsa, gidelim.", en_q: "(If you have a car, let's go.)", en_a: "(If you have a car, let's go.)", ar_q: "(إذا كانت لديك سيارة، فلنذهب.)", ar_a: "(إذا كانت لديك سيارة، فلنذهب.)" },
+                { tr_q: "Evde süt ____, alma.", tr_a: "Evde süt yoksa, alma.", en_q: "(If there is no milk at home, don't buy... (wait, logic is off))", en_a: "(If there is milk at home, don't buy it.)", ar_q: "(This is better: Evde süt varsa, alma.)", ar_a: "(إذا كان هناك حليب في البيت، لا تشترِ.)" }, // Corrected logic
+                { tr_q: "Evde süt ____, al.", tr_a: "Evde süt yoksa, al.", en_q: "(If there is no milk at home, buy some.)", en_a: "(If there is no milk at home, buy some.)", ar_q: "(إذا لم يكن هناك حليب في البيت، اشترِ.)", ar_a: "(إذا لم يكن هناك حليب في البيت، اشترِ.)" },
+                { tr_q: "Onun zamanı ____, konuşsun.", tr_a: "Onun zamanı varsa, konuşsun.", en_q: "(If he/she has time, let him/her speak.)", en_a: "(If he/she has time, let him/her speak.)", ar_q: "(إذا كان لديه/لديها وقت، فليتكلم/فلتتكلم.)", ar_a: "(إذا كان لديه/لديها وقت، فليتكلم/فلتتكلم.)" },
+                { tr_q: "Bizim paramız ____, tatile çıkarız.", tr_a: "Bizim paramız varsa, tatile çıkarız.", en_q: "(If we have money, we will go on vacation.)", en_a: "(If we have money, we will go on vacation.)", ar_q: "(إذا كان لدينا مال، سنذهب في عطلة.)", ar_a: "(إذا كان لدينا مال، سنذهب في عطلة.)" },
+                { tr_q: "Sizin sorununuz ____, söyleyin.", tr_a: "Sizin sorununuz varsa, söyleyin.", en_q: "(If you (pl.) have a problem, say it.)", en_a: "(If you (pl.) have a problem, say it.)", ar_q: "(إذا كانت لديكم مشكلة، قولوا.)", ar_a: "(إذا كانت لديكم مشكلة، قولوا.)" },
+                { tr_q: "Onların evi ____, gidemeyiz.", tr_a: "Onların evi yoksa, gidemeyiz.", en_q: "(If they don't have a house, we can't go.)", en_a: "(If they don't have a house, we can't go.)", ar_q: "(إذا لم يكن لديهم بيت، لا يمكننا الذهاب.)", ar_a: "(إذا لم يكن لديهم بيت، لا يمكننا الذهاب.)" },
+                { tr_q: "Sorun ____, devam et.", tr_a: "Sorun yoksa, devam et.", en_q: "(If there is no problem, continue.)", en_a: "(If there is no problem, continue.)", ar_q: "(إذا لم تكن هناك مشكلة، استمر.)", ar_a: "(إذا لم تكن هناك مشكلة، استمر.)" }
+            ]; 
+
+            const flipCard = document.getElementById('flip-card');
+            const nextBtn = document.getElementById('next-question-btn');
+            
+            // Get all text elements in the card
+            const qTextTr = document.getElementById('question-text-tr');
+            const aTextTr = document.getElementById('answer-text-tr');
+            const qTextLangs = document.querySelectorAll('#question-text-lang');
+            const aTextLangs = document.querySelectorAll('#answer-text-lang');
+
+            let currentQuestionIndex = -1;
+
+            function loadNewQuestion() {
+                // Unflip the card
+                flipCard.classList.remove('flipped');
+                
+                // Get a new random question (make sure it's not the same as the last one)
+                let newIndex = Math.floor(Math.random() * practiceQuestions.length);
+                if (practiceQuestions.length > 1) {
+                    while (newIndex === currentQuestionIndex) {
+                        newIndex = Math.floor(Math.random() * practiceQuestions.length);
+                    }
+                }
+                currentQuestionIndex = newIndex;
+                const question = practiceQuestions[currentQuestionIndex];
+
+                // Set Turkish texts
+                qTextTr.innerHTML = question.tr_q; // Use innerHTML for suffix styling
+                aTextTr.innerHTML = question.tr_a.replace(/(\.[A-Za-zğüşıöçİĞÜŞÖÇ]+)/g, '<span class="suffix">$1</span>');
+
+                // Set translation texts for both front and back
+                qTextLangs.forEach(el => {
+                    const lang = el.getAttribute('data-lang');
+                    el.innerText = question[lang + '_q'] || '';
+                });
+                aTextLangs.forEach(el => {
+                    const lang = el.getAttribute('data-lang');
+                    el.innerText = question[lang + '_a'] || '';
+                });
+            }
+
+            // Add event listeners for card
+            flipCard.addEventListener('click', () => {
+                flipCard.classList.toggle('flipped');
+            });
+            nextBtn.addEventListener('click', loadNewQuestion);
+
+            
+            // --- Language Switching Logic ---
+            const htmlEl = document.documentElement;
+            const enBtn = document.getElementById('lang-en-btn');
+            const arBtn = document.getElementById('lang-ar-btn');
+            const langElements = document.querySelectorAll('span[data-lang], div[data-lang]');
+            const enTitle = 'Turkish Grammar: Noun Sentence Examples';
+            const arTitle = 'قواعد اللغة التركية: أمثلة الجمل الاسمية';
+            let currentLang = 'en'; // Keep track of current language for the card
+
+            function setLanguage(lang) {
+                currentLang = lang; // Update global lang state
+                
+                if (lang === 'ar') {
+                    // Set attributes for Arabic
+                    htmlEl.setAttribute('lang', 'ar');
+                    htmlEl.setAttribute('dir', 'rtl');
+                    document.title = arTitle;
+                    
+                    // Update button active state
+                    arBtn.classList.add('active');
+                    enBtn.classList.remove('active');
+                    
+                    // Show/hide language elements
+                    langElements.forEach(el => {
+                        if (el.getAttribute('data-lang') === 'ar') {
+                            el.classList.remove('hidden');
+                        } else {
+                            el.classList.add('hidden');
+                        }
+                    });
+                    
+                } else { // Default to English
+                    // Set attributes for English
+                    htmlEl.setAttribute('lang', 'en');
+                    htmlEl.setAttribute('dir', 'ltr');
+                    document.title = enTitle;
+                    
+                    // Update button active state
+                    enBtn.classList.add('active');
+                    arBtn.classList.remove('active');
+                    
+                    // Show/hide language elements
+                    langElements.forEach(el => {
+                        if (el.getAttribute('data-lang') === 'en') {
+                            el.classList.remove('hidden');
+                        } else {
+                            el.classList.add('hidden');
+                        }
+                    });
+                }
+            }
+
+            // Add event listeners to buttons
+            enBtn.addEventListener('click', () => setLanguage('en'));
+            arBtn.addEventListener('click', () => setLanguage('ar'));
+
+            // Set initial language (default to English)
+            setLanguage('en');
+
+            // Load the first practice question on page load
+            loadNewQuestion();
+
+        });
+    </script>
+
+</body>
+</html>
