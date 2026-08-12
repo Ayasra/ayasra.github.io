@@ -1,345 +1,93 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" data-theme="day" data-set="wake">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أذكار النوم والاستيقاظ</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    
-    <style>
-        body {
-            font-family: 'Noto Naskh Arabic', serif;
-            transition: background-color 0.5s ease, color 0.5s ease, background-image 0.5s ease;
-            background-size: 100px;
-        }
-        .dhikr-card {
-            font-family: 'Amiri', serif;
-            transition: opacity 0.4s ease, transform 0.4s ease, background-color 0.4s ease;
-        }
-        .dhikr-card.completed {
-            opacity: 0.6;
-            transform: scale(0.98);
-            cursor: default;
-        }
-        .counter-text {
-            transition: color 0.3s ease, transform 0.3s ease;
-        }
-        .dhikr-card:not(.completed):hover .counter-text {
-            transform: scale(1.1);
-        }
-        .rtl-text {
-            text-align: right;
-        }
-        /* Hide scrollbar for cleaner look if needed */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background-color: rgba(0,0,0,0.2);
-            border-radius: 4px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>أذكار النوم والاستيقاظ</title>
+<meta name="description" content="أذكار النوم والاستيقاظ مع تخريج الأحاديث ودرجاتها، وعدّاد يحفظ تقدّمك ويعمل بدون إنترنت.">
+<meta name="theme-color" content="#FAF6EF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="أذكار">
+<meta property="og:title" content="أذكار النوم والاستيقاظ">
+<meta property="og:description" content="أذكار النوم والاستيقاظ مع تخريج الأحاديث ودرجاتها، وعدّاد يحفظ تقدّمك ويعمل بدون إنترنت.">
+<meta property="og:type" content="website">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="stylesheet" href="assets/thekr.css">
+<script>
+(function () {
+  try {
+    var s = JSON.parse(localStorage.getItem('thekr.settings.v1') || '{}');
+    var h = new Date().getHours();
+    var set = (h >= 3 && h < 15) ? 'wake' : 'sleep';
+    var theme = (!s.theme || s.theme === 'auto') ? (set === 'wake' ? 'day' : 'night') : s.theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-set', set);
+    if (s.size != null) {
+      document.documentElement.style.setProperty('--dhikr-size', [1.12,1.28,1.45,1.66,1.92][s.size] + 'rem');
+    }
+  } catch (e) {}
+})();
+</script>
 </head>
-<body id="page-body" class="bg-amber-50 text-gray-800">
+<body>
 
-    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
-
-        <header class="text-center mb-8">
-            <h1 id="header-title" class="text-4xl sm:text-5xl font-bold text-amber-800 mb-4 transition-colors" style="font-family: 'Amiri', serif;">أذكار النوم والاستيقاظ</h1>
-            <div class="flex justify-center gap-2 sm:gap-4 p-2 bg-white/60 backdrop-blur-sm rounded-full shadow-sm max-w-xs mx-auto">
-                <button id="wake-btn" class="flex-1 py-2 px-4 rounded-full text-sm sm:text-base font-bold transition-colors">أذكار الاستيقاظ</button>
-                <button id="sleep-btn" class="flex-1 py-2 px-4 rounded-full text-sm sm:text-base font-bold transition-colors">أذكار النوم</button>
-            </div>
-        </header>
-
-        <main id="athkar-container" class="space-y-4">
-            </main>
-
-        <footer id="footer" class="text-center mt-12 text-gray-500 text-sm transition-colors">
-            <p>انقر على الذكر لتتبّع عدد المرات.</p>
-        </footer>
-
+<div class="topbar">
+  <div class="topbar__inner">
+    <a class="iconbtn iconbtn--back" href="index.html" aria-label="رجوع إلى فهرس الأذكار">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+    </a>
+    <div class="progress">
+      <div class="progress__row">
+        <span class="progress__label" id="progress-label">أذكار الاستيقاظ</span>
+        <span class="progress__count" id="progress-count">0 / 0</span>
+      </div>
+      <div class="progress__track" role="progressbar" aria-label="نسبة الإنجاز" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="progress__bar" id="progress-bar"></div>
+      </div>
     </div>
+    <button type="button" class="iconbtn" id="gear" aria-expanded="false" aria-controls="settings" aria-label="الإعدادات">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 008.6 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 8.6a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    </button>
+  </div>
+</div>
 
-    <script>
-        // --- Data for Sleep & Wake Athkar ---
-        const athkarData = [
-            // --- Wake Up Athkar ---
-            { 
-                id: 1, 
-                type: 'wake', 
-                count: 1, 
-                text: 'الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ.',
-                source: 'رواه البخاري',
-                virtue: 'يُستحب قوله عند الاستيقاظ مباشرة.'
-            },
-            { 
-                id: 2, 
-                type: 'wake', 
-                count: 1, 
-                text: 'لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلاَ إِلَهَ إِلاَّ اللَّهُ، وَاللَّهُ أَكْبَرُ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ الْعَلِيِّ الْعَظِيمِ، رَبِّ اغْفِرْ لِي.',
-                source: 'رواه البخاري',
-                virtue: 'من قالها غُفِرَ له، فإن دعا استُجيب له، فإن قام فتوضأ وصلى قُبِلَت صلاته.'
-            },
-            { 
-                id: 3, 
-                type: 'wake', 
-                count: 1, 
-                text: 'الْحَمْدُ لِلَّهِ الَّذِي عَافَانِي فِي جَسَدِي، وَرَدَّ عَلَيَّ رُوحِي، وَأَذِنَ لِي بِذِكْرِهِ.',
-                source: 'رواه الترمذي'
-            },
-            { 
-                id: 4, 
-                type: 'wake', 
-                count: 1, 
-                text: 'إِنَّ فِي خَلْقِ السَّمَوَاتِ وَالأَرْضِ وَاخْتِلاَفِ اللَّيْلِ وَالنَّهَارِ لَآيَاتٍ لِّأُوْلِي الألْبَابِ... (قراءة الآيات العشر الأواخر من سورة آل عمران).',
-                source: 'سورة آل عمران: 190-200',
-                virtue: 'كان النبي صلى الله عليه وسلم يقرؤها إذا استيقظ.'
-            },
+<div class="wrap">
 
-            // --- Sleep Athkar ---
-            { 
-                id: 5, 
-                type: 'sleep', 
-                count: 1, 
-                text: 'يَجْمَعُ كَفَّيْهِ ثُمَّ يَنْفُثُ فِيهِمَا فَيَقْرَأُ فِيهِمَا: ﴿قُلْ هُوَ اللَّهُ أَحَدٌ﴾ و ﴿قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ﴾ و ﴿قُلْ أَعُوذُ بِرَبِّ النَّاسِ﴾ ثُمَّ يَمْسَحُ بِهِمَا مَا اسْتَطَاعَ مِنْ جَسَدِهِ، يَبْدَأُ بِهِمَا عَلَى رَأْسِهِ وَوَجْهِهِ وَمَا أَقْبَلَ مِنْ جَسَدِهِ (يفعل ذلك ثلاث مرات).',
-                source: 'رواه البخاري ومسلم',
-                virtue: 'حصن للمسلم عند نومه.'
-            },
-            { 
-                id: 6, 
-                type: 'sleep', 
-                count: 1, 
-                text: 'أَعُوذُ بِاللَّهِ مِنَ الشَّيطَانِ الرَّجِيمِ: ﴿اللَّهُ لاَ إِلَهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ...﴾ (آية الكرسي).',
-                source: 'سورة البقرة: 255',
-                virtue: 'من قرأها إذا أوى إلى فراشه لم يزل عليه من الله حافظ، ولا يقربه شيطان حتى يصبح.'
-            },
-            { 
-                id: 7, 
-                type: 'sleep', 
-                count: 1, 
-                text: 'آمَنَ الرَّسُولُ بِمَا أُنْزِلَ إِلَيْهِ مِنْ رَبِّهِ وَالْمُؤْمِنُونَ ۚ كُلٌّ آمَنَ بِاللَّهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ لَا نُفَرِّقُ بَيْنَ أَحَدٍ مِنْ رُسُلِهِ ۚ وَقَالُوا سَمِعْنَا وَأَطَعْنَا ۖ غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ الْمَصِيرُ... (الآيتان من آخر سورة البقرة).',
-                source: 'سورة البقرة: 285-286',
-                virtue: 'من قرأهما في ليلة كفتاه.'
-            },
-            { 
-                id: 8, 
-                type: 'sleep', 
-                count: 1, 
-                text: 'بِاسْمِكَ رَبِّي وَضَعْتُ جَنْبِي، وَبِكَ أَرْفَعُهُ، فَإِنْ أَمْسَكْتَ نَفْسِي فَارْحَمْهَا، وَإِنْ أَرْسَلْتَهَا فَاحْفَظْهَا بِمَا تَحْفَظُ بِهِ عِبَادَكَ الصَّالِحِينَ.',
-                source: 'رواه البخاري ومسلم'
-            },
-            { 
-                id: 9, 
-                type: 'sleep', 
-                count: 1, 
-                text: 'اللَّهُمَّ إِنَّكَ خَلَقْتَ نَفْسِي وَأَنْتَ تَوَفَّاهَا، لَكَ مَمَاتُهَا وَمَحْيَاهَا، إِنْ أَحْيَيْتَهَا فَاحْفَظْهَا، وَإِنْ أَمَتَّهَا فَاغْفِرْ لَهَا. اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ.',
-                source: 'رواه مسلم'
-            },
-            { 
-                id: 10, 
-                type: 'sleep', 
-                count: 3, 
-                text: 'اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ.',
-                source: 'رواه أبو داود والترمذي',
-                virtue: 'يقولها ثلاث مرات إذا وضع يده اليمنى تحت خده.'
-            },
-            { 
-                id: 11, 
-                type: 'sleep', 
-                count: 1, 
-                text: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا.',
-                source: 'رواه البخاري'
-            },
-            { 
-                id: 12, 
-                type: 'sleep', 
-                count: 33, 
-                text: 'سُبْحَانَ اللَّهِ (33)، وَالْحَمْدُ لِلَّهِ (33)، وَاللَّهُ أَكْبَرُ (34).',
-                source: 'رواه البخاري ومسلم',
-                virtue: 'خير من خادم، تقال قبل النوم.'
-            },
-            { 
-                id: 13, 
-                type: 'sleep', 
-                count: 1, 
-                text: 'اللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ، وَوَجَّهْتُ وَجْهِي إِلَيْكَ، وَأَلْجَأْتُ ظَهْرِي إِلَيْكَ، رَغْبَةً وَرَهْبَةً إِلَيْكَ، لاَ مَلْجَأَ وَلاَ مَنْجَا مِنْكَ إِلاَّ إِلَيْكَ، آمَنْتُ بِكِتَابِكَ الَّذِي أَنْزَلْتَ، وَبِنَبِيِّكَ الَّذِي أَرْسَلْتَ.',
-                source: 'رواه البخاري ومسلم',
-                virtue: 'من قالها ومات من ليلته مات على الفطرة.'
-            }
-        ];
+  <header class="masthead">
+    <h1>أذكار النوم والاستيقاظ</h1>
+    <p class="sub">خِتامُ اليوم ومَطلعُه</p>
+    <div class="ornament" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 2l2.4 6.5L21 9.2l-4.9 4.3 1.5 6.5L12 16.6 6.4 20l1.5-6.5L3 9.2l6.6-.7z"/></svg>
+    </div>
+  </header>
 
-        // --- DOM Elements ---
-        const pageBody = document.getElementById('page-body');
-        const container = document.getElementById('athkar-container');
-        const wakeBtn = document.getElementById('wake-btn');
-        const sleepBtn = document.getElementById('sleep-btn');
-        const headerTitle = document.getElementById('header-title');
-        const footer = document.getElementById('footer');
+  <div class="segmented" id="segmented" role="tablist" aria-label="اختيار مجموعة الأذكار"></div>
 
-        // --- Programmatic SVG Backgrounds (Customized Colors) ---
-        // Amber/Orange pattern for Wake
-        const wakePatternSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="20" stroke="rgba(245, 158, 11, 0.1)" stroke-width="2" fill="none"/><path d="M50 0 L50 20 M50 80 L50 100 M0 50 L20 50 M80 50 L100 50" stroke="rgba(245, 158, 11, 0.1)" stroke-width="1"/></svg>`;
-        // Indigo/Star pattern for Sleep
-        const sleepPatternSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path d="M50 20 Q60 50 90 50 Q60 50 50 80 Q40 50 10 50 Q40 50 50 20" fill="rgba(99, 102, 241, 0.05)"/></svg>`;
-        
-        const wakePatternUrl = `url("data:image/svg+xml,${encodeURIComponent(wakePatternSVG)}")`;
-        const sleepPatternUrl = `url("data:image/svg+xml,${encodeURIComponent(sleepPatternSVG)}")`;
+  <div class="settings" id="settings" data-open="false">
+    <div class="settings__inner"></div>
+  </div>
 
-        let currentMode = 'wake';
-        
-        // Color Themes
-        // Wake: Amber to Orange gradients
-        const gradientWakeClasses = ['bg-gradient-to-br', 'from-amber-600', 'to-orange-500', 'bg-clip-text', 'text-transparent'];
-        // Sleep: Indigo to Violet gradients
-        const gradientSleepClasses = ['bg-gradient-to-br', 'from-indigo-400', 'to-violet-400', 'bg-clip-text', 'text-transparent'];
-        // Completed: Green
-        const gradientCompletedClasses = ['bg-gradient-to-br', 'from-green-500', 'to-emerald-500', 'bg-clip-text', 'text-transparent'];
+  <ul class="list" id="list"></ul>
 
-        function renderAthkar(mode) {
-            container.innerHTML = '';
-            // Filter: show items that match the mode (or 'both' if we had any, though wake/sleep are usually distinct)
-            const filteredAthkar = athkarData.filter(dhikr => dhikr.type === mode || dhikr.type === 'both');
-            
-            filteredAthkar.forEach(dhikr => {
-                const card = document.createElement('div');
-                // Dynamic card bg based on mode
-                const cardBg = mode === 'wake' ? 'bg-white/90 text-gray-900' : 'bg-slate-800/80 text-white';
-                
-                card.className = `dhikr-card flex items-start gap-4 ${cardBg} backdrop-blur-sm rounded-xl shadow-md p-5 cursor-pointer`;
-                card.dataset.count = dhikr.count;
-                card.id = `dhikr-${dhikr.id}`;
+  <div class="finale" id="finale" data-show="false" role="status">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.2l2.4 2.4 4.6-4.6"/></svg>
+    <p>تقبّل الله منك</p>
+    <small>أتممتَ أذكار هذه الفترة — يُعاد ضبط العدّاد تلقائياً غداً</small>
+  </div>
 
-                // Counter Column
-                const counterContainer = document.createElement('div');
-                counterContainer.className = 'flex-shrink-0 pt-2';
-                const counterText = document.createElement('div');
-                counterText.className = 'counter-text text-2xl font-bold w-10 text-center';
-                counterText.textContent = dhikr.count;
-                counterContainer.appendChild(counterText);
+  <footer class="pagefoot">
+    <p>انقر على الذكر لعدّ المرات · يُحفظ تقدّمك على جهازك ويُعاد ضبطه كل يوم</p>
+    <p><a href="index.html">فهرس الأذكار</a> · <a href="../index.html">الصفحة الرئيسية</a></p>
+  </footer>
 
-                // Separator
-                const separator = document.createElement('div');
-                const separatorColor = mode === 'wake' ? 'bg-black/10' : 'bg-white/10';
-                separator.className = `separator w-px self-stretch ${separatorColor} mx-2`;
+</div>
 
-                // Content Column
-                const textContainer = document.createElement('div');
-                textContainer.className = 'flex-grow';
-                
-                const textElement = document.createElement('p');
-                textElement.className = 'text-xl md:text-2xl leading-loose rtl-text font-medium';
-                textElement.textContent = dhikr.text;
-                textContainer.appendChild(textElement);
+<div class="toast" id="toast" role="status" aria-live="polite" data-show="false"></div>
 
-                if (dhikr.source) {
-                    const sourceElement = document.createElement('p');
-                    sourceElement.className = `text-xs mt-2 rtl-text ${mode === 'wake' ? 'text-gray-400' : 'text-slate-400'}`;
-                    sourceElement.textContent = `المصدر: ${dhikr.source}`;
-                    textContainer.appendChild(sourceElement);
-                }
-
-                if (dhikr.virtue) {
-                    const virtueContainer = document.createElement('div');
-                    // Style virtue box based on mode
-                    if (mode === 'wake') {
-                        virtueContainer.className = 'mt-3 bg-amber-50/80 rounded-lg p-3 rtl-text border border-amber-100';
-                        virtueContainer.innerHTML = `<p class="text-sm text-amber-800"><span class="font-bold ml-1">✦ الفضل:</span> ${dhikr.virtue}</p>`;
-                    } else {
-                        virtueContainer.className = 'mt-3 bg-indigo-900/50 rounded-lg p-3 rtl-text border border-indigo-800';
-                        virtueContainer.innerHTML = `<p class="text-sm text-indigo-200"><span class="font-bold ml-1">✦ الفضل:</span> ${dhikr.virtue}</p>`;
-                    }
-                    textContainer.appendChild(virtueContainer);
-                }
-                
-                if (mode === 'wake') {
-                    counterText.classList.add(...gradientWakeClasses);
-                } else {
-                    counterText.classList.add(...gradientSleepClasses);
-                }
-                
-                card.appendChild(textContainer);
-                card.appendChild(separator);
-                card.appendChild(counterContainer);
-                
-                card.addEventListener('click', () => handleCardClick(card));
-                container.appendChild(card);
-            });
-        }
-
-        function handleCardClick(card) {
-            let currentCount = parseInt(card.dataset.count, 10);
-            if (currentCount > 0) {
-                currentCount--;
-                card.dataset.count = currentCount;
-                const counter = card.querySelector('.counter-text');
-                counter.textContent = currentCount;
-                
-                if (currentCount === 0) {
-                    card.classList.add('completed');
-                    counter.textContent = '✓';
-                    counter.classList.remove(...gradientWakeClasses, ...gradientSleepClasses);
-                    counter.classList.add(...gradientCompletedClasses);
-                }
-            }
-        }
-
-        function setMode(newMode) {
-            currentMode = newMode;
-            renderAthkar(currentMode);
-
-            // Styling for Wake Mode (Amber/Light)
-            if (currentMode === 'wake') {
-                wakeBtn.classList.add('bg-amber-600', 'text-white');
-                wakeBtn.classList.remove('bg-white/50', 'text-gray-700');
-                sleepBtn.classList.add('bg-white/50', 'text-gray-700');
-                sleepBtn.classList.remove('bg-indigo-600', 'text-white');
-
-                pageBody.style.backgroundColor = '#fffbeb'; // amber-50
-                pageBody.style.backgroundImage = wakePatternUrl;
-                
-                pageBody.classList.remove('text-gray-100');
-                pageBody.classList.add('text-gray-800');
-                
-                headerTitle.classList.remove('text-indigo-200');
-                headerTitle.classList.add('text-amber-800');
-                
-                footer.classList.remove('text-slate-400');
-                footer.classList.add('text-gray-500');
-
-            // Styling for Sleep Mode (Indigo/Dark)
-            } else { 
-                sleepBtn.classList.add('bg-indigo-600', 'text-white');
-                sleepBtn.classList.remove('bg-white/50', 'text-gray-700');
-                wakeBtn.classList.add('bg-white/50', 'text-gray-700');
-                wakeBtn.classList.remove('bg-amber-600', 'text-white');
-                
-                pageBody.style.backgroundColor = '#0f172a'; // slate-900
-                pageBody.style.backgroundImage = sleepPatternUrl;
-                
-                pageBody.classList.remove('text-gray-800');
-                pageBody.classList.add('text-gray-100');
-                
-                headerTitle.classList.remove('text-amber-800');
-                headerTitle.classList.add('text-indigo-200');
-                
-                footer.classList.remove('text-gray-500');
-                footer.classList.add('text-slate-400');
-            }
-        }
-
-        wakeBtn.addEventListener('click', () => setMode('wake'));
-        sleepBtn.addEventListener('click', () => setMode('sleep'));
-
-        // Initialize
-        setMode('wake');
-
-    </script>
-
+<script src="assets/data-sleep-wake.js"></script>
+<script src="assets/thekr.js"></script>
 </body>
 </html>

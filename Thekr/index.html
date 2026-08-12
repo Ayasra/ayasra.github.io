@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="day">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الأذكار والقرآن — مصعب الأياصرة</title>
+<meta name="description" content="أذكار الصباح والمساء والنوم والاستيقاظ مع تخريج الأحاديث ودرجاتها، وخطط لقراءة القرآن وحفظه. تعمل بدون إنترنت.">
+<meta name="theme-color" content="#FAF6EF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="أذكار">
+<meta property="og:title" content="الأذكار والقرآن">
+<meta property="og:description" content="أذكار الصباح والمساء والنوم والاستيقاظ مع تخريج الأحاديث، وخطط لقراءة القرآن وحفظه.">
+<meta property="og:type" content="website">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="stylesheet" href="assets/thekr.css">
+<script>
+(function () {
+  try {
+    var s = JSON.parse(localStorage.getItem('thekr.settings.v1') || '{}');
+    var h = new Date().getHours();
+    var theme = (!s.theme || s.theme === 'auto') ? ((h >= 5 && h < 18) ? 'day' : 'night') : s.theme;
+    document.documentElement.setAttribute('data-theme', theme);
+  } catch (e) {}
+})();
+</script>
+<style>
+  .hero-icon{width:64px;height:64px;margin:0 auto .9rem;display:block;border-radius:16px;box-shadow:var(--shadow)}
+  .install{
+    display:none;margin:1.4rem 0 0;padding:.95rem 1.1rem;
+    background:var(--accent-soft);border-radius:var(--r-md);
+    font-size:.87rem;line-height:1.7;color:var(--ink-2);
+    align-items:center;gap:.8rem;
+  }
+  .install[data-show="true"]{display:flex}
+  .install button{
+    margin-inline-start:auto;flex:0 0 auto;padding:.5rem 1rem;border-radius:var(--r-full);
+    background:var(--accent);color:var(--on-accent);font-size:.85rem;font-weight:700;
+  }
+  .section-label{
+    margin:2.4rem 0 0;font-size:.8rem;font-weight:700;letter-spacing:.06em;
+    color:var(--ink-3);text-transform:uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar__inner">
+    <a class="iconbtn iconbtn--back" href="../index.html" aria-label="رجوع إلى الصفحة الرئيسية">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+    </a>
+    <div class="progress">
+      <div class="progress__row">
+        <span class="progress__label">الأذكار والقرآن</span>
+        <span class="progress__count" id="clock"></span>
+      </div>
+    </div>
+    <button type="button" class="iconbtn" id="theme-toggle" aria-label="تبديل المظهر">
+      <svg viewBox="0 0 24 24" aria-hidden="true" id="theme-icon"></svg>
+    </button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <img class="hero-icon" src="assets/icon.svg" alt="" width="64" height="64">
+    <h1>الأذكار والقرآن</h1>
+    <p class="sub">أذكارٌ بتخريجها ودرجاتها، وخططٌ للقراءة والحفظ</p>
+    <div class="ornament" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 2l2.4 6.5L21 9.2l-4.9 4.3 1.5 6.5L12 16.6 6.4 20l1.5-6.5L3 9.2l6.6-.7z"/></svg>
+    </div>
+  </header>
+
+  <div class="install" id="install" role="note">
+    <span>يمكنك تثبيت هذه الصفحة على شاشة هاتفك واستخدامها بدون إنترنت.</span>
+    <button type="button" id="install-btn">تثبيت</button>
+  </div>
+
+  <p class="section-label">الأذكار</p>
+  <ul class="tiles">
+    <li>
+      <a class="tile" href="morning_evening.html">
+        <span class="tile__icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66l1.42-1.42M4.92 19.08l1.42-1.42m0-11.32L4.92 4.92m14.16 14.16l-1.42-1.42"/></svg>
+        </span>
+        <span>
+          <h2>أذكار الصباح والمساء</h2>
+          <p>٣٠ ذكراً مع تخريج كل حديث ودرجته، وعدّاد يحفظ تقدّمك</p>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="tile" href="sleep_wake.html">
+        <span class="tile__icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 100 17 8.5 8.5 0 0010.5-6.5z"/></svg>
+        </span>
+        <span>
+          <h2>أذكار النوم والاستيقاظ</h2>
+          <p>٢٠ ذكراً لختام اليوم ومطلعه، بما فيها تسبيح فاطمة وسورة الملك</p>
+        </span>
+      </a>
+    </li>
+  </ul>
+
+  <p class="section-label">القرآن</p>
+  <ul class="tiles">
+    <li>
+      <a class="tile" href="quran_reading.html">
+        <span class="tile__icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5A2.5 2.5 0 016.5 2H20v18H6.5A2.5 2.5 0 004 22z"/><path d="M4 17.5A2.5 2.5 0 016.5 15H20"/></svg>
+        </span>
+        <span>
+          <h2>خطة القراءة في سبعة أيام</h2>
+          <p>تقسيم أحزاب الصحابة رضي الله عنهم لختم القرآن كل أسبوع</p>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="tile" href="quran_memorizing.html">
+        <span class="tile__icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M5 7h3m-3 4h3m-3 4h3m8-8h3m-3 4h3m-3 4h3"/><rect x="2" y="3" width="20" height="18" rx="2"/></svg>
+        </span>
+        <span>
+          <h2>خطة حفظ القرآن</h2>
+          <p>منهج يومي لحفظ صفحة واحدة، مع جلسات الصباح والمراجعة</p>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="tile" href="Quran/Luqman.html">
+        <span class="tile__icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 6.5L21 9.2l-4.9 4.3 1.5 6.5L12 16.6 6.4 20l1.5-6.5L3 9.2l6.6-.7z"/></svg>
+        </span>
+        <span>
+          <h2>سورة لقمان</h2>
+          <p>نص السورة مع عرض المصحف والترجمة</p>
+        </span>
+      </a>
+    </li>
+  </ul>
+
+  <footer class="pagefoot">
+    <p>نصوص الأذكار على منهج «حصن المسلم» للشيخ سعيد بن علي القحطاني، مع إثبات التخريج ودرجة كل حديث.</p>
+    <p><a href="../index.html">مصعب الأياصرة</a></p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  /* clock */
+  var clock = document.getElementById('clock');
+  function tick() {
+    clock.textContent = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+  }
+  tick(); setInterval(tick, 20000);
+
+  /* theme toggle — writes to the same settings the athkar pages read */
+  var SUN = '<circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66l1.42-1.42M4.92 19.08l1.42-1.42m0-11.32L4.92 4.92m14.16 14.16l-1.42-1.42" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>';
+  var MOON = '<path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 100 17 8.5 8.5 0 0010.5-6.5z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>';
+  var icon = document.getElementById('theme-icon');
+  function paintIcon() {
+    icon.innerHTML = document.documentElement.getAttribute('data-theme') === 'night' ? SUN : MOON;
+  }
+  paintIcon();
+  document.getElementById('theme-toggle').addEventListener('click', function () {
+    var next = document.documentElement.getAttribute('data-theme') === 'night' ? 'day' : 'night';
+    document.documentElement.setAttribute('data-theme', next);
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', next === 'night' ? '#0B1119' : '#FAF6EF');
+    paintIcon();
+    try {
+      var s = JSON.parse(localStorage.getItem('thekr.settings.v1') || '{}');
+      s.theme = next;
+      localStorage.setItem('thekr.settings.v1', JSON.stringify(s));
+    } catch (e) {}
+  });
+
+  /* install prompt */
+  var deferred = null;
+  var box = document.getElementById('install');
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferred = e;
+    box.setAttribute('data-show', 'true');
+  });
+  document.getElementById('install-btn').addEventListener('click', function () {
+    if (!deferred) return;
+    deferred.prompt();
+    deferred.userChoice.finally(function () {
+      deferred = null;
+      box.setAttribute('data-show', 'false');
+    });
+  });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="أذكار">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#12857A"/>
+      <stop offset="1" stop-color="#0A4741"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#F6E2B4"/>
+      <stop offset="1" stop-color="#D2A052"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="114" fill="url(#bg)"/>
+  <g fill="none" stroke="url(#gold)" stroke-width="13" stroke-linejoin="round">
+    <path d="M 156.0 156.0 H 356.0 V 356.0 H 156.0 Z"/>
+    <path d="M 256.0 114.6 L 397.4 256.0 L 256.0 397.4 L 114.6 256.0 Z"/>
+  </g>
+  <path d="M 256.0 204.0 L 264.0 236.6 L 292.8 219.2 L 275.4 248.0 L 308.0 256.0 L 275.4 264.0 L 292.8 292.8 L 264.0 275.4 L 256.0 308.0 L 248.0 275.4 L 219.2 292.8 L 236.6 264.0 L 204.0 256.0 L 236.6 248.0 L 219.2 219.2 L 248.0 236.6 Z" fill="url(#gold)"/>
+  <circle cx="256" cy="256" r="9" fill="#0A4741"/>
+</svg>

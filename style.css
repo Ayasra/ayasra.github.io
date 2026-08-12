@@ -303,7 +303,7 @@ header h1 {
     .bottom-sections-wrapper {
         flex-direction: column;
     }
-    .publications {
+    .bottom-sections-wrapper > section:not(:last-child) {
         border-bottom: 1px solid #e0e0e0; /* Add bottom border when stacked */
     }
 }
