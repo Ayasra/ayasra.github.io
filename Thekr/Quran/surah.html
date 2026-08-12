@@ -22,6 +22,7 @@
     document.documentElement.setAttribute('data-theme', theme);
     var q = JSON.parse(localStorage.getItem('quran.settings.v1') || '{}');
     if (q.size != null) document.documentElement.style.setProperty('--ayah-size', [1.35,1.55,1.75,2.0,2.35][q.size] + 'rem');
+    document.documentElement.setAttribute('data-mode', q.mode || 'mushaf');
   } catch (e) {}
 })();
 </script>

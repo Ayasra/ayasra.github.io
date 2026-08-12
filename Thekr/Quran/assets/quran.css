@@ -169,11 +169,40 @@ html[dir="rtl"] .ayah__en{padding-inline-start:0;padding-left:.8rem;border-inlin
   color:var(--ink-2);direction:ltr;margin-top:.15rem;line-height:1.4;
 }
 
-/* ---------- Mushaf (continuous) mode ---------- */
+/* ---------- Mushaf (continuous) mode — the default view ---------- */
 .mushaf{margin:1rem 0 0;display:grid;gap:1.1rem}
+.mushaf__spread{display:grid;gap:1.1rem}
 .mushaf__page{
   background:var(--surface);border:1px solid var(--border-soft);
   border-radius:var(--r-lg);box-shadow:var(--shadow);padding:1.5rem 1.35rem 1rem;
+}
+
+/* Wide screens: two pages open side by side as one spread, right page first.
+   Everything that is not the mushaf stays at comfortable reading width. */
+html[data-mode="mushaf"]{--maxw:78rem}
+html[data-mode="mushaf"] .surah-head,
+html[data-mode="mushaf"] .bismillah,
+html[data-mode="mushaf"] .surah-nav,
+html[data-mode="mushaf"] .settings__inner,
+html[data-mode="mushaf"] .state{max-width:46rem;margin-inline:auto}
+
+@media (min-width:62rem){
+  html[data-mode="mushaf"] .mushaf__spread{
+    grid-template-columns:1fr 1fr;gap:0;
+    background:var(--surface);border:1px solid var(--border-soft);
+    border-radius:var(--r-lg);box-shadow:var(--shadow);
+  }
+  html[data-mode="mushaf"] .mushaf__spread .mushaf__page{
+    background:none;border:0;box-shadow:none;border-radius:0;
+  }
+  /* the binding line down the middle of the spread */
+  html[data-mode="mushaf"] .mushaf__spread .mushaf__page:first-child:not(:only-child){
+    border-inline-end:1px solid var(--border-soft);
+  }
+  /* a lone final page should not stretch across half an empty spread */
+  html[data-mode="mushaf"] .mushaf__spread[data-single="true"]{
+    grid-template-columns:1fr;max-width:calc(50% - .55rem);margin-inline:auto;
+  }
 }
 .mushaf__text{
   font-family:'Amiri Quran','Amiri',serif;

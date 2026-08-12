@@ -26,7 +26,7 @@
   function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
   var S = Object.assign({
-    size: 2, translation: true, translit: false, mode: 'verse',
+    size: 2, translation: true, translit: false, mode: 'mushaf',
     tafsir: 'muyassar', reciter: 'Alafasy_128kbps', autoscroll: true
   }, read(SET_KEY, {}));
 
@@ -64,6 +64,7 @@
   var sid = 1;
 
   function applySize() { document.documentElement.style.setProperty('--ayah-size', SIZES[S.size] + 'rem'); }
+  function applyMode() { document.documentElement.setAttribute('data-mode', S.mode); }
   function applyTheme() {
     var t = read(THEKR_SET, {}).theme;
     var h = new Date().getHours();
@@ -87,7 +88,7 @@
     if (!(sid >= 1 && sid <= 114)) sid = 1;
     var jump = parseInt(q.get('a'), 10) || 0;
 
-    applyTheme(); applySize();
+    applyTheme(); applySize(); applyMode();
 
     Promise.all([json('assets/data/surahs.json'), json('assets/data/' + pad3(sid) + '.json')])
       .then(function (r) {
@@ -122,6 +123,7 @@
       b.textContent = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
       elMain.appendChild(b);
     }
+    applyMode();
     elMain.appendChild(S.mode === 'mushaf' ? mushaf() : verseList());
     elMain.appendChild(surahNav());
   }
@@ -389,12 +391,25 @@
       if (!pages[k]) { pages[k] = []; order.push(k); }
       pages[k].push(v);
     });
-    order.forEach(function (k) {
+    /* group pages into spreads of two, right-hand page first (RTL) */
+    var spreads = [];
+    for (var i = 0; i < order.length; i += 2) spreads.push(order.slice(i, i + 2));
+
+    spreads.forEach(function (pair) {
+      var spread = document.createElement('div');
+      spread.className = 'mushaf__spread';
+      spread.dataset.single = String(pair.length === 1);
+      pair.forEach(function (k) { spread.appendChild(buildPage(k, pages[k])); });
+      wrap.appendChild(spread);
+    });
+    return wrap;
+
+    function buildPage(k, list) {
       var page = document.createElement('div');
       page.className = 'mushaf__page';
       var p = document.createElement('p');
       p.className = 'mushaf__text';
-      pages[k].forEach(function (v) {
+      list.forEach(function (v) {
         var span = document.createElement('span');
         span.className = 'a';
         span.dataset.n = v.n;
@@ -409,9 +424,8 @@
       f.className = 'mushaf__foot';
       f.textContent = 'صفحة ' + ar(k);
       page.appendChild(f);
-      wrap.appendChild(page);
-    });
-    return wrap;
+      return page;
+    }
   }
 
   /* ---------------- surah nav ---------------- */
@@ -583,7 +597,7 @@
     paint(); st.appendChild(minus); st.appendChild(out); st.appendChild(plus);
     sr.appendChild(st); box.appendChild(sr);
 
-    box.appendChild(chips('طريقة العرض', 'mode', [['verse', 'آية آية'], ['mushaf', 'مصحف']], render));
+    box.appendChild(chips('طريقة العرض', 'mode', [['mushaf', 'مصحف'], ['verse', 'آية آية']], render));
 
     box.appendChild(toggle('الترجمة الإنجليزية', 'Saheeh International', 'translation', function () {
       Array.prototype.forEach.call(document.querySelectorAll('[data-role="translation"]'), function (n) { n.hidden = !S.translation; });
