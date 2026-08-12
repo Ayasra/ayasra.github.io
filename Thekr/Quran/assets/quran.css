@@ -1,0 +1,310 @@
+@charset "UTF-8";
+/* =========================================================================
+   Qur'an reader — layered on top of ../../assets/thekr.css
+   (that file supplies the colour tokens, fonts, top bar and settings shell)
+   ========================================================================= */
+
+@font-face{
+  font-family:'Amiri Quran';font-style:normal;font-weight:400;font-display:swap;
+  src:url('../../assets/fonts/amiri-quran-arabic.woff2') format('woff2');
+  unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC;
+}
+
+:root{
+  --ayah-size:1.75rem;
+  --ayah-leading:2.35;
+}
+html[data-theme="day"]  { --accent:#0E6E63; --accent-2:#128C7E; --accent-soft:rgba(14,110,99,.09); --on-accent:#fff; }
+html[data-theme="night"]{ --accent:#5FD3C4; --accent-2:#8FE3D8; --accent-soft:rgba(95,211,196,.12); --on-accent:#062521; }
+
+.font-quran{font-family:'Amiri Quran','Amiri',serif}
+
+/* leave room for the sticky recitation bar */
+.wrap{padding-bottom:7rem}
+@supports selector(:has(*)){
+  body:has(.player[data-show="true"]) .wrap{padding-bottom:10rem}
+}
+
+/* ---------- Surah header card ---------- */
+.surah-head{
+  margin-top:1.4rem;padding:1.6rem 1.3rem 1.4rem;
+  background:var(--surface);border:1px solid var(--border-soft);
+  border-radius:var(--r-lg);box-shadow:var(--shadow);text-align:center;
+}
+.surah-head__name{
+  font-family:'Amiri Quran','Amiri',serif;font-weight:400;
+  font-size:clamp(2.1rem,8vw,3.1rem);line-height:1.45;margin:0;color:var(--ink);
+}
+.surah-head__en{margin:.15rem 0 0;font-size:.95rem;color:var(--ink-3);letter-spacing:.02em}
+.surah-head__meaning{margin:.1rem 0 0;font-size:.85rem;color:var(--ink-3);font-style:italic;direction:ltr;unicode-bidi:isolate}
+
+.facts{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:.45rem;
+  margin:1.1rem 0 0;padding:0;list-style:none;
+}
+.facts li{
+  display:inline-flex;align-items:center;gap:.35rem;
+  padding:.3rem .7rem;border-radius:var(--r-full);
+  background:var(--surface-sunk);font-size:.78rem;color:var(--ink-2);
+}
+.facts li b{color:var(--ink);font-weight:700}
+.facts li[data-kind="place"]{background:var(--accent-soft);color:var(--accent)}
+
+.intro-toggle{
+  display:inline-flex;align-items:center;gap:.4rem;margin:1.1rem auto 0;
+  padding:.45rem .95rem;border-radius:var(--r-full);
+  background:var(--surface-sunk);color:var(--ink-2);
+  font-size:.83rem;font-weight:600;transition:background var(--t),color var(--t);
+}
+.intro-toggle:hover{background:var(--accent-soft);color:var(--accent)}
+.intro-toggle svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform var(--t)}
+.intro-toggle[aria-expanded="true"]{background:var(--accent-soft);color:var(--accent)}
+.intro-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+
+.intro{
+  margin:1.05rem 0 0;padding-top:1.05rem;border-top:1px solid var(--border-soft);
+  font-size:.94rem;line-height:1.95;color:var(--ink-2);text-align:start;
+}
+.intro p{margin:0 0 .7rem}
+.intro p:last-child{margin:0}
+.intro h3{
+  margin:1.1rem 0 .5rem;font-size:.78rem;font-weight:700;letter-spacing:.06em;
+  color:var(--ink-3);
+}
+
+/* ---------- Bismillah ---------- */
+.bismillah{
+  text-align:center;margin:1.7rem 0 .4rem;
+  font-family:'Amiri Quran','Amiri',serif;
+  font-size:clamp(1.5rem,5.5vw,2rem);color:var(--accent);line-height:2;
+}
+
+/* ---------- Verse ---------- */
+.verses{margin:1rem 0 0;padding:0;list-style:none;display:grid;gap:.7rem}
+
+.ayah{
+  background:var(--surface);border:1px solid var(--border-soft);
+  border-radius:var(--r-lg);box-shadow:var(--shadow);
+  padding:1.15rem 1.2rem 0.9rem;
+  scroll-margin-top:5.5rem;
+  transition:border-color var(--t),box-shadow var(--t),background var(--t);
+}
+.ayah.is-playing{
+  border-color:var(--accent);
+  box-shadow:0 0 0 2px var(--accent-soft), var(--shadow-lg);
+}
+.ayah.is-bookmarked{border-inline-start:3px solid var(--accent)}
+
+.ayah__ar{
+  font-family:'Amiri Quran','Amiri',serif;
+  font-size:var(--ayah-size);line-height:var(--ayah-leading);
+  color:var(--ink);margin:0;text-align:start;
+  direction:rtl;
+}
+.ayah__num{
+  display:inline-block;font-family:'Amiri Quran','Amiri',serif;
+  color:var(--accent);font-size:.82em;white-space:nowrap;
+}
+.ayah__tr{
+  margin:.85rem 0 0;font-family:var(--font-latin);font-size:.86rem;line-height:1.8;
+  color:var(--ink-3);font-style:italic;direction:ltr;text-align:left;
+}
+.ayah__en{
+  margin:.7rem 0 0;font-family:var(--font-latin);font-size:.94rem;line-height:1.75;
+  color:var(--ink-2);direction:ltr;text-align:left;
+  padding-inline-start:.8rem;border-inline-start:2px solid var(--border);
+}
+html[dir="rtl"] .ayah__en{padding-inline-start:0;padding-left:.8rem;border-inline-start:0;border-left:2px solid var(--border)}
+
+/* verse toolbar */
+.ayah__bar{
+  display:flex;align-items:center;gap:.1rem;flex-wrap:wrap;
+  margin-top:.75rem;padding-top:.6rem;border-top:1px solid var(--border-soft);
+}
+.vbtn{
+  display:inline-flex;align-items:center;gap:.35rem;
+  height:34px;padding:0 .6rem;border-radius:var(--r-full);
+  font-size:.78rem;font-weight:600;color:var(--ink-3);
+  transition:background var(--t),color var(--t);
+}
+.vbtn:hover{background:var(--surface-sunk);color:var(--ink)}
+.vbtn[aria-pressed="true"],.vbtn[aria-expanded="true"]{color:var(--accent);background:var(--accent-soft)}
+.vbtn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.vbtn--icon{padding:0;width:34px;justify-content:center}
+.vbtn__meta{margin-inline-start:auto;font-size:.72rem;color:var(--ink-3);font-weight:400;padding-inline-end:.2rem}
+
+/* ---------- Collapsible panels ---------- */
+.panel{display:none;margin-top:.75rem}
+.panel[data-open="true"]{display:block;animation:fade 260ms ease}
+@keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+.tafsir{
+  background:var(--surface-sunk);border-radius:var(--r-md);
+  padding:.95rem 1rem;font-size:.92rem;line-height:2;color:var(--ink-2);
+}
+.tafsir[data-lang="en"]{direction:ltr;text-align:left;font-family:var(--font-latin);font-size:.9rem;line-height:1.8}
+.tafsir p{margin:0 0 .75rem}
+.tafsir p:last-child{margin:0}
+.tafsir__src{
+  display:block;margin-bottom:.55rem;font-size:.72rem;font-weight:700;
+  letter-spacing:.04em;color:var(--accent);
+}
+
+.words{display:flex;flex-wrap:wrap;gap:.4rem;direction:rtl}
+.word{
+  flex:0 0 auto;min-width:4.5rem;text-align:center;
+  padding:.5rem .6rem;border-radius:var(--r-md);
+  background:var(--surface-sunk);border:1px solid var(--border-soft);
+}
+.word b{
+  display:block;font-family:'Amiri Quran','Amiri',serif;font-weight:400;
+  font-size:1.28rem;line-height:1.9;color:var(--ink);
+}
+.word i{
+  display:block;font-family:var(--font-latin);font-style:normal;
+  font-size:.68rem;color:var(--ink-3);direction:ltr;margin-top:.1rem;
+}
+.word span{
+  display:block;font-family:var(--font-latin);font-size:.75rem;
+  color:var(--ink-2);direction:ltr;margin-top:.15rem;line-height:1.4;
+}
+
+/* ---------- Mushaf (continuous) mode ---------- */
+.mushaf{margin:1rem 0 0;display:grid;gap:1.1rem}
+.mushaf__page{
+  background:var(--surface);border:1px solid var(--border-soft);
+  border-radius:var(--r-lg);box-shadow:var(--shadow);padding:1.5rem 1.35rem 1rem;
+}
+.mushaf__text{
+  font-family:'Amiri Quran','Amiri',serif;
+  font-size:var(--ayah-size);line-height:calc(var(--ayah-leading) + .15);
+  color:var(--ink);text-align:justify;text-align-last:center;direction:rtl;margin:0;
+}
+.mushaf__text .a{cursor:pointer;border-radius:4px;transition:background var(--t)}
+.mushaf__text .a:hover{background:var(--accent-soft)}
+.mushaf__text .a.is-playing{background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent-soft)}
+.mushaf__foot{
+  margin-top:1rem;padding-top:.7rem;border-top:1px solid var(--border-soft);
+  text-align:center;font-size:.75rem;color:var(--ink-3);
+}
+
+/* ---------- Sticky audio bar ---------- */
+.player{
+  position:fixed;inset-inline:0;bottom:0;z-index:50;
+  transform:translateY(110%);transition:transform 300ms cubic-bezier(.2,.8,.25,1);
+  background:var(--scrim);backdrop-filter:saturate(1.6) blur(14px);
+  -webkit-backdrop-filter:saturate(1.6) blur(14px);
+  border-top:1px solid var(--border);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.player[data-show="true"]{transform:none}
+.player__inner{
+  max-width:var(--maxw);margin:0 auto;padding:.6rem var(--pad);
+  display:flex;align-items:center;gap:.5rem;
+}
+.player__label{
+  flex:1 1 auto;min-width:0;font-size:.82rem;color:var(--ink-2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.player__label b{color:var(--ink)}
+.pbtn{
+  display:grid;place-items:center;width:40px;height:40px;flex:0 0 auto;
+  border-radius:var(--r-full);color:var(--ink-2);transition:background var(--t),color var(--t);
+}
+.pbtn:hover{background:var(--surface-sunk);color:var(--ink)}
+.pbtn--main{background:var(--accent);color:var(--on-accent);width:44px;height:44px}
+.pbtn--main:hover{background:var(--accent-2);color:var(--on-accent)}
+.pbtn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.pbtn--main svg{width:21px;height:21px}
+
+/* ---------- Select control (settings) ---------- */
+.select{
+  flex:0 0 auto;max-width:13.5rem;
+  font-family:var(--font-ui);font-size:.85rem;font-weight:600;
+  color:var(--ink);background:var(--surface-sunk);
+  border:1px solid var(--border-soft);border-radius:var(--r-full);
+  padding:.45rem 1.8rem .45rem .8rem;cursor:pointer;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:left .65rem center;
+}
+html[dir="ltr"] .select{padding:.45rem .8rem .45rem 1.8rem;background-position:right .65rem center}
+.select:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
+
+/* ---------- Surah index ---------- */
+.searchbar{
+  display:flex;align-items:center;gap:.6rem;margin:1.4rem 0 0;
+  padding:.75rem 1rem;background:var(--surface);
+  border:1px solid var(--border-soft);border-radius:var(--r-full);box-shadow:var(--shadow);
+}
+.searchbar svg{width:18px;height:18px;stroke:var(--ink-3);fill:none;stroke-width:1.9;flex:0 0 auto}
+.searchbar input{
+  flex:1;border:0;background:none;outline:none;color:var(--ink);
+  font-family:var(--font-ui);font-size:.95rem;min-width:0;
+}
+.searchbar input::placeholder{color:var(--ink-3)}
+
+.surah-grid{margin:1.1rem 0 0;padding:0;list-style:none;display:grid;gap:.55rem}
+@media(min-width:620px){.surah-grid{grid-template-columns:1fr 1fr}}
+.surah-link{
+  display:flex;align-items:center;gap:.85rem;
+  padding:.8rem .9rem;background:var(--surface);
+  border:1px solid var(--border-soft);border-radius:var(--r-md);
+  box-shadow:var(--shadow);text-decoration:none;color:inherit;
+  transition:transform var(--t),box-shadow var(--t),border-color var(--t);
+}
+.surah-link:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg);border-color:var(--border)}
+.surah-link__n{
+  flex:0 0 auto;display:grid;place-items:center;width:36px;height:36px;
+  font-family:var(--font-latin);font-size:.8rem;font-weight:700;
+  color:var(--accent);background:var(--accent-soft);
+  clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+}
+.surah-link__body{flex:1 1 auto;min-width:0}
+.surah-link__ar{
+  display:block;font-family:'Amiri Quran','Amiri',serif;font-size:1.28rem;
+  line-height:1.7;color:var(--ink);
+}
+.surah-link__en{
+  display:block;font-family:var(--font-latin);font-size:.75rem;color:var(--ink-3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.surah-link__meta{
+  flex:0 0 auto;text-align:end;font-size:.7rem;color:var(--ink-3);line-height:1.5;
+}
+
+/* ---------- Prev / next ---------- */
+.surah-nav{display:flex;gap:.6rem;margin-top:1.6rem}
+.surah-nav a{
+  flex:1;display:flex;align-items:center;gap:.55rem;
+  padding:.85rem 1rem;background:var(--surface);
+  border:1px solid var(--border-soft);border-radius:var(--r-md);
+  box-shadow:var(--shadow);text-decoration:none;color:inherit;
+  transition:box-shadow var(--t),border-color var(--t);
+}
+.surah-nav a:hover{box-shadow:var(--shadow-lg);border-color:var(--border)}
+.surah-nav a:last-child{justify-content:flex-end;text-align:end}
+.surah-nav svg{width:17px;height:17px;stroke:var(--ink-3);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.surah-nav small{display:block;font-size:.68rem;color:var(--ink-3)}
+.surah-nav b{font-family:'Amiri Quran','Amiri',serif;font-size:1.1rem;font-weight:400;color:var(--ink)}
+html[dir="rtl"] .surah-nav svg{transform:scaleX(-1)}
+
+/* ---------- Loading / error ---------- */
+.state{
+  text-align:center;padding:3.5rem 1rem;color:var(--ink-3);font-size:.92rem;
+}
+.spinner{
+  width:26px;height:26px;margin:0 auto .9rem;border-radius:50%;
+  border:2.5px solid var(--border);border-top-color:var(--accent);
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media (prefers-reduced-motion:reduce){
+  .spinner{animation-duration:2s}
+}
+
+@media print{
+  .player,.ayah__bar,.surah-nav,.searchbar{display:none!important}
+  .ayah,.mushaf__page{break-inside:avoid;box-shadow:none;border:1px solid #ddd}
+}

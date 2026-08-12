@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="day">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>القرآن الكريم — فهرس السور</title>
+<meta name="description" content="فهرس سور القرآن الكريم، مع الترجمة والتفسير ومعاني الكلمات والتلاوة.">
+<meta name="theme-color" content="#FAF6EF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="القرآن">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icon-180.png">
+<link rel="stylesheet" href="../assets/thekr.css">
+<link rel="stylesheet" href="assets/quran.css">
+<script>
+(function () {
+  try {
+    var s = JSON.parse(localStorage.getItem('thekr.settings.v1') || '{}');
+    var h = new Date().getHours();
+    var theme = (!s.theme || s.theme === 'auto') ? ((h >= 5 && h < 18) ? 'day' : 'night') : s.theme;
+    document.documentElement.setAttribute('data-theme', theme);
+  } catch (e) {}
+})();
+</script>
+<style>
+  .resume{
+    display:none;align-items:center;gap:.85rem;margin:1.3rem 0 0;padding:.95rem 1.1rem;
+    background:var(--accent-soft);border-radius:var(--r-md);text-decoration:none;color:inherit;
+  }
+  .resume[data-show="true"]{display:flex}
+  .resume svg{width:20px;height:20px;stroke:var(--accent);fill:none;stroke-width:1.8;flex:0 0 auto}
+  .resume small{display:block;font-size:.75rem;color:var(--ink-3)}
+  .resume b{font-family:'Amiri Quran','Amiri',serif;font-weight:400;font-size:1.15rem}
+  .filters{display:flex;gap:.3rem;justify-content:center;margin:.9rem 0 0}
+  .filters button{
+    padding:.4rem .9rem;border-radius:var(--r-full);font-size:.83rem;font-weight:600;
+    color:var(--ink-2);background:var(--surface-sunk);transition:background var(--t),color var(--t);
+  }
+  .filters button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+  .empty{text-align:center;padding:2.5rem 1rem;color:var(--ink-3);font-size:.9rem}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar__inner">
+    <a class="iconbtn iconbtn--back" href="../index.html" aria-label="رجوع">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+    </a>
+    <div class="progress">
+      <div class="progress__row">
+        <span class="progress__label">القرآن الكريم</span>
+        <span class="progress__count" id="count"></span>
+      </div>
+    </div>
+    <button type="button" class="iconbtn" id="theme-toggle" aria-label="تبديل المظهر">
+      <svg viewBox="0 0 24 24" aria-hidden="true" id="theme-icon"></svg>
+    </button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <h1>القرآن الكريم</h1>
+    <p class="sub">بالرسم العثماني، مع الترجمة والتفسير ومعاني الكلمات والتلاوة</p>
+    <div class="ornament" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 2l2.4 6.5L21 9.2l-4.9 4.3 1.5 6.5L12 16.6 6.4 20l1.5-6.5L3 9.2l6.6-.7z"/></svg>
+    </div>
+  </header>
+
+  <a class="resume" id="resume" href="#">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+    <span><small>متابعة القراءة</small><b id="resume-name"></b></span>
+  </a>
+
+  <div class="searchbar">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    <input type="search" id="q" placeholder="ابحث باسم السورة أو رقمها…" aria-label="بحث عن سورة">
+  </div>
+
+  <div class="filters" role="group" aria-label="تصفية">
+    <button type="button" data-f="all" aria-pressed="true">الكل</button>
+    <button type="button" data-f="makkah" aria-pressed="false">مكّية</button>
+    <button type="button" data-f="madinah" aria-pressed="false">مدنيّة</button>
+  </div>
+
+  <ul class="surah-grid" id="grid"></ul>
+  <p class="empty" id="empty" hidden>لا توجد نتائج مطابقة.</p>
+
+  <footer class="pagefoot">
+    <p>النص بالرسم العثماني · الترجمة: Saheeh International · التفسير: الميسر، السعدي، وابن كثير</p>
+    <p><a href="../index.html">فهرس الأذكار والقرآن</a></p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var grid = document.getElementById('grid');
+  var empty = document.getElementById('empty');
+  var q = document.getElementById('q');
+  var countEl = document.getElementById('count');
+  var list = [], filter = 'all';
+
+  var AR = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  function ar(n){ return String(n).split('').map(function(c){ return AR[+c] != null ? AR[+c] : c; }).join(''); }
+  function norm(s){
+    return (s||'').toLowerCase()
+      .replace(/[ً-ْٰ]/g,'')
+      .replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه')
+      .replace(/['`\-’]/g,'');
+  }
+
+  function draw() {
+    var term = norm(q.value.trim());
+    var shown = list.filter(function (s) {
+      if (filter !== 'all' && s.place !== filter) return false;
+      if (!term) return true;
+      return String(s.id) === term
+          || norm(s.nameAr).indexOf(term) !== -1
+          || norm(s.nameEn).indexOf(term) !== -1
+          || norm(s.meaning).indexOf(term) !== -1;
+    });
+    grid.innerHTML = '';
+    shown.forEach(function (s) {
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.className = 'surah-link';
+      a.href = 'surah.html?s=' + s.id;
+      a.innerHTML =
+        '<span class="surah-link__n">' + s.id + '</span>' +
+        '<span class="surah-link__body">' +
+          '<span class="surah-link__ar">' + s.nameAr + '</span>' +
+          '<span class="surah-link__en">' + s.nameEn + ' · ' + s.meaning + '</span>' +
+        '</span>' +
+        '<span class="surah-link__meta">' + (s.place === 'makkah' ? 'مكّية' : 'مدنيّة') +
+          '<br>' + ar(s.verses) + ' آية</span>';
+      li.appendChild(a);
+      grid.appendChild(li);
+    });
+    empty.hidden = shown.length > 0;
+    countEl.textContent = shown.length + ' / ' + list.length;
+  }
+
+  fetch('assets/data/surahs.json')
+    .then(function (r) { return r.json(); })
+    .then(function (d) { list = d; draw(); resume(d); })
+    .catch(function () { empty.textContent = 'تعذّر تحميل فهرس السور.'; empty.hidden = false; });
+
+  q.addEventListener('input', draw);
+  Array.prototype.forEach.call(document.querySelectorAll('.filters button'), function (b) {
+    b.addEventListener('click', function () {
+      filter = b.dataset.f;
+      Array.prototype.forEach.call(document.querySelectorAll('.filters button'), function (x) {
+        x.setAttribute('aria-pressed', String(x === b));
+      });
+      draw();
+    });
+  });
+
+  function resume(all) {
+    try {
+      var last = JSON.parse(localStorage.getItem('quran.last.v1') || 'null');
+      if (!last) return;
+      var m = all.filter(function (s) { return s.id === last.surah; })[0];
+      if (!m) return;
+      var box = document.getElementById('resume');
+      document.getElementById('resume-name').textContent = 'سورة ' + m.nameAr + ' · آية ' + ar(last.ayah || 1);
+      box.href = 'surah.html?s=' + last.surah + '&a=' + (last.ayah || 1);
+      box.setAttribute('data-show', 'true');
+    } catch (e) {}
+  }
+
+  /* theme toggle, shared with the athkar pages */
+  var SUN = '<circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66l1.42-1.42M4.92 19.08l1.42-1.42m0-11.32L4.92 4.92m14.16 14.16l-1.42-1.42" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>';
+  var MOON = '<path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 100 17 8.5 8.5 0 0010.5-6.5z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>';
+  var icon = document.getElementById('theme-icon');
+  function paintIcon(){ icon.innerHTML = document.documentElement.getAttribute('data-theme') === 'night' ? SUN : MOON; }
+  paintIcon();
+  document.getElementById('theme-toggle').addEventListener('click', function () {
+    var next = document.documentElement.getAttribute('data-theme') === 'night' ? 'day' : 'night';
+    document.documentElement.setAttribute('data-theme', next);
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', next === 'night' ? '#0B1119' : '#FAF6EF');
+    paintIcon();
+    try {
+      var s = JSON.parse(localStorage.getItem('thekr.settings.v1') || '{}');
+      s.theme = next; localStorage.setItem('thekr.settings.v1', JSON.stringify(s));
+    } catch (e) {}
+  });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(function () {});
+    });
+  }
+})();
+</script>
+</body>
+</html>

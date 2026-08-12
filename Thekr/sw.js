@@ -1,6 +1,6 @@
 /* Thekr service worker — offline-first.
    Bump CACHE when any precached file changes. */
-const CACHE = 'thekr-v1';
+const CACHE = 'thekr-v2';
 
 const PRECACHE = [
   './',
@@ -10,6 +10,15 @@ const PRECACHE = [
   'quran_reading.html',
   'quran_memorizing.html',
   'Quran/Luqman.html',
+  'Quran/index.html',
+  'Quran/surah.html',
+  'Quran/assets/quran.css',
+  'Quran/assets/quran.js',
+  'Quran/assets/intros.js',
+  'Quran/assets/data/surahs.json',
+  'Quran/assets/data/031.json',
+  'Quran/assets/data/tafsir/031.json',
+  'assets/fonts/amiri-quran-arabic.woff2',
   'manifest.webmanifest',
   'assets/thekr.css',
   'assets/thekr.js',
@@ -76,6 +85,10 @@ self.addEventListener('fetch', function (event) {
     );
     return;
   }
+
+  /* recitation audio: always straight to the network, never cached
+     (hundreds of MB otherwise) */
+  if (/everyayah\.com|\.mp3(\?|$)/i.test(req.url)) return;
 
   /* everything else: cache-first, then network (and cache the result,
      including opaque cross-origin responses such as CDN scripts/fonts) */
