@@ -65,6 +65,59 @@
 
   function applySize() { document.documentElement.style.setProperty('--ayah-size', SIZES[S.size] + 'rem'); }
   function applyMode() { document.documentElement.setAttribute('data-mode', S.mode); }
+
+  /* Forced two-page mode.
+     The size that fits a column is a function of the column width, not of the
+     reader's chosen size — roughly 18em of measure per line reads well in
+     naskh. Compute that, cap it at the reader's size, and if the result would
+     fall below the legibility floor, stack the pages instead. */
+  var MIN_PAGE_SIZE = 1.05;   /* rem — below this the spread gives up */
+  var EM_PER_LINE = 18;       /* target measure per line */
+
+  function fitSpread() {
+    var root = document.documentElement;
+    if (S.mode !== 'spread') {
+      root.removeAttribute('data-spread-stacked');
+      root.style.removeProperty('--page-size');
+      return;
+    }
+    root.removeAttribute('data-spread-stacked');
+    root.style.removeProperty('--page-size');
+
+    var spread = document.querySelector('.mushaf__spread[data-pair="true"]');
+    if (!spread) return;
+
+    var frame = spread.querySelector('.mushaf__frame');
+    var colPx = frame ? frame.getBoundingClientRect().width
+                      : spread.getBoundingClientRect().width / 2;
+    var rootPx = parseFloat(getComputedStyle(root).fontSize) || 16;
+    var fitRem = (colPx / EM_PER_LINE) / rootPx;
+    var size = Math.min(SIZES[S.size], fitRem);
+
+    if (size < MIN_PAGE_SIZE) {
+      root.setAttribute('data-spread-stacked', 'true');
+      root.style.removeProperty('--page-size');
+      return;
+    }
+    root.style.setProperty('--page-size', size.toFixed(3) + 'rem');
+  }
+
+  /* Measuring straight after appending can read a stale layout box, and the
+     Qur'anic webfont changes metrics once it lands — so fit after layout has
+     settled and again when the font is ready. */
+  function scheduleFit() {
+    requestAnimationFrame(function () { requestAnimationFrame(fitSpread); });
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(fitSpread).catch(function () {});
+    }
+  }
+
+  var fitTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(fitTimer);
+    fitTimer = setTimeout(fitSpread, 120);
+  });
+  window.addEventListener('orientationchange', scheduleFit);
   function applyTheme() {
     var t = read(THEKR_SET, {}).theme;
     var h = new Date().getHours();
@@ -124,8 +177,9 @@
       elMain.appendChild(b);
     }
     applyMode();
-    elMain.appendChild(S.mode === 'mushaf' ? mushaf() : verseList());
+    elMain.appendChild(S.mode === 'verse' ? verseList() : mushaf());
     elMain.appendChild(surahNav());
+    scheduleFit();
   }
 
   function fact(label, value, kind) {
@@ -399,6 +453,7 @@
       var spread = document.createElement('div');
       spread.className = 'mushaf__spread';
       spread.dataset.single = String(pair.length === 1);
+      spread.dataset.pair = String(pair.length === 2);
       pair.forEach(function (k) { spread.appendChild(buildPage(k, pages[k])); });
       wrap.appendChild(spread);
     });
@@ -407,6 +462,8 @@
     function buildPage(k, list) {
       var page = document.createElement('div');
       page.className = 'mushaf__page';
+      var frame = document.createElement('div');
+      frame.className = 'mushaf__frame';
       var p = document.createElement('p');
       p.className = 'mushaf__text';
       list.forEach(function (v) {
@@ -419,10 +476,15 @@
         span.addEventListener('click', function () { togglePlay(v.n); });
         p.appendChild(span);
       });
-      page.appendChild(p);
+      frame.appendChild(p);
+      page.appendChild(frame);
       var f = document.createElement('div');
       f.className = 'mushaf__foot';
-      f.textContent = 'صفحة ' + ar(k);
+      var medallion = document.createElement('span');
+      medallion.className = 'mushaf__num';
+      medallion.textContent = ar(k);
+      medallion.title = 'صفحة ' + ar(k);
+      f.appendChild(medallion);
       page.appendChild(f);
       return page;
     }
@@ -592,12 +654,13 @@
     var out = document.createElement('output');
     var plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', 'تكبير');
     function paint() { out.textContent = (S.size + 1) + '/' + SIZES.length; minus.disabled = !S.size; plus.disabled = S.size === SIZES.length - 1; }
-    minus.addEventListener('click', function () { S.size = Math.max(0, S.size - 1); write(SET_KEY, S); applySize(); paint(); });
-    plus.addEventListener('click', function () { S.size = Math.min(SIZES.length - 1, S.size + 1); write(SET_KEY, S); applySize(); paint(); });
+    minus.addEventListener('click', function () { S.size = Math.max(0, S.size - 1); write(SET_KEY, S); applySize(); scheduleFit(); paint(); });
+    plus.addEventListener('click', function () { S.size = Math.min(SIZES.length - 1, S.size + 1); write(SET_KEY, S); applySize(); scheduleFit(); paint(); });
     paint(); st.appendChild(minus); st.appendChild(out); st.appendChild(plus);
     sr.appendChild(st); box.appendChild(sr);
 
-    box.appendChild(chips('طريقة العرض', 'mode', [['mushaf', 'مصحف'], ['verse', 'آية آية']], render));
+    box.appendChild(chips('طريقة العرض', 'mode',
+      [['verse', 'آية آية'], ['mushaf', 'صفحة'], ['spread', 'صفحتان']], render));
 
     box.appendChild(toggle('الترجمة الإنجليزية', 'Saheeh International', 'translation', function () {
       Array.prototype.forEach.call(document.querySelectorAll('[data-role="translation"]'), function (n) { n.hidden = !S.translation; });

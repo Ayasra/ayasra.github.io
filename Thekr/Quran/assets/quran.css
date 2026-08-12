@@ -169,52 +169,178 @@ html[dir="rtl"] .ayah__en{padding-inline-start:0;padding-left:.8rem;border-inlin
   color:var(--ink-2);direction:ltr;margin-top:.15rem;line-height:1.4;
 }
 
-/* ---------- Mushaf (continuous) mode — the default view ---------- */
-.mushaf{margin:1rem 0 0;display:grid;gap:1.1rem}
-.mushaf__spread{display:grid;gap:1.1rem}
+/* ---------- Mushaf pages — printed-paper treatment -------------------------
+   modes:  page   = one page per row
+           spread = two pages forced side by side, text scaled to fit
+   -------------------------------------------------------------------------- */
+html[data-theme="day"]{
+  --paper:        #FCF8EE;
+  --paper-edge:   #EFE4CC;
+  --rule:         #C9A961;
+  --rule-soft:    rgba(201,169,97,.42);
+  --paper-shadow: 0 1px 2px rgba(90,70,35,.07), 0 10px 28px -12px rgba(90,70,35,.28);
+}
+html[data-theme="night"]{
+  --paper:        #121C27;
+  --paper-edge:   #22303F;
+  --rule:         #A98A4E;
+  --rule-soft:    rgba(169,138,78,.45);
+  --paper-shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px -12px rgba(0,0,0,.75);
+}
+
+.mushaf{margin:1.2rem 0 0;display:grid;gap:1.5rem}
+.mushaf__spread{display:grid;gap:1.5rem}
+
 .mushaf__page{
-  background:var(--surface);border:1px solid var(--border-soft);
-  border-radius:var(--r-lg);box-shadow:var(--shadow);padding:1.5rem 1.35rem 1rem;
+  position:relative;
+  background:var(--paper);
+  border:1px solid var(--paper-edge);
+  border-radius:2px;                       /* printed sheet, not a UI card */
+  box-shadow:var(--paper-shadow);
+  padding:1.5rem 1.3rem 1.15rem;
+  display:flex;flex-direction:column;
 }
 
-/* Wide screens: two pages open side by side as one spread, right page first.
-   Everything that is not the mushaf stays at comfortable reading width. */
-html[data-mode="mushaf"]{--maxw:78rem}
-html[data-mode="mushaf"] .surah-head,
-html[data-mode="mushaf"] .bismillah,
-html[data-mode="mushaf"] .surah-nav,
-html[data-mode="mushaf"] .settings__inner,
-html[data-mode="mushaf"] .state{max-width:46rem;margin-inline:auto}
-
-@media (min-width:62rem){
-  html[data-mode="mushaf"] .mushaf__spread{
-    grid-template-columns:1fr 1fr;gap:0;
-    background:var(--surface);border:1px solid var(--border-soft);
-    border-radius:var(--r-lg);box-shadow:var(--shadow);
-  }
-  html[data-mode="mushaf"] .mushaf__spread .mushaf__page{
-    background:none;border:0;box-shadow:none;border-radius:0;
-  }
-  /* the binding line down the middle of the spread */
-  html[data-mode="mushaf"] .mushaf__spread .mushaf__page:first-child:not(:only-child){
-    border-inline-end:1px solid var(--border-soft);
-  }
-  /* a lone final page should not stretch across half an empty spread */
-  html[data-mode="mushaf"] .mushaf__spread[data-single="true"]{
-    grid-template-columns:1fr;max-width:calc(50% - .55rem);margin-inline:auto;
-  }
+/* the fine double rule that frames the text block of a printed mushaf */
+.mushaf__frame{
+  flex:1;
+  border:1.5px solid var(--rule);
+  border-radius:1px;
+  padding:1.15rem 1.05rem 1.25rem;
+  position:relative;
 }
+.mushaf__frame::before{
+  content:'';position:absolute;inset:4px;
+  border:.5px solid var(--rule-soft);
+  border-radius:1px;pointer-events:none;
+}
+
 .mushaf__text{
   font-family:'Amiri Quran','Amiri',serif;
-  font-size:var(--ayah-size);line-height:calc(var(--ayah-leading) + .15);
+  font-size:var(--page-size, var(--ayah-size));
+  line-height:calc(var(--ayah-leading) + .15);
   color:var(--ink);text-align:justify;text-align-last:center;direction:rtl;margin:0;
 }
 .mushaf__text .a{cursor:pointer;border-radius:4px;transition:background var(--t)}
 .mushaf__text .a:hover{background:var(--accent-soft)}
 .mushaf__text .a.is-playing{background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent-soft)}
+
+/* page number in an eight-pointed medallion, centred under the frame */
 .mushaf__foot{
-  margin-top:1rem;padding-top:.7rem;border-top:1px solid var(--border-soft);
-  text-align:center;font-size:.75rem;color:var(--ink-3);
+  margin-top:.95rem;display:flex;align-items:center;justify-content:center;gap:.7rem;
+  color:var(--rule);
+}
+.mushaf__foot::before,.mushaf__foot::after{
+  content:'';height:1px;flex:1;max-width:5.5rem;
+  background:linear-gradient(90deg,transparent,var(--rule-soft));
+}
+.mushaf__foot::after{background:linear-gradient(270deg,transparent,var(--rule-soft))}
+.mushaf__num{
+  flex:0 0 auto;display:grid;place-items:center;
+  width:30px;height:30px;
+  font-family:'Amiri Quran','Amiri',serif;font-size:.9rem;line-height:1;
+  color:var(--ink-2);background:var(--rule-soft);
+  clip-path:polygon(50% 0,68% 15%,85% 15%,85% 32%,100% 50%,85% 68%,85% 85%,68% 85%,50% 100%,32% 85%,15% 85%,15% 68%,0 50%,15% 32%,15% 15%,32% 15%);
+}
+
+/* In the page modes the header sits above paper, so it becomes a title
+   page rather than a UI card. Verse mode keeps the card. */
+html[data-mode="mushaf"] .surah-head,
+html[data-mode="spread"] .surah-head{
+  background:var(--paper);
+  border:1px solid var(--paper-edge);
+  border-radius:2px;
+  box-shadow:var(--paper-shadow);
+  padding:1.9rem 1.4rem 1.5rem;
+  position:relative;
+}
+html[data-mode="mushaf"] .surah-head::before,
+html[data-mode="spread"] .surah-head::before{
+  content:'';position:absolute;inset:6px;
+  border:1px solid var(--rule-soft);border-radius:1px;pointer-events:none;
+}
+html[data-mode="mushaf"] .surah-head__name,
+html[data-mode="spread"] .surah-head__name{color:var(--ink)}
+/* a short gold rule under the sūrah name */
+html[data-mode="mushaf"] .surah-head__meaning::after,
+html[data-mode="spread"] .surah-head__meaning::after{
+  content:'';display:block;width:5.5rem;height:1px;margin:.85rem auto 0;
+  background:linear-gradient(90deg,transparent,var(--rule),transparent);
+}
+html[data-mode="mushaf"] .bismillah,
+html[data-mode="spread"] .bismillah{color:var(--rule)}
+
+/* ---------- layout per mode ---------- */
+html[data-mode="mushaf"] .surah-head,
+html[data-mode="mushaf"] .bismillah,
+html[data-mode="mushaf"] .surah-nav,
+html[data-mode="mushaf"] .settings__inner,
+html[data-mode="mushaf"] .state,
+html[data-mode="spread"] .surah-head,
+html[data-mode="spread"] .bismillah,
+html[data-mode="spread"] .surah-nav,
+html[data-mode="spread"] .settings__inner,
+html[data-mode="spread"] .state{max-width:46rem;margin-inline:auto}
+
+html[data-mode="mushaf"]{--maxw:78rem}
+html[data-mode="spread"] {--maxw:82rem}
+
+/* joined spread: two sheets sharing one binding */
+.mushaf__spread[data-pair="true"]{gap:0}
+.mushaf__spread[data-pair="true"] .mushaf__page{
+  border-radius:0;box-shadow:none;border:0;
+}
+.mushaf__spread[data-pair="true"]{
+  background:var(--paper);
+  border:1px solid var(--paper-edge);
+  border-radius:2px;
+  box-shadow:var(--paper-shadow);
+}
+/* the spine: a soft crease down the centre of the open book */
+.mushaf__spread[data-pair="true"] .mushaf__page:first-child:not(:only-child){
+  border-inline-end:1px solid var(--paper-edge);
+  box-shadow:inset -14px 0 22px -20px rgba(90,70,35,.55);
+}
+html[data-theme="night"] .mushaf__spread[data-pair="true"] .mushaf__page:first-child:not(:only-child){
+  box-shadow:inset -14px 0 22px -18px rgba(0,0,0,.9);
+}
+html[dir="rtl"] .mushaf__spread[data-pair="true"] .mushaf__page:last-child:not(:only-child){
+  box-shadow:inset 14px 0 22px -20px rgba(90,70,35,.55);
+}
+html[data-theme="night"][dir="rtl"] .mushaf__spread[data-pair="true"] .mushaf__page:last-child:not(:only-child){
+  box-shadow:inset 14px 0 22px -18px rgba(0,0,0,.9);
+}
+
+/* auto mode: pair up only when there is genuinely room */
+@media (min-width:62rem){
+  html[data-mode="mushaf"] .mushaf__spread[data-pair="true"]{grid-template-columns:1fr 1fr}
+  html[data-mode="mushaf"] .mushaf__spread[data-single="true"]{
+    grid-template-columns:1fr;max-width:calc(50% - .55rem);margin-inline:auto;
+  }
+}
+
+/* forced spread: always two up, the type shrinks to fit (floor handled in JS) */
+html[data-mode="spread"] .mushaf__spread[data-pair="true"]{grid-template-columns:1fr 1fr}
+html[data-mode="spread"] .mushaf__spread[data-single="true"]{
+  grid-template-columns:1fr;max-width:min(100%,34rem);margin-inline:auto;
+}
+html[data-mode="spread"] .mushaf__page{padding:1.1rem .85rem .9rem}
+html[data-mode="spread"] .mushaf__frame{padding:.85rem .7rem .95rem}
+html[data-mode="spread"] .mushaf__num{width:26px;height:26px;font-size:.8rem}
+html[data-mode="spread"] .mushaf__foot{margin-top:.7rem}
+html[data-mode="spread"] .mushaf__foot::before,
+html[data-mode="spread"] .mushaf__foot::after{max-width:3rem}
+
+/* below the legibility floor the forced spread gives up and stacks */
+html[data-mode="spread"][data-spread-stacked="true"] .mushaf__spread{grid-template-columns:1fr!important;gap:1.5rem}
+html[data-mode="spread"][data-spread-stacked="true"] .mushaf__spread[data-pair="true"]{
+  background:none;border:0;box-shadow:none;
+}
+html[data-mode="spread"][data-spread-stacked="true"] .mushaf__spread[data-pair="true"] .mushaf__page{
+  border:1px solid var(--paper-edge);border-radius:2px;box-shadow:var(--paper-shadow);
+}
+html[data-mode="spread"][data-spread-stacked="true"] .mushaf__spread .mushaf__page:first-child:not(:only-child){
+  border-inline-end:1px solid var(--paper-edge);box-shadow:var(--paper-shadow);
 }
 
 /* ---------- Sticky audio bar ---------- */
