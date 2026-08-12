@@ -1,6 +1,6 @@
 /* Thekr service worker — offline-first.
    Bump CACHE when any precached file changes. */
-const CACHE = 'thekr-v2';
+const CACHE = 'thekr-v9';
 
 const PRECACHE = [
   './',
@@ -15,10 +15,13 @@ const PRECACHE = [
   'Quran/assets/quran.css',
   'Quran/assets/quran.js',
   'Quran/assets/intros.js',
-  'Quran/assets/data/surahs.json',
-  'Quran/assets/data/031.json',
-  'Quran/assets/data/tafsir/031.json',
+  'Quran/assets/data/surahs.js',
+  /* Individual sūrahs, their tafsir and the 604 page fonts are deliberately
+     NOT precached — that would be well over 100MB on first visit. They are
+     cached as they are read, which is what makes a sūrah work offline
+     afterwards. */
   'assets/fonts/amiri-quran-arabic.woff2',
+  'Quran/assets/fonts/sura-names.woff2',
   'manifest.webmanifest',
   'assets/thekr.css',
   'assets/thekr.js',
@@ -89,6 +92,10 @@ self.addEventListener('fetch', function (event) {
   /* recitation audio: always straight to the network, never cached
      (hundreds of MB otherwise) */
   if (/everyayah\.com|\.mp3(\?|$)/i.test(req.url)) return;
+
+  /* muṣḥaf page fonts are ~200KB each and there are 604 of them, so they
+     are never precached — but once a page has been read its font is kept,
+     which is what makes that page work offline afterwards. */
 
   /* everything else: cache-first, then network (and cache the result,
      including opaque cross-origin responses such as CDN scripts/fonts) */

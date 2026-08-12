@@ -23,6 +23,8 @@
     var q = JSON.parse(localStorage.getItem('quran.settings.v1') || '{}');
     if (q.size != null) document.documentElement.style.setProperty('--ayah-size', [1.35,1.55,1.75,2.0,2.35][q.size] + 'rem');
     document.documentElement.setAttribute('data-mode', q.mode || 'mushaf');
+    document.documentElement.setAttribute('data-frame', q.frame === false ? 'off' : 'on');
+    document.documentElement.setAttribute('data-pattern', q.pattern === false ? 'off' : 'on');
   } catch (e) {}
 })();
 </script>
@@ -66,6 +68,24 @@
     <button type="button" class="pbtn" id="p-next" aria-label="الآية التالية"><svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8z" fill="currentColor" stroke="none"/><rect x="17" y="4" width="2.4" height="16" rx="1" fill="currentColor" stroke="none"/></svg></button>
     <span class="player__label" id="player-label"></span>
     <button type="button" class="pbtn" id="p-close" aria-label="إغلاق المشغّل"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  </div>
+</div>
+
+<!-- verse detail, opened by tapping an ayah medallion -->
+<div class="sheet" id="sheet" data-open="false" hidden>
+  <div class="sheet__scrim" id="sheet-scrim"></div>
+  <div class="sheet__panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <header class="sheet__head">
+      <span class="sheet__medallion" id="sheet-medallion" aria-hidden="true"></span>
+      <span class="sheet__titles">
+        <h2 id="sheet-title"></h2>
+        <small id="sheet-sub"></small>
+      </span>
+      <button type="button" class="iconbtn" id="sheet-close" aria-label="إغلاق">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </header>
+    <div class="sheet__body" id="sheet-body"></div>
   </div>
 </div>
 

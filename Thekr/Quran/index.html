@@ -16,10 +16,17 @@
 <script>
 (function () {
   try {
-    var s = JSON.parse(localStorage.getItem('thekr.settings.v1') || '{}');
-    var h = new Date().getHours();
-    var theme = (!s.theme || s.theme === 'auto') ? ((h >= 5 && h < 18) ? 'day' : 'night') : s.theme;
-    document.documentElement.setAttribute('data-theme', theme);
+    var T = {paper:['day','paper'], blue:['day','blue'], mono:['day','mono'], night:['night','paper']};
+    var q = JSON.parse(localStorage.getItem('quran.settings.v1') || '{}');
+    var pick = T[q.theme];
+    if (!pick) {
+      var s = JSON.parse(localStorage.getItem('thekr.settings.v1') || '{}');
+      var h = new Date().getHours();
+      var dark = s.theme === 'night' || ((!s.theme || s.theme === 'auto') && !(h >= 5 && h < 18));
+      pick = dark ? T.night : T.paper;
+    }
+    document.documentElement.setAttribute('data-theme', pick[0]);
+    document.documentElement.setAttribute('data-palette', pick[1]);
   } catch (e) {}
 })();
 </script>
@@ -96,6 +103,7 @@
 
 </div>
 
+<script src="assets/data/surahs.js"></script>
 <script>
 (function () {
   var grid = document.getElementById('grid');
@@ -144,10 +152,14 @@
     countEl.textContent = shown.length + ' / ' + list.length;
   }
 
-  fetch('assets/data/surahs.json')
-    .then(function (r) { return r.json(); })
-    .then(function (d) { list = d; draw(); resume(d); })
-    .catch(function () { empty.textContent = 'تعذّر تحميل فهرس السور.'; empty.hidden = false; });
+  /* surahs.js assigns window.QURAN_SURAHS; a plain <script> works over
+     file:// too, which fetch() does not. */
+  if (window.QURAN_SURAHS) {
+    list = window.QURAN_SURAHS; draw(); resume(list);
+  } else {
+    empty.textContent = 'تعذّر تحميل فهرس السور.';
+    empty.hidden = false;
+  }
 
   q.addEventListener('input', draw);
   Array.prototype.forEach.call(document.querySelectorAll('.filters button'), function (b) {
@@ -173,21 +185,44 @@
     } catch (e) {}
   }
 
-  /* theme toggle, shared with the athkar pages */
+  /* theme: cycles the four reader themes, kept in step with the surah page */
+  var THEMES = [
+    {id:'paper', label:'ورقي',       base:'day',   palette:'paper'},
+    {id:'blue',  label:'أزرق',       base:'day',   palette:'blue'},
+    {id:'mono',  label:'أبيض وأسود', base:'day',   palette:'mono'},
+    {id:'night', label:'ليلي',       base:'night', palette:'paper'}
+  ];
   var SUN = '<circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66l1.42-1.42M4.92 19.08l1.42-1.42m0-11.32L4.92 4.92m14.16 14.16l-1.42-1.42" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>';
   var MOON = '<path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 100 17 8.5 8.5 0 0010.5-6.5z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>';
   var icon = document.getElementById('theme-icon');
-  function paintIcon(){ icon.innerHTML = document.documentElement.getAttribute('data-theme') === 'night' ? SUN : MOON; }
+  var btn  = document.getElementById('theme-toggle');
+
+  function currentIndex() {
+    var q = {};
+    try { q = JSON.parse(localStorage.getItem('quran.settings.v1') || '{}'); } catch (e) {}
+    for (var i = 0; i < THEMES.length; i++) if (THEMES[i].id === q.theme) return i;
+    return document.documentElement.getAttribute('data-theme') === 'night' ? 3 : 0;
+  }
+  function paintIcon() {
+    var t = THEMES[currentIndex()];
+    icon.innerHTML = t.base === 'night' ? SUN : MOON;
+    btn.setAttribute('aria-label', 'السمة: ' + t.label);
+    btn.title = 'السمة: ' + t.label;
+  }
   paintIcon();
-  document.getElementById('theme-toggle').addEventListener('click', function () {
-    var next = document.documentElement.getAttribute('data-theme') === 'night' ? 'day' : 'night';
-    document.documentElement.setAttribute('data-theme', next);
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', next === 'night' ? '#0B1119' : '#FAF6EF');
-    paintIcon();
+  btn.addEventListener('click', function () {
+    var t = THEMES[(currentIndex() + 1) % THEMES.length];
+    document.documentElement.setAttribute('data-theme', t.base);
+    document.documentElement.setAttribute('data-palette', t.palette);
+    document.querySelector('meta[name="theme-color"]').setAttribute('content',
+      t.base === 'night' ? '#0B1119' : t.palette === 'blue' ? '#EEF4FA' : t.palette === 'mono' ? '#F4F4F4' : '#FAF6EF');
     try {
-      var s = JSON.parse(localStorage.getItem('thekr.settings.v1') || '{}');
-      s.theme = next; localStorage.setItem('thekr.settings.v1', JSON.stringify(s));
+      var q = JSON.parse(localStorage.getItem('quran.settings.v1') || '{}');
+      q.theme = t.id; localStorage.setItem('quran.settings.v1', JSON.stringify(q));
+      var k = JSON.parse(localStorage.getItem('thekr.settings.v1') || '{}');
+      k.theme = t.base; localStorage.setItem('thekr.settings.v1', JSON.stringify(k));
     } catch (e) {}
+    paintIcon();
   });
 
   if ('serviceWorker' in navigator) {

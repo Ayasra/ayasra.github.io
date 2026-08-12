@@ -25,9 +25,20 @@
   function read(k, d) { try { var r = localStorage.getItem(k); return r ? JSON.parse(r) : d; } catch (e) { return d; } }
   function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
+  /* Each theme is a (light-or-dark base, palette) pair. The base is what the
+     shared athkar stylesheet understands, so those pages never receive a
+     theme name they cannot style. */
+  var THEMES = [
+    { id: 'paper', label: 'ورقي',        base: 'day',   palette: 'paper' },
+    { id: 'blue',  label: 'أزرق',        base: 'day',   palette: 'blue'  },
+    { id: 'mono',  label: 'أبيض وأسود',  base: 'day',   palette: 'mono'  },
+    { id: 'night', label: 'ليلي',        base: 'night', palette: 'paper' }
+  ];
+
   var S = Object.assign({
     size: 2, translation: true, translit: false, mode: 'mushaf',
-    tafsir: 'muyassar', reciter: 'Alafasy_128kbps', autoscroll: true
+    tafsir: 'muyassar', reciter: 'Minshawy_Murattal_128kbps', autoscroll: true,
+    theme: null, frame: true, pattern: true
   }, read(SET_KEY, {}));
 
   var bookmarks = read(BM_KEY, {});
@@ -64,13 +75,67 @@
   var sid = 1;
 
   function applySize() { document.documentElement.style.setProperty('--ayah-size', SIZES[S.size] + 'rem'); }
+
+  /* Each muṣḥaf page has its own font in which one glyph is one whole word,
+     already shaped and spaced by the calligrapher. Injecting the @font-face
+     on demand means a reader only downloads the pages actually opened. */
+  var fontsAsked = {};
+  function ensurePageFont(pageNo) {
+    if (fontsAsked[pageNo]) return;
+    fontsAsked[pageNo] = true;
+    var n = pad3(pageNo);
+    var css = document.createElement('style');
+    css.textContent =
+      '@font-face{font-family:"QCF' + n + '";' +
+      'src:url("assets/fonts/pages/p' + n + '.woff2") format("woff2");' +
+      'font-display:swap;font-weight:normal;font-style:normal}';
+    document.head.appendChild(css);
+  }
   function applyMode() { document.documentElement.setAttribute('data-mode', S.mode); }
+
+  /* The two decorative rules a reader may want out of the way: the ruled box
+     drawn around the text on every sheet, and the geometric watermark behind
+     the whole page. */
+  function applyOrnament() {
+    var root = document.documentElement;
+    root.setAttribute('data-frame', S.frame ? 'on' : 'off');
+    root.setAttribute('data-pattern', S.pattern ? 'on' : 'off');
+  }
+
+  /* Where a sūrah opens, a printed muṣḥaf spends two of the fifteen lines on
+     the ornamental name band and the basmala before the first verse — which
+     is exactly why the API reports Luqmān's first verse on line 3 of p411
+     rather than line 1. Work out which lines those are. */
+  function openingLines() {
+    if (!surah.layout) return null;
+    var first = surah.pages && surah.pages[0];
+    var lines = surah.layout[String(first)];
+    if (!lines) return null;
+    var nums = Object.keys(lines).map(Number).sort(function (a, b) { return a - b; });
+    if (!nums.length) return null;
+    var firstVerseLine = nums[0];
+    var free = firstVerseLine - 1;          /* lines the muṣḥaf left for the opening */
+    var wantsBasmala = !!surah.bismillah;
+
+    /* Two free lines is the usual case: name band, then basmala. But eighteen
+       sūrahs open on line 2 — an-Nisāʾ, Yūnus, al-Ḥajj and the rest — leaving
+       a single line for the whole opening. There both are set into that one
+       line, stacked and reduced, so the fifteen-line grid still holds. */
+    if (free <= 0) return null;
+    if (free === 1 && wantsBasmala) {
+        return { page: first, band: 1, bism: 0, tight: true };
+    }
+    var bism = wantsBasmala ? firstVerseLine - 1 : 0;
+    var band = firstVerseLine - (wantsBasmala ? 2 : 1);
+    return { page: first, band: band >= 1 ? band : 0, bism: bism >= 1 ? bism : 0, tight: false };
+  }
 
   /* Forced two-page mode.
      The size that fits a column is a function of the column width, not of the
      reader's chosen size — roughly 18em of measure per line reads well in
      naskh. Compute that, cap it at the reader's size, and if the result would
      fall below the legibility floor, stack the pages instead. */
+  var LINES_PER_PAGE = 15;    /* every muṣḥaf page, by construction */
   var MIN_PAGE_SIZE = 1.05;   /* rem — below this the spread gives up */
   var EM_PER_LINE = 18;       /* target measure per line */
 
@@ -102,36 +167,141 @@
     root.style.setProperty('--page-size', size.toFixed(3) + 'rem');
   }
 
+  /* Fill each sheet.
+     Every page box has the same proportion, so the text is scaled until the
+     block fills its frame. For wrapped text the rendered height grows roughly
+     with the square of the font size (bigger type ⇒ both taller lines and more
+     of them), so sqrt(target/actual) converges in a couple of passes.
+     Clamped, because a sūrah's closing page genuinely holds only a line or
+     two and should be left part-empty, exactly as it is in print. */
+  var FIT_MIN = 0.70, FIT_MAX = 1.30;
+
+  /* A page font is drawn so that every full line spans the same measure.
+     So: pick the font size that makes the widest line exactly fill the frame,
+     then set the leading so fifteen lines exactly fill its height. The page
+     then matches the printed original — filled without stretching any spaces,
+     because there are no spaces to stretch. */
+  function fitExactPages() {
+    Array.prototype.forEach.call(
+      document.querySelectorAll('.mushaf__frame--exact'), function (frame) {
+        /* clientWidth counts the padding, so sizing the type to it pushed the
+           lines out into the margin until they touched the rule. Measure the
+           content box instead, which is the printed text block. */
+        var cs = getComputedStyle(frame);
+        var padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+        var padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+        var w = frame.clientWidth - padX;
+        var h = frame.clientHeight - padY;
+        if (w <= 0 || h <= 0) return;
+
+        var REF = 40;                       /* measure at a known size */
+        frame.style.setProperty('--exact-size', REF + 'px');
+        frame.style.setProperty('--exact-line', '1');
+
+        var widest = 0;
+        Array.prototype.forEach.call(frame.children, function (row) {
+          if (row.classList.contains('is-blank')) return;
+          /* the band and basmala are set in other fonts — measuring them
+             would skew the size chosen for the calligraphic lines */
+          if (row.classList.contains('mushaf__line--band')) return;
+          if (row.classList.contains('mushaf__line--bism')) return;
+          /* the rows are flex containers, and scrollWidth under-reports the
+             overflow of items that cannot shrink — so add the words up */
+          var w = 0;
+          Array.prototype.forEach.call(row.children, function (word) {
+            w += word.getBoundingClientRect().width;
+          });
+          widest = Math.max(widest, w || row.scrollWidth);
+        });
+        if (!widest) return;
+
+        var size = REF * (w / widest);
+        frame.style.setProperty('--exact-size', size.toFixed(2) + 'px');
+        frame.style.setProperty('--exact-line', (h / LINES_PER_PAGE / size).toFixed(4));
+      });
+  }
+
+  function fitPages() {
+    var frames = document.querySelectorAll('.mushaf__frame:not(.mushaf__frame--exact)');
+    if (!frames.length) return;
+
+    Array.prototype.forEach.call(frames, function (frame) {
+      var page = frame.parentNode;
+      var text = frame.querySelector('.mushaf__text');
+      if (!text) return;
+
+      page.style.setProperty('--fit', '1');
+      for (var pass = 0; pass < 3; pass++) {
+        var avail = frame.clientHeight -
+                    (parseFloat(getComputedStyle(frame).paddingTop) || 0) * 2;
+        var used = text.scrollHeight;
+        if (!avail || !used) break;
+        var cur = parseFloat(page.style.getPropertyValue('--fit')) || 1;
+        var next = cur * Math.sqrt(avail / used);
+        next = Math.max(FIT_MIN, Math.min(FIT_MAX, next));
+        if (Math.abs(next - cur) < 0.01) break;
+        page.style.setProperty('--fit', next.toFixed(3));
+      }
+    });
+  }
+
+  function layoutPages() { fitSpread(); fitPages(); fitExactPages(); }
+
   /* Measuring straight after appending can read a stale layout box, and the
      Qur'anic webfont changes metrics once it lands — so fit after layout has
      settled and again when the font is ready. */
   function scheduleFit() {
-    requestAnimationFrame(function () { requestAnimationFrame(fitSpread); });
+    requestAnimationFrame(function () { requestAnimationFrame(layoutPages); });
     if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(fitSpread).catch(function () {});
+      document.fonts.ready.then(layoutPages).catch(function () {});
     }
   }
 
   var fitTimer;
   window.addEventListener('resize', function () {
     clearTimeout(fitTimer);
-    fitTimer = setTimeout(fitSpread, 120);
+    fitTimer = setTimeout(layoutPages, 120);
   });
   window.addEventListener('orientationchange', scheduleFit);
-  function applyTheme() {
-    var t = read(THEKR_SET, {}).theme;
+  function themeById(id) {
+    for (var i = 0; i < THEMES.length; i++) if (THEMES[i].id === id) return THEMES[i];
+    return null;
+  }
+  function currentTheme() {
+    var t = themeById(S.theme);
+    if (t) return t;
+    /* no choice made yet — fall back to the athkar day/night preference */
+    var prev = read(THEKR_SET, {}).theme;
     var h = new Date().getHours();
-    var theme = (!t || t === 'auto') ? ((h >= 5 && h < 18) ? 'day' : 'night') : t;
-    document.documentElement.setAttribute('data-theme', theme);
+    var dark = prev === 'night' || ((!prev || prev === 'auto') && !(h >= 5 && h < 18));
+    return themeById(dark ? 'night' : 'paper');
+  }
+  function applyTheme() {
+    var t = currentTheme();
+    var root = document.documentElement;
+    root.setAttribute('data-theme', t.base);
+    root.setAttribute('data-palette', t.palette);
     var m = $('meta[name="theme-color"]');
-    if (m) m.setAttribute('content', theme === 'night' ? '#0B1119' : '#FAF6EF');
+    if (m) m.setAttribute('content',
+      t.base === 'night' ? '#0B1119' : (t.palette === 'blue' ? '#EEF4FA' : t.palette === 'mono' ? '#F4F4F4' : '#FAF6EF'));
   }
 
-  /* ---------------- data ---------------- */
-  function json(url) {
-    return fetch(url).then(function (r) {
-      if (!r.ok) throw new Error(url + ' → ' + r.status);
-      return r.json();
+  /* ---------------- data ----------------
+     Data ships as <script> files that assign to a global rather than JSON
+     fetched with fetch(). Script tags are not subject to the file:// CORS
+     block, so the reader also works when the page is opened straight from
+     disk — which fetch() cannot do. */
+  function loadScript(src, globalName) {
+    return new Promise(function (resolve, reject) {
+      if (window[globalName]) return resolve(window[globalName]);
+      var el = document.createElement('script');
+      el.src = src;
+      el.onload = function () {
+        if (window[globalName]) resolve(window[globalName]);
+        else reject(new Error(src + ' loaded but ' + globalName + ' is missing'));
+      };
+      el.onerror = function () { reject(new Error('تعذّر تحميل ' + src)); };
+      document.head.appendChild(el);
     });
   }
 
@@ -141,9 +311,12 @@
     if (!(sid >= 1 && sid <= 114)) sid = 1;
     var jump = parseInt(q.get('a'), 10) || 0;
 
-    applyTheme(); applySize(); applyMode();
+    applyTheme(); applySize(); applyMode(); applyOrnament();
 
-    Promise.all([json('assets/data/surahs.json'), json('assets/data/' + pad3(sid) + '.json')])
+    Promise.all([
+      loadScript('assets/data/surahs.js', 'QURAN_SURAHS'),
+      loadScript('assets/data/' + pad3(sid) + '.js', 'QURAN_SURAH')
+    ])
       .then(function (r) {
         meta = r[0]; surah = r[1];
         render();
@@ -170,7 +343,9 @@
     elMain.innerHTML = '';
 
     elMain.appendChild(header());
-    if (surah.bismillah) {
+    /* In the page views the basmala is printed on the sheet itself, so the
+       standalone one would be a duplicate. */
+    if (surah.bismillah && (S.mode === 'verse' || !surah.layout)) {
       var b = document.createElement('p');
       b.className = 'bismillah';
       b.textContent = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
@@ -193,9 +368,21 @@
     var box = document.createElement('section');
     box.className = 'surah-head';
 
+    /* The ornamental name: in the KFGQPC sūrah-names font each sūrah is a
+       single glyph already set inside its printed frame. Its codepoint is
+       U+E<ddd> where ddd is the sūrah number written in DECIMAL, not hex —
+       so Luqmān (31) is U+E031, not U+E01F. */
     var h = document.createElement('h1');
     h.className = 'surah-head__name';
-    h.textContent = 'سورة ' + surah.nameAr;
+    var band = document.createElement('span');
+    band.className = 'surah-head__band';
+    band.setAttribute('aria-hidden', 'true');
+    band.textContent = String.fromCharCode(parseInt('E' + pad3(surah.id), 16));
+    var sr = document.createElement('span');
+    sr.className = 'visually-hidden';
+    sr.textContent = 'سورة ' + surah.nameAr;
+    h.appendChild(band);
+    h.appendChild(sr);
     box.appendChild(h);
 
     var en = document.createElement('p');
@@ -295,9 +482,12 @@
     var p = document.createElement('p');
     p.className = 'ayah__ar';
     p.appendChild(document.createTextNode(v.ar + '\u00A0'));
-    var num = document.createElement('span');
-    num.className = 'ayah__num';
+    var num = document.createElement('button');
+    num.type = 'button';
+    num.className = 'ayah__num ayah__num--btn';
     num.textContent = '﴿' + ar(v.n) + '﴾';
+    num.setAttribute('aria-label', 'تفسير الآية ' + v.n);
+    num.addEventListener('click', function () { openSheet(v.n); });
     p.appendChild(num);
     li.appendChild(p);
 
@@ -423,7 +613,7 @@
       panel.appendChild(box);
     };
     if (tafsirData) return draw();
-    json('assets/data/tafsir/' + pad3(sid) + '.json')
+    loadScript('assets/data/tafsir/' + pad3(sid) + '.js', 'QURAN_TAFSIR')
       .then(function (d) { tafsirData = d; draw(); })
       .catch(function () { panel.innerHTML = '<div class="tafsir"><p>تعذّر تحميل التفسير.</p></div>'; });
   }
@@ -445,15 +635,31 @@
       if (!pages[k]) { pages[k] = []; order.push(k); }
       pages[k].push(v);
     });
-    /* group pages into spreads of two, right-hand page first (RTL) */
+    /* In a printed muṣḥaf an open spread shows an odd page on the right and
+       the following even page on the left — the illuminated opening pairs
+       al-Fātiḥah (1) with the start of al-Baqarah (2). So a spread must begin
+       on an odd page. If a sūrah opens on an even page that sheet belongs on
+       the left of a spread whose right half is the previous sūrah, so it is
+       shown on its own rather than mis-paired.
+       صفحة mode never pairs at all. */
     var spreads = [];
-    for (var i = 0; i < order.length; i += 2) spreads.push(order.slice(i, i + 2));
+    if (S.mode !== 'spread') {
+      order.forEach(function (k) { spreads.push([k]); });
+    } else {
+      var i = 0;
+      if (order.length && order[0] % 2 === 0) { spreads.push([order[0]]); i = 1; }
+      for (; i < order.length; i += 2) spreads.push(order.slice(i, i + 2));
+    }
 
     spreads.forEach(function (pair) {
       var spread = document.createElement('div');
       spread.className = 'mushaf__spread';
       spread.dataset.single = String(pair.length === 1);
       spread.dataset.pair = String(pair.length === 2);
+      if (pair.length === 1) {
+        /* odd pages fall on the right of a binding, even pages on the left */
+        spread.dataset.side = (pair[0] % 2 === 1) ? 'right' : 'left';
+      }
       pair.forEach(function (k) { spread.appendChild(buildPage(k, pages[k])); });
       wrap.appendChild(spread);
     });
@@ -462,21 +668,104 @@
     function buildPage(k, list) {
       var page = document.createElement('div');
       page.className = 'mushaf__page';
+      page.dataset.page = k;
+
       var frame = document.createElement('div');
       frame.className = 'mushaf__frame';
-      var p = document.createElement('p');
-      p.className = 'mushaf__text';
+
+      var lines = (surah.layout || {})[String(k)];
+      if (lines) {
+        /* Real muṣḥaf page: fifteen fixed lines, each drawn with the page's
+           own font. Lines belonging to a neighbouring sūrah stay empty so the
+           sheet keeps its true height without borrowing another sūrah's text. */
+        ensurePageFont(k);
+        var opening = openingLines();
+        frame.classList.add('mushaf__frame--exact');
+        frame.style.fontFamily = '"QCF' + pad3(k) + '"';
+        for (var ln = 1; ln <= LINES_PER_PAGE; ln++) {
+          var row = document.createElement('div');
+          row.className = 'mushaf__line';
+          var words = lines[String(ln)];
+          if (opening && opening.page === k && ln === opening.band) {
+            row.classList.add('mushaf__line--band');
+            var stack = document.createElement('span');
+            stack.className = 'opening' + (opening.tight ? ' opening--tight' : '');
+
+            var cart = document.createElement('span');
+            cart.className = 'cartouche';
+            var nm = document.createElement('span');
+            nm.className = 'cartouche__name';
+            nm.setAttribute('aria-hidden', 'true');
+            nm.textContent = String.fromCharCode(parseInt('E' + pad3(surah.id), 16));
+            cart.appendChild(nm);
+            var srn = document.createElement('span');
+            srn.className = 'visually-hidden';
+            srn.textContent = 'سورة ' + surah.nameAr;
+            cart.appendChild(srn);
+            stack.appendChild(cart);
+
+            if (opening.tight) {
+              var bs = document.createElement('span');
+              bs.className = 'opening__bism';
+              bs.textContent = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
+              stack.appendChild(bs);
+            }
+            row.appendChild(stack);
+          } else if (opening && opening.page === k && ln === opening.bism) {
+            row.classList.add('mushaf__line--bism');
+            row.textContent = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
+          } else if (!words || !words.length) {
+            /* keeps the sheet fifteen lines tall while showing nothing —
+               the neighbouring sūrah's lines stay blank in their real place */
+            row.classList.add('is-blank');
+            row.innerHTML = '&nbsp;';
+          } else {
+            words.forEach(function (w) {
+              var sp = document.createElement('span');
+              sp.className = 'w' + (w.e ? ' w--end' : '');
+              sp.dataset.n = w.v;
+              sp.textContent = w.g;
+              if (w.e) {
+                /* the ayah number opens the verse detail … */
+                sp.setAttribute('role', 'button');
+                sp.setAttribute('tabindex', '0');
+                sp.setAttribute('aria-label', 'تفسير الآية ' + w.v);
+                sp.addEventListener('click', function () { openSheet(w.v); });
+                sp.addEventListener('keydown', function (e) {
+                  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSheet(w.v); }
+                });
+              } else {
+                /* … while any word of the verse plays it */
+                sp.addEventListener('click', function () { togglePlay(w.v); });
+              }
+              row.appendChild(sp);
+            });
+          }
+          frame.appendChild(row);
+        }
+      } else {
+        /* Fallback for data built before glyph codes existed. */
+        var p = document.createElement('p');
+        p.className = 'mushaf__text';
+        list.forEach(function (v) {
+          var span = document.createElement('span');
+          span.className = 'a';
+          span.dataset.n = v.n;
+          span.id = 'a' + v.n;
+          span.textContent = v.ar + ' ﴿' + ar(v.n) + '﴾ ';
+          span.addEventListener('click', function () { togglePlay(v.n); });
+          p.appendChild(span);
+        });
+        frame.appendChild(p);
+      }
+
+      /* anchor the first appearance of each verse for deep links + scrolling */
       list.forEach(function (v) {
-        var span = document.createElement('span');
-        span.className = 'a';
-        span.dataset.n = v.n;
-        span.id = 'a' + v.n;
-        span.textContent = v.ar + ' ﴿' + ar(v.n) + '﴾ ';
-        span.title = 'آية ' + v.n + ' — انقر للاستماع';
-        span.addEventListener('click', function () { togglePlay(v.n); });
-        p.appendChild(span);
+        if (document.getElementById('a' + v.n)) return;
+        var hit = frame.querySelector('.w[data-n="' + v.n + '"]');
+        if (hit && !hit.id) hit.id = 'a' + v.n;
       });
-      frame.appendChild(p);
+
       page.appendChild(frame);
       var f = document.createElement('div');
       f.className = 'mushaf__foot';
@@ -521,7 +810,12 @@
       e.classList.remove('is-playing');
     });
     if (!n) return;
+    Array.prototype.forEach.call(
+      document.querySelectorAll('.mushaf__line .w[data-n="' + n + '"]'),
+      function (w) { w.classList.add('is-playing'); });
+
     var card = document.querySelector('.ayah[data-n="' + n + '"]') ||
+               document.querySelector('.mushaf__line .w[data-n="' + n + '"]') ||
                document.querySelector('.mushaf__text .a[data-n="' + n + '"]');
     if (card) {
       card.classList.add('is-playing');
@@ -569,6 +863,161 @@
   $('#p-prev').addEventListener('click', function () { playVerse((playing || 1) - 1); });
   $('#p-next').addEventListener('click', function () { playVerse((playing || 0) + 1); });
   $('#p-close').addEventListener('click', stop);
+
+  /* ---------------- verse sheet ----------------
+     Tapping an ayah medallion opens this; tapping a word still plays. */
+  var elSheet = $('#sheet'), elSheetBody = $('#sheet-body'),
+      elSheetTitle = $('#sheet-title'), elSheetSub = $('#sheet-sub'),
+      elSheetMed = $('#sheet-medallion');
+  var sheetVerse = null, lastFocus = null;
+
+  function verseByNumber(n) {
+    for (var i = 0; i < surah.verses.length; i++) if (surah.verses[i].n === n) return surah.verses[i];
+    return null;
+  }
+
+  function openSheet(n) {
+    var v = verseByNumber(n);
+    if (!v) return;
+    sheetVerse = n;
+    lastFocus = document.activeElement;
+
+    elSheetMed.textContent = ar(n);
+    elSheetTitle.textContent = 'سورة ' + surah.nameAr + ' · الآية ' + ar(n);
+    elSheetSub.textContent = 'صفحة ' + ar(v.page || 0) + ' · جزء ' + ar(v.juz || 0) +
+      (v.sajda ? ' · سجدة تلاوة' : '');
+
+    elSheetBody.innerHTML = '';
+
+    var arP = document.createElement('p');
+    arP.className = 'sheet__ar';
+    arP.textContent = v.ar;
+    elSheetBody.appendChild(arP);
+
+    elSheetBody.appendChild(sheetActions(v));
+
+    if (v.tr) elSheetBody.appendChild(sheetSection('النطق', 'sheet__tr', v.tr));
+    if (v.en) elSheetBody.appendChild(sheetSection('الترجمة', 'sheet__en', v.en));
+
+    /* tafsir, with its own source picker */
+    var tSec = document.createElement('div');
+    tSec.className = 'sheet__sec';
+    var tH = document.createElement('h3'); tH.textContent = 'التفسير'; tSec.appendChild(tH);
+    var picker = document.createElement('div'); picker.className = 'sheet__srcs'; tSec.appendChild(picker);
+    var tBox = document.createElement('div'); tBox.className = 'tafsir'; tSec.appendChild(tBox);
+    elSheetBody.appendChild(tSec);
+    loadTafsirInto(picker, tBox, n);
+
+    /* word by word */
+    if (v.w && v.w.length) {
+      var wSec = document.createElement('div');
+      wSec.className = 'sheet__sec';
+      var wH = document.createElement('h3'); wH.textContent = 'معاني الكلمات'; wSec.appendChild(wH);
+      var panel = document.createElement('div');
+      fillWords(panel, v);
+      wSec.appendChild(panel);
+      elSheetBody.appendChild(wSec);
+    }
+
+    elSheet.hidden = false;
+    requestAnimationFrame(function () { elSheet.setAttribute('data-open', 'true'); });
+    elSheetBody.scrollTop = 0;
+    $('#sheet-close').focus();
+  }
+
+  function sheetSection(title, cls, text) {
+    var sec = document.createElement('div');
+    sec.className = 'sheet__sec';
+    var h = document.createElement('h3'); h.textContent = title; sec.appendChild(h);
+    var p = document.createElement('p'); p.className = cls; p.textContent = text; sec.appendChild(p);
+    return sec;
+  }
+
+  function sheetActions(v) {
+    var bar = document.createElement('div');
+    bar.className = 'sheet__actions';
+
+    var play = vbtn('', ICON.play, 'استماع للآية', 'استماع');
+    play.addEventListener('click', function () { togglePlay(v.n); });
+    bar.appendChild(play);
+
+    var bm = vbtn('', ICON.bookmark, 'حفظ علامة', 'علامة');
+    bm.setAttribute('aria-pressed', String(isBookmarked(v.n)));
+    bm.addEventListener('click', function () {
+      var arr = bookmarks[sid] || (bookmarks[sid] = []);
+      var i = arr.indexOf(v.n);
+      if (i === -1) arr.push(v.n); else arr.splice(i, 1);
+      write(BM_KEY, bookmarks);
+      bm.setAttribute('aria-pressed', String(i === -1));
+      var card = document.getElementById('a' + v.n);
+      if (card && card.classList.contains('ayah')) card.classList.toggle('is-bookmarked', i === -1);
+    });
+    bar.appendChild(bm);
+
+    var cp = vbtn('', ICON.copy, 'نسخ الآية', 'نسخ');
+    cp.addEventListener('click', function () {
+      var txt = v.ar + ' ﴿' + ar(v.n) + '﴾\n— سورة ' + surah.nameAr + ': ' + v.n +
+                (v.en ? '\n\n' + v.en : '');
+      if (navigator.clipboard) navigator.clipboard.writeText(txt).then(toastCopied, function () {});
+    });
+    bar.appendChild(cp);
+    return bar;
+  }
+
+  function loadTafsirInto(picker, box, n) {
+    box.textContent = '…';
+    var draw = function () {
+      var srcs = tafsirData.sources || [];
+      picker.innerHTML = '';
+      srcs.forEach(function (src) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = src.name;
+        b.setAttribute('aria-pressed', String(S.tafsir === src.key));
+        b.addEventListener('click', function () {
+          S.tafsir = src.key; write(SET_KEY, S);
+          Array.prototype.forEach.call(picker.children, function (x) {
+            x.setAttribute('aria-pressed', String(x === b));
+          });
+          paint();
+          redrawOpenTafsirs();
+        });
+        picker.appendChild(b);
+      });
+      paint();
+    };
+    function paint() {
+      var srcs = tafsirData.sources || [];
+      var pick = null;
+      for (var i = 0; i < srcs.length; i++) if (srcs[i].key === S.tafsir) pick = srcs[i];
+      if (!pick) pick = srcs[0];
+      box.innerHTML = '';
+      box.dataset.lang = pick ? pick.lang : 'ar';
+      var text = ((tafsirData.verses || {})[String(n)] || {})[pick && pick.key] || '';
+      if (text) {
+        text.split('\n\n').forEach(function (para) {
+          var p = document.createElement('p'); p.textContent = para; box.appendChild(p);
+        });
+      } else {
+        var p = document.createElement('p');
+        p.textContent = 'لا يتوفر تفسير لهذه الآية من هذا المصدر.';
+        box.appendChild(p);
+      }
+    }
+    if (tafsirData) return draw();
+    loadScript('assets/data/tafsir/' + pad3(sid) + '.js', 'QURAN_TAFSIR')
+      .then(function (d) { tafsirData = d; draw(); })
+      .catch(function () { box.textContent = 'تعذّر تحميل التفسير.'; });
+  }
+
+  function closeSheet() {
+    elSheet.setAttribute('data-open', 'false');
+    sheetVerse = null;
+    setTimeout(function () { elSheet.hidden = true; }, 320);
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  $('#sheet-close').addEventListener('click', closeSheet);
+  $('#sheet-scrim').addEventListener('click', closeSheet);
 
   /* ---------------- toast ---------------- */
   var toastEl = $('#toast'), toastT;
@@ -678,6 +1127,42 @@
       function () { if (playing) playVerse(playing); }));
 
     box.appendChild(toggle('التمرير التلقائي', 'يتابع الآية أثناء التلاوة', 'autoscroll', function () {}));
+
+    /* Removing the frame changes the text block's width, so the calligraphy
+       has to be re-fitted rather than just hidden. */
+    box.appendChild(toggle('إطار الصفحة', 'الخط المزدوج حول نص كل صفحة', 'frame', function () {
+      applyOrnament();
+      scheduleFit();
+    }));
+    box.appendChild(toggle('زخرفة الخلفية', 'النقش الهندسي خلف الصفحات', 'pattern', applyOrnament));
+
+    /* theme */
+    var themeRow = row('السمة');
+    var tc = document.createElement('div');
+    tc.className = 'chips chips--wrap';
+    THEMES.forEach(function (t) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = t.label;
+      b.setAttribute('aria-pressed', String(currentTheme().id === t.id));
+      b.addEventListener('click', function () {
+        S.theme = t.id;
+        write(SET_KEY, S);
+        /* keep the athkar pages on a base they understand */
+        try {
+          var prev = read(THEKR_SET, {});
+          prev.theme = t.base;
+          write(THEKR_SET, prev);
+        } catch (e) {}
+        Array.prototype.forEach.call(tc.children, function (x) {
+          x.setAttribute('aria-pressed', String(x === b));
+        });
+        applyTheme();
+      });
+      tc.appendChild(b);
+    });
+    themeRow.appendChild(tc);
+    box.appendChild(themeRow);
   }
 
   elGear.addEventListener('click', function () {
@@ -687,6 +1172,7 @@
   });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
+      if (sheetVerse != null) { closeSheet(); return; }
       if (elSettings.getAttribute('data-open') === 'true') {
         elSettings.setAttribute('data-open', 'false');
         elGear.setAttribute('aria-expanded', 'false');

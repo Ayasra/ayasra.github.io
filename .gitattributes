@@ -1,0 +1,5 @@
+# Qur'an page fonts and text data are generated binaries/large assets.
+# Mark them so GitHub does not try to diff them and language stats stay sane.
+Thekr/Quran/assets/fonts/pages/*.woff2 binary linguist-generated
+Thekr/assets/fonts/*.woff2             binary linguist-generated
+Thekr/Quran/assets/data/**             linguist-generated
