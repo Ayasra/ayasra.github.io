@@ -1,6 +1,6 @@
 /* Thekr service worker — offline-first.
    Bump CACHE when any precached file changes. */
-const CACHE = 'thekr-v12';
+const CACHE = 'thekr-v13';
 
 const PRECACHE = [
   './',

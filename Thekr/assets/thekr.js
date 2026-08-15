@@ -182,8 +182,10 @@
     var num = card.querySelector('.counter__num');
 
     if (isDone) {
+      /* Sizing and stroke live in the stylesheet now — see .counter__num svg.
+         Inline styles could not fix this anyway: they cannot override the
+         position and transform the tick was picking up from the ring's rule. */
       num.innerHTML = svg(ICON.check, '');
-      num.querySelector('svg').style.cssText = 'width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round';
     } else {
       num.textContent = String(remaining);
       num.classList.toggle('is-small', remaining >= 100);

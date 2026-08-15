@@ -279,7 +279,12 @@ html[data-theme="night"] .btn-danger{color:#FF8A7A;background:rgba(255,138,122,.
 
 /* counter with progress ring */
 .counter{position:relative;flex:0 0 auto;width:54px;height:54px;display:grid;place-items:center}
-.counter svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+/* Child combinator, not descendant: this rule dresses the progress ring, and
+   the ring alone. When a dhikr is finished a tick is drawn inside
+   .counter__num, and a descendant selector handed it the ring's absolute
+   positioning and its -90deg start-at-twelve rotation — so the tick landed
+   against the number span's box instead of the circle, lying on its side. */
+.counter > svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
 .counter .ring-bg{fill:none;stroke:var(--border);stroke-width:3.5}
 .counter .ring-fg{
   fill:none;stroke:var(--accent);stroke-width:3.5;stroke-linecap:round;
@@ -287,11 +292,17 @@ html[data-theme="night"] .btn-danger{color:#FF8A7A;background:rgba(255,138,122,.
 }
 .card[data-done="true"] .ring-fg{stroke:var(--done)}
 .counter__num{
-  position:relative;font-family:var(--font-latin);font-weight:700;
+  position:relative;display:grid;place-items:center;
+  font-family:var(--font-latin);font-weight:700;
   font-size:1.12rem;font-variant-numeric:tabular-nums;color:var(--accent);
   transition:color var(--t),transform 160ms;
 }
 .counter__num.is-small{font-size:.92rem}
+/* the completed tick — centred by the grid above, not by absolute offsets */
+.counter__num svg{
+  display:block;width:20px;height:20px;
+  stroke:currentColor;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;
+}
 .card[data-done="true"] .counter__num{color:var(--done)}
 .counter.bump .counter__num{transform:scale(1.22)}
 
@@ -423,6 +434,8 @@ html[data-theme="night"] .grade[data-g="disputed"]{color:#F0C070;background:rgba
   .topbar,.segmented,.settings,.card__actions,.finale,.toast,.pagefoot{display:none!important}
   body{background:#fff!important;color:#000}
   .card{break-inside:avoid;box-shadow:none;border:1px solid #ddd;opacity:1!important}
-  .counter svg{display:none}
+  /* hide the ring when printing, but keep the tick — it is the only thing on
+     paper that says the dhikr was completed */
+  .counter > svg{display:none}
   .dhikr{font-size:1.15rem;line-height:2}
 }
