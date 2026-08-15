@@ -160,6 +160,27 @@ img,svg{max-width:100%}
 
 ::selection{background:var(--gold-soft);color:var(--ink)}
 
+/* ---------- the geometric watermark ----------
+   Toggled by the reader's "زخرفة الخلفية" setting. This lived in the athkar
+   stylesheet and did not come across when the section was forked, which left
+   that switch controlling nothing; quran.css still carried the tokens and the
+   off-state rule. Both leaves take their stroke from their own accent, so the
+   ornament sits in the same hue family as everything around it. */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background-image:var(--pattern);
+  background-size:72px 72px;
+  opacity:var(--pattern-opacity, .05);
+}
+html[data-theme="day"]{
+  --pattern:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%230E3B39' stroke-width='1.1'%3E%3Cpath d='M36 0 L72 36 L36 72 L0 36 Z'/%3E%3Cpath d='M36 18 L54 36 L36 54 L18 36 Z'/%3E%3C/g%3E%3C/svg%3E");
+  --pattern-opacity:.05;
+}
+html[data-theme="night"]{
+  --pattern:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%2369AFA2' stroke-width='1.1'%3E%3Cpath d='M36 0 L72 36 L36 72 L0 36 Z'/%3E%3Cpath d='M36 18 L54 36 L36 54 L18 36 Z'/%3E%3C/g%3E%3C/svg%3E");
+  --pattern-opacity:.05;
+}
+
 /* ---------- shell ---------- */
 
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad) 5rem}

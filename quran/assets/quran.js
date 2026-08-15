@@ -681,29 +681,26 @@
           var words = lines[String(ln)];
           if (opening && opening.page === k && ln === opening.band) {
             row.classList.add('mushaf__line--band');
-            var stack = document.createElement('span');
-            stack.className = 'opening' + (opening.tight ? ' opening--tight' : '');
-
-            var cart = document.createElement('span');
-            cart.className = 'cartouche';
-            var nm = document.createElement('span');
-            nm.className = 'cartouche__name';
-            nm.setAttribute('aria-hidden', 'true');
-            nm.textContent = String.fromCharCode(parseInt('E' + pad3(surah.id), 16));
-            cart.appendChild(nm);
-            var srn = document.createElement('span');
-            srn.className = 'visually-hidden';
-            srn.textContent = 'سورة ' + surah.nameAr;
-            cart.appendChild(srn);
-            stack.appendChild(cart);
-
+            /* The ornamental name band a printed muṣḥaf draws here is not
+               rendered: the sūrah is already named in the header card above,
+               and repeating it immediately before the basmala earned nothing.
+               The line itself is kept — blank — so the sheet stays fifteen
+               lines tall and still matches the printed page. */
             if (opening.tight) {
+              /* Eighteen sūrahs open on line 2, leaving one free line for the
+                 whole opening. With the band gone the basmala has that line to
+                 itself instead of sharing it. */
+              var stack = document.createElement('span');
+              stack.className = 'opening opening--tight';
               var bs = document.createElement('span');
               bs.className = 'opening__bism';
               bs.textContent = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
               stack.appendChild(bs);
+              row.appendChild(stack);
+            } else {
+              row.classList.add('is-blank');
+              row.innerHTML = '&nbsp;';
             }
-            row.appendChild(stack);
           } else if (opening && opening.page === k && ln === opening.bism) {
             row.classList.add('mushaf__line--bism');
             row.textContent = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';

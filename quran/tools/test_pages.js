@@ -533,6 +533,117 @@ function eqv(name, got, want) {
     ok('plans list shows it', doc.querySelectorAll('.plan').length === 1);
   }
 
+  /* ---------- night mode is one hue family ----------
+     The sheet used to keep the day leaf's gold rule on a blue-grey paper while
+     the shell around it went green, so the muṣḥaf looked like it belonged to a
+     different app. These assertions pin the sheet to the shell's greens. */
+  {
+    const fs3 = require('fs');
+    const css = fs3.readFileSync(path.join(ROOT, 'assets/quran.css'), 'utf8');
+    const night = css.slice(css.indexOf('html[data-theme="night"]{'));
+    const block = night.slice(0, night.indexOf('}'));
+
+    const tok = n => (block.match(new RegExp('--' + n + ':\\s*([^;]+);')) || [])[1]?.trim();
+
+    /* a hex colour is green when its green channel leads */
+    const greenish = hex => {
+      const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex || '');
+      if (!m) return false;
+      const [r, g, b] = m.slice(1).map(x => parseInt(x, 16));
+      return g > r && g >= b;
+    };
+
+    ok('the night rule is green, not gold', greenish(tok('rule')), tok('rule'));
+    ok('the night paper is green, not blue-grey', greenish(tok('paper')), tok('paper'));
+    ok('the paper edge follows', greenish(tok('paper-edge')), tok('paper-edge'));
+    ok('no gold left in the night sheet block',
+       !/A98A4E|169,138,78/.test(block), block.match(/A98A4E|169,138,78/)?.[0]);
+
+    /* the rule must not be the accent exactly, or the reciting verse stops
+       standing out from every other ayah medallion */
+    const base = fs3.readFileSync(path.join(ROOT, 'assets/base.css'), 'utf8');
+    const accent = (base.slice(base.indexOf('html[data-theme="night"]{'))
+                       .match(/--accent:\s*(#[0-9a-f]{6})/i) || [])[1];
+    ok('night accent found in base.css', !!accent);
+    ok('the rule is distinct from the accent',
+       accent && tok('rule') && tok('rule').toLowerCase() !== accent.toLowerCase(),
+       `rule ${tok('rule')} vs accent ${accent}`);
+
+    /* the watermark toggle must actually control something */
+    ok('the watermark is drawn somewhere', /body::before\s*{/.test(base));
+    ok('it has a night pattern', /html\[data-theme="night"\]\{\s*--pattern:/.test(base));
+    ok('and the off switch still targets it', /data-pattern="off"\] body::before/.test(css));
+  }
+
+  /* the setting that drives it is still offered */
+  {
+    const { doc } = await loadPage('surah.html?s=1', 'ornament setting');
+    const gear = doc.querySelector('#gear');
+    gear.click();
+    await new Promise(r => setTimeout(r, 120));
+    ok('the background-ornament switch is in settings',
+       /زخرفة الخلفية/.test(doc.querySelector('#settings').textContent));
+  }
+
+  /* ---------- the sūrah opening on the sheet ----------
+     The ornamental name band is no longer drawn, but its line is still
+     reserved so the sheet keeps its true fifteen-line height. Ninety-six
+     sūrahs get a band line plus a basmala line; the other eighteen open on
+     line 2 and have only one free line for the whole opening. */
+  {
+    const { doc, errors } = await loadPage('surah.html?s=2', 'opening — two free lines');
+    const real = errors.filter(e => !/Could not load|net::|ENOENT|font/i.test(e));
+    ok('reader boots', real.length === 0, real.join(' | '));
+
+    ok('no ornamental name band is drawn', doc.querySelectorAll('.cartouche').length === 0);
+    ok('and no name glyph anywhere on the sheet',
+       doc.querySelectorAll('.mushaf__page .cartouche__name').length === 0);
+
+    const band = doc.querySelector('.mushaf__line--band');
+    ok('the band line is still there', !!band);
+    ok('but it is blank', band && band.classList.contains('is-blank'));
+    ok('it holds a space so it keeps its height',
+       band && band.textContent.trim().length === 0 && band.innerHTML.length > 0);
+
+    const bism = doc.querySelector('.mushaf__line--bism');
+    ok('the basmala is on its own line', !!bism);
+    ok('and reads correctly', bism && /بِسْمِ/.test(bism.textContent));
+
+    /* the fifteen-line grid must survive */
+    const firstPage = doc.querySelector('.mushaf__page');
+    eqv('the opening sheet still has fifteen lines',
+        firstPage.querySelectorAll('.mushaf__line').length, 15);
+  }
+
+  /* one of the eighteen one-line openings */
+  {
+    const { doc } = await loadPage('surah.html?s=4', 'opening — one free line');
+    ok('still no name band', doc.querySelectorAll('.cartouche').length === 0);
+    const band = doc.querySelector('.mushaf__line--band');
+    ok('the single free line is used, not blanked',
+       band && !band.classList.contains('is-blank'));
+    ok('it carries the basmala', band && /بِسْمِ/.test(band.textContent));
+    ok('there is no separate basmala line', !doc.querySelector('.mushaf__line--bism'));
+    eqv('and the sheet still has fifteen lines',
+        doc.querySelector('.mushaf__page').querySelectorAll('.mushaf__line').length, 15);
+  }
+
+  /* a sūrah with no basmala at all — Al-Fatihah numbers it as ayah 1 */
+  {
+    const { doc } = await loadPage('surah.html?s=1', 'opening — Al-Fatihah');
+    ok('no name band on Al-Fatihah either', doc.querySelectorAll('.cartouche').length === 0);
+    eqv('fifteen lines',
+        doc.querySelector('.mushaf__page').querySelectorAll('.mushaf__line').length, 15);
+  }
+
+  /* the header card keeps its ornamental name — that one was not removed */
+  {
+    const { doc } = await loadPage('surah.html?s=2', 'header card');
+    ok('the header card still names the sūrah', !!doc.querySelector('.surah-head__band'));
+    ok('and still reads it out for screen readers',
+       /البقرة/.test(doc.querySelector('.surah-head').textContent));
+  }
+
   /* ---------- marks in the reader ---------- */
   {
     const { win, doc, errors } = await loadPage('surah.html?s=2&a=255', 'marks in reader');

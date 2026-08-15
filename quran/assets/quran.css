@@ -194,16 +194,24 @@ html[data-theme="day"]{
   --band-fill:    rgba(201,169,97,.07);
   --grain:        rgba(120,95,50,.022);
 }
+/* After dark the sheet follows the shell into green rather than keeping the
+   day leaf's gold. On paper, gold on cream is the printed muṣḥaf; on a
+   green-black screen the same gold reads as a second, competing hue — the
+   sheet looked like it belonged to a different app from the frame around it.
+
+   The rule is deliberately a step calmer than --accent (#7FCEC0): it colours
+   every ayah medallion on the page, and if it matched the accent exactly the
+   verse currently being recited would stop standing out. */
 html[data-theme="night"]{
-  --paper:        #121C27;
-  --paper-edge:   #22303F;
-  --rule:         #A98A4E;
-  --rule-soft:    rgba(169,138,78,.45);
+  --paper:        #101E1B;
+  --paper-edge:   #1D332E;
+  --rule:         #69AFA2;
+  --rule-soft:    rgba(105,175,162,.42);
   --paper-shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px -12px rgba(0,0,0,.75);
-  --seam-soft:    rgba(0,0,0,.28);
+  --seam-soft:    rgba(0,0,0,.30);
   --seam-line:    rgba(0,0,0,.62);
-  --band-fill:    rgba(169,138,78,.10);
-  --grain:        rgba(190,220,235,.016);
+  --band-fill:    rgba(105,175,162,.10);
+  --grain:        rgba(168,224,212,.018);
 }
 
 /* The palettes must come AFTER the paper/night token blocks above:
@@ -349,48 +357,39 @@ html[data-mode="spread"] .mushaf__frame{padding:1.15rem 1.25rem 1.25rem}
 }
 .mushaf__line.is-blank{visibility:hidden}
 
-/* the sūrah opening: an ornamental cartouche on its own line, then the
-   basmala — the two lines a printed muṣḥaf gives up before the first verse */
-/* Both decorated rows must occupy exactly one line. Rather than pinning a
+/* The sūrah opening. A printed muṣḥaf gives up two lines here — an ornamental
+   name band, then the basmala. The band is no longer drawn (the header card
+   above already names the sūrah), but its line is still reserved, so the sheet
+   keeps its true fifteen-line height and matches print.
+
+   Both reserved rows must occupy exactly one line. Rather than pinning a
    calc() height — which rounds differently from the browser's own line-box
    maths and left this sheet ~1px taller than its neighbours — each row is
    built from the same font-size × line-height product as a normal line:
-     band  : S × L
-     basmala: (0.72·S) × (L ÷ 0.72)  ==  S × L                                */
+     band   :  S × L
+     basmala: (F·S) × (L ÷ F)  ==  S × L
+   The line-height half of that pair used to be missing, which left the
+   basmala row about a quarter-line short. */
 .mushaf__line--band{font-size:var(--exact-size,1rem)}
 .opening{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%}
-/* one-line openings: name and basmala reduced so both fit the single line */
-.opening--tight .cartouche{height:.62em;width:min(66%,100%)}
-.opening--tight .cartouche__name{font-size:.42em}
+/* One-line openings — eighteen sūrahs — now give the whole line to the
+   basmala, since it no longer shares it with the name band. */
 .opening__bism{
   font-family:'Amiri Quran','Amiri',serif;color:var(--rule);
-  font-size:.5em;line-height:1.15;margin-top:.05em;white-space:nowrap;
+  font-size:.74em;line-height:1.2;white-space:nowrap;
 }
-.cartouche{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:min(70%,100%);height:.92em;vertical-align:middle;
-  border:1px solid var(--rule);border-radius:2px;
-  background:var(--band-fill);
-  position:relative;overflow:hidden;
-}
-.cartouche::before,.cartouche::after{
-  content:'';position:absolute;top:50%;
-  width:.16em;height:.16em;
-  background:var(--rule);opacity:.7;
-  transform:translateY(-50%) rotate(45deg);
-}
-.cartouche::before{inset-inline-start:.45em}
-.cartouche::after{inset-inline-end:.45em}
-.cartouche__name{
-  font-family:'SuraNames';color:var(--rule);
-  font-size:.70em;line-height:1;white-space:nowrap;
-  transform:translateY(.06em);       /* optically centre the calligraphy */
-}
+
 .mushaf__line--bism{
   font-family:'Amiri Quran','Amiri',serif;
   color:var(--rule);
   letter-spacing:.01em;
-  font-size:calc(var(--exact-size,1rem) * .72);
+  /* F = 0.88. Larger than the 0.72 it was, now that it opens the sheet alone
+     rather than sitting under a band. */
+  font-size:calc(var(--exact-size,1rem) * .88);
+  line-height:calc(var(--exact-line,1.7) / .88);
+  /* Drawn a little higher, into the space the band used to fill. A transform
+     is visual only, so the fifteen-line grid is untouched. */
+  transform:translateY(-.2em);
 }
 /* the ayah medallion carries the verse number inside the calligraphy */
 .mushaf__line .w--end{color:var(--rule)}
