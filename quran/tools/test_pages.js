@@ -575,6 +575,36 @@ function eqv(name, got, want) {
     ok('and the off switch still targets it', /data-pattern="off"\] body::before/.test(css));
   }
 
+  /* ---------- the basmala's lift ----------
+     It rises by a third of (frame padding + one line), which leaves a gap
+     below it equal to half the gap above. The arithmetic only holds while the
+     padding the rule measures from is the padding actually applied, so that
+     pairing is what gets asserted. */
+  {
+    const fs4 = require('fs');
+    const css = fs4.readFileSync(path.join(ROOT, 'assets/quran.css'), 'utf8');
+
+    const lift = (css.match(/--bism-lift:\s*calc\(([^;]+)\);/) || [])[1];
+    ok('the basmala has a lift rule', !!lift);
+    ok('it is measured from the frame padding', /--frame-pad-top/.test(lift || ''), lift);
+    ok('and from the fitted line height',
+       /--exact-line/.test(lift || '') && /--exact-size/.test(lift || ''), lift);
+    ok('it is a third of that run', /\/\s*3\s*\)?\s*$/.test((lift || '').trim()), lift);
+    ok('the lift is applied upward',
+       /transform:translateY\(calc\(-1 \* var\(--bism-lift\)\)\)/.test(css));
+    ok('it is no longer a fixed nudge', !/translateY\(-\.2em\)/.test(css));
+
+    /* every place the frame's top padding is set must publish it, or the lift
+       silently measures from the wrong number at that breakpoint */
+    const frameRules = css.match(/\.mushaf__frame\{[^}]*padding:[^}]*\}/g) || [];
+    ok('found the frame padding rules', frameRules.length >= 3, `${frameRules.length}`);
+    frameRules.forEach((r, i) => {
+      ok('frame rule ' + (i + 1) + ' publishes its top padding',
+         /--frame-pad-top:/.test(r) && /padding:var\(--frame-pad-top\)/.test(r),
+         r.slice(0, 90));
+    });
+  }
+
   /* the setting that drives it is still offered */
   {
     const { doc } = await loadPage('surah.html?s=1', 'ornament setting');

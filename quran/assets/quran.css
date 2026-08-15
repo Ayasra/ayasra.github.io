@@ -309,14 +309,17 @@ html[data-palette="blue"]{
   min-width:0;   /* height stays content-driven so the sheet can grow */
   border:1.5px solid var(--rule);
   border-radius:1px;
-  /* a clear margin between the rule and the text block, as in print */
-  padding:1.5rem 1.7rem 1.6rem;
+  /* a clear margin between the rule and the text block, as in print.
+     The top value is also published as a token, because the basmala's lift is
+     measured from the sheet's upper edge and so has to know it. */
+  --frame-pad-top:1.5rem;
+  padding:var(--frame-pad-top) 1.7rem 1.6rem;
   position:relative;
 }
 @media (max-width:40rem){
-  .mushaf__frame{padding:1.1rem 1.15rem 1.2rem}
+  .mushaf__frame{--frame-pad-top:1.1rem;padding:var(--frame-pad-top) 1.15rem 1.2rem}
 }
-html[data-mode="spread"] .mushaf__frame{padding:1.15rem 1.25rem 1.25rem}
+html[data-mode="spread"] .mushaf__frame{--frame-pad-top:1.15rem;padding:var(--frame-pad-top) 1.25rem 1.25rem}
 .mushaf__frame::before{
   content:'';position:absolute;inset:4px;
   border:.5px solid var(--rule-soft);
@@ -387,10 +390,27 @@ html[data-mode="spread"] .mushaf__frame{padding:1.15rem 1.25rem 1.25rem}
      rather than sitting under a band. */
   font-size:calc(var(--exact-size,1rem) * .88);
   line-height:calc(var(--exact-line,1.7) / .88);
-  /* Drawn a little higher, into the space the band used to fill. A transform
-     is visual only, so the fifteen-line grid is untouched. */
-  transform:translateY(-.2em);
+
+  /* Lift it toward the top of the sheet, leaving a margin before the first
+     verse. A transform is visual only — the verses do not move — so whatever
+     the basmala rises by becomes exactly the gap beneath it.
+
+     The distance from the sheet's upper edge down to the basmala is the
+     frame's top padding plus the blank band line. Call that A, and the gap
+     left below it B. Wanting B to be half of A means
+
+         B = (A₀ − B) / 2   ⟹   B = A₀ / 3
+
+     where A₀ is the whole run from the upper edge to where the basmala starts
+     out. So the lift is a third of (padding + one line) — a ratio rather than
+     a fixed nudge, which keeps it correct as the type refits per page and
+     across the breakpoints where the padding changes. */
+  --bism-lift:calc((var(--frame-pad-top,1.5rem) +
+                    var(--exact-line,1.7) * var(--exact-size,1rem)) / 3);
+  transform:translateY(calc(-1 * var(--bism-lift)));
 }
+/* The eighteen one-line openings are left alone: their basmala already sits on
+   the sheet's first line, so there is nothing above it to rise into. */
 /* the ayah medallion carries the verse number inside the calligraphy */
 .mushaf__line .w--end{color:var(--rule)}
 .mushaf__line .w--end:hover{background:none}
