@@ -1,32 +1,53 @@
-/* Thekr service worker — offline-first.
+/* Qur'an section service worker — offline-first.
+   Scope is /quran/ only; the athkar section keeps its own worker at
+   /Thekr/sw.js and the two never see each other's caches.
    Bump CACHE when any precached file changes. */
-const CACHE = 'thekr-v12';
+const CACHE = 'quran-v1';
 
 const PRECACHE = [
   './',
   'index.html',
-  'morning_evening.html',
-  'sleep_wake.html',
-  'quran_reading.html',
-  'quran_memorizing.html',
-  /* The Qur'an app moved to /quran and has its own worker now. */
-  'assets/fonts/amiri-quran-arabic.woff2',
+  'surah.html',
+  'plan.html',
+  'hifz.html',
+  'qiyam-40.html',
+  'khatm-7.html',
   'manifest.webmanifest',
-  'assets/thekr.css',
-  'assets/thekr.js',
-  'assets/data-morning-evening.js',
-  'assets/data-sleep-wake.js',
+  'assets/base.css',
+  'assets/quran.css',
+  'assets/plan.css',
+  'assets/hifz.css',
+  'assets/session.css',
+  'assets/test.css',
+  'assets/program.css',
+  'assets/quran.js',
+  'assets/intros.js',
+  'assets/tracker.js',
+  'assets/plan.js',
+  'assets/hifz.js',
+  'assets/session.js',
+  'assets/test.js',
+  'assets/program.js',
+  'assets/data/surahs.js',
+  'assets/data/index.js',
+  'assets/data/programs.js',
+  /* Individual sūrahs, their tafsir and the 604 page fonts are deliberately
+     NOT precached — that would be well over 100MB on first visit. They are
+     cached as they are read, which is what makes a sūrah work offline
+     afterwards. */
   'assets/icon.svg',
   'assets/icon-180.png',
   'assets/icon-192.png',
   'assets/icon-512.png',
   'assets/icon-512-maskable.png',
+  'assets/fonts/amiri-quran-arabic.woff2',
   'assets/fonts/amiri-400-arabic.woff2',
   'assets/fonts/amiri-400-latin.woff2',
   'assets/fonts/amiri-700-arabic.woff2',
   'assets/fonts/amiri-700-latin.woff2',
   'assets/fonts/naskh-var-arabic.woff2',
-  'assets/fonts/naskh-var-latin.woff2'
+  'assets/fonts/naskh-var-latin.woff2',
+  'assets/fonts/sura-names.woff2'
 ];
 
 self.addEventListener('install', function (event) {

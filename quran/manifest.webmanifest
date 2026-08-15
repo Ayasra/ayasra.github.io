@@ -1,0 +1,32 @@
+{
+  "name": "القرآن الكريم — قراءة وحفظ",
+  "short_name": "القرآن",
+  "description": "المصحف بالرسم العثماني مع الترجمة والتفسير ومعاني الكلمات والتلاوة، وخطط للقراءة والحفظ والمراجعة تعمل بدون إنترنت.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF7F0",
+  "theme_color": "#0E3B39",
+  "categories": ["books", "education", "lifestyle"],
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "نصيب اليوم",
+      "url": "plan.html",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "الحفظ والمراجعة",
+      "url": "hifz.html",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

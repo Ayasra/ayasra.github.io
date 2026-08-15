@@ -1,0 +1,182 @@
+@charset "UTF-8";
+/* =========================================================================
+   Programme pages — the forty nights of qiyam and the seven manazil.
+   Layers on base.css.
+
+   These are the two pages the section's look was drawn from, so they keep the
+   original's proportions most closely: a deep slab at the head, numbered
+   cards ruled in gold, and the portion set apart on its own tinted panel.
+   ========================================================================= */
+
+/* ---------- the running strip under the hero ---------- */
+.progbar{
+  position:sticky;top:0;z-index:38;
+  background:var(--scrim);backdrop-filter:saturate(1.7) blur(14px);
+  -webkit-backdrop-filter:saturate(1.7) blur(14px);
+  border-bottom:1px solid var(--border-soft);
+}
+.progbar__inner{
+  max-width:var(--maxw);margin:0 auto;padding:.6rem var(--pad);
+  display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;
+}
+.progbar__state{font-size:.8rem;color:var(--ink-2);font-weight:600}
+.progbar__state b{color:var(--accent);font-variant-numeric:tabular-nums}
+html[data-theme="night"] .progbar__state b{color:var(--gold-2)}
+.progbar__track{
+  flex:1 1 8rem;min-width:6rem;height:4px;border-radius:var(--r-full);
+  background:var(--surface-sunk);overflow:hidden;
+}
+.progbar__bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--gold-2));transition:width var(--t)}
+.progbar__tools{display:flex;gap:.4rem;margin-inline-start:auto}
+
+/* ---------- mnemonic strip (seven manazil) ---------- */
+.mnem{
+  display:flex;gap:.4rem;flex-wrap:wrap;margin:1.4rem 0 0;padding-top:1.2rem;
+  border-top:1px solid rgba(201,164,92,.22);
+}
+.mnem__lab{
+  flex:1 0 100%;font-size:.72rem;letter-spacing:.06em;color:#8FB0AA;margin-bottom:.5rem;
+}
+.mnem a{
+  display:grid;place-items:center;width:52px;padding:.5rem .2rem;
+  border-radius:var(--r-sm);background:rgba(201,164,92,.12);
+  border:1px solid rgba(201,164,92,.26);text-decoration:none;
+  transition:background var(--t);
+}
+.mnem a:hover{background:rgba(201,164,92,.24)}
+.mnem b{font-family:var(--font-display);font-size:1.5rem;color:var(--gold-2);line-height:1;font-weight:400}
+.mnem small{font-size:.62rem;color:#A9C2BC;margin-top:.3rem;text-align:center;line-height:1.3}
+.mnem__key{flex:1 0 100%;margin-top:.7rem;font-size:.84rem;color:#B9CCC7}
+.mnem__key b{font-family:var(--font-display);font-size:1.25rem;color:#E8DDC4;font-weight:400}
+
+/* ---------- step cards ---------- */
+.step{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:1.15rem 1.3rem 1rem;margin:0 0 .9rem;
+  position:relative;transition:border-color var(--t),opacity var(--t);
+  scroll-margin-top:5rem;
+}
+.step:target{border-color:var(--gold)}
+.step[data-done="true"]{opacity:.55}
+.step[data-done="true"]:hover{opacity:.9}
+.step[data-themed="true"]{border-color:var(--themed-line);background:var(--themed-bg)}
+
+.step__head{display:flex;align-items:center;gap:.85rem;flex-wrap:wrap;margin:0 0 .8rem}
+.step__num{
+  flex:0 0 auto;width:38px;height:38px;border-radius:50%;
+  display:grid;place-items:center;
+  font-family:var(--font-display);font-size:1.05rem;font-weight:700;
+  background:var(--accent);color:var(--on-accent);
+  font-variant-numeric:lining-nums tabular-nums;
+}
+.step[data-done="true"] .step__num{background:var(--gold)}
+.step__tick{
+  flex:0 0 auto;width:22px;height:22px;border-radius:6px;
+  border:1.5px solid var(--border);background:var(--surface);
+  display:grid;place-items:center;cursor:pointer;transition:background var(--t),border-color var(--t);
+}
+.step__tick[aria-pressed="true"]{background:var(--accent);border-color:var(--accent)}
+.step__tick svg{width:14px;height:14px;stroke:var(--on-accent);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.step__tick[aria-pressed="true"] svg{opacity:1}
+
+.step__badge{
+  font-size:.66rem;letter-spacing:.05em;font-weight:600;
+  background:var(--themed-bg);color:var(--themed);
+  border:1px solid var(--themed-line);padding:.18rem .55rem;border-radius:var(--r-full);
+}
+.step__stats{
+  margin-inline-start:auto;display:flex;gap:.9rem;flex-wrap:wrap;
+  font-size:.75rem;color:var(--ink-3);
+}
+.step__stats b{color:var(--ink-2);font-weight:600;font-variant-numeric:tabular-nums}
+.step__stats .juz{color:var(--gold)}
+
+.step__title{
+  font-family:var(--font-display);font-size:1.25rem;font-weight:400;
+  color:var(--accent);margin:0 0 .3rem;line-height:1.45;
+}
+html[data-theme="night"] .step__title{color:var(--ink)}
+.step__sub{font-size:.85rem;color:var(--ink-2);line-height:1.9;margin:0 0 .9rem}
+
+.step__portion{
+  background:var(--surface-2);border-radius:var(--r-sm);
+  padding:.6rem .85rem;margin:0 0 .9rem;
+  font-size:.9rem;font-weight:600;color:var(--ink);
+}
+.step__portion .lab{
+  font-size:.66rem;letter-spacing:.07em;color:var(--gold);
+  font-weight:600;margin-inline-end:.6rem;
+}
+
+/* rak'ah / sitting rows */
+.units{display:grid;gap:.35rem;margin:0 0 .8rem}
+.unit{
+  display:flex;gap:.75rem;align-items:center;padding:.5rem .75rem;
+  background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--r-sm);
+}
+.step[data-themed="true"] .unit{background:var(--surface)}
+.unit--themed{background:var(--themed-bg)!important;border-color:var(--themed-line)}
+.unit__n{
+  flex:0 0 1.4rem;text-align:center;
+  font-family:var(--font-display);font-weight:700;color:var(--gold);
+  font-variant-numeric:lining-nums;
+}
+.unit__body{flex:1 1 auto;min-width:0;font-size:.85rem;color:var(--ink)}
+.unit__when{display:block;font-size:.68rem;color:var(--ink-3);margin-top:.1rem}
+.unit__meta{flex:0 0 auto;text-align:end;font-size:.7rem;color:var(--ink-3);min-width:4rem}
+.unit__meta b{display:block;color:var(--gold);font-weight:600}
+
+/* closers and pulled surahs */
+.aside{
+  font-size:.82rem;background:var(--surface-2);border-radius:var(--r-sm);
+  padding:.6rem .85rem;margin:0 0 .6rem;color:var(--ink-2);line-height:1.85;
+}
+.aside b{color:var(--themed);font-weight:600}
+.aside__why{display:block;margin-top:.2rem;font-size:.79rem;color:var(--ink-3);line-height:1.85}
+
+/* key passages, seven-manazil pages */
+.keys{margin:0 0 .5rem}
+.keys__lab{
+  font-size:.68rem;letter-spacing:.06em;color:var(--gold);font-weight:600;
+  margin:0 0 .45rem;
+}
+.key{
+  padding:.55rem .8rem;border-inline-start:2px solid var(--gold-2);
+  margin:0 0 .45rem;background:var(--surface-2);border-radius:0 var(--r-sm) var(--r-sm) 0;
+}
+html[dir="rtl"] .key{border-radius:var(--r-sm) 0 0 var(--r-sm)}
+.key__ref{
+  font-family:var(--font-display);font-size:1rem;color:var(--accent);
+  text-decoration:none;font-weight:700;
+}
+html[data-theme="night"] .key__ref{color:var(--gold-2)}
+.key__note{font-size:.8rem;color:var(--ink-2);line-height:1.9;margin-top:.15rem}
+
+.step__actions{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.2rem}
+
+/* ---------- the note panel ---------- */
+.note{
+  background:var(--surface);border:1px solid var(--border);
+  border-inline-start:3px solid var(--gold);
+  border-radius:var(--r-md);padding:1rem 1.15rem;margin:0 0 1.6rem;
+  font-size:.85rem;color:var(--ink-2);line-height:2;
+}
+
+/* ---------- filter ---------- */
+.filters{display:flex;gap:.25rem;justify-content:center;margin:0 0 1.4rem}
+.filters button{
+  padding:.35rem .9rem;border-radius:var(--r-sm);font-size:.8rem;font-weight:600;
+  color:var(--ink-2);background:var(--surface-sunk);transition:background var(--t),color var(--t);
+}
+.filters button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+
+@media (max-width:34rem){
+  .step__stats{margin-inline-start:0;width:100%}
+  .unit{flex-wrap:wrap}
+  .unit__meta{text-align:start;min-width:0}
+}
+@media print{
+  .progbar,.filters,.step__actions,.step__tick,.topbar{display:none}
+  .step{break-inside:avoid;page-break-inside:avoid;opacity:1!important}
+  body{background:#fff}
+}

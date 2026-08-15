@@ -1,0 +1,126 @@
+@charset "UTF-8";
+/* =========================================================================
+   Review surface — the masking layer and the rating bar, layered over the
+   reader's own muṣḥaf rendering.
+   ========================================================================= */
+
+/* ---------- masking ----------
+   Masked text keeps its exact geometry and loses only its colour. That is
+   deliberate: the shape of a page — where the lines break, where the long
+   ayah sits — is part of how a hāfiẓ holds it, and blanking the layout would
+   remove a cue the reciter legitimately owns. What is hidden is the reading,
+   not the page. */
+html[data-review="on"] .w.is-masked,
+html[data-review="on"] .a.is-masked{
+  color:transparent;
+  background:var(--surface-sunk);
+  border-radius:3px;
+  box-shadow:0 0 0 1px var(--border-soft) inset;
+  cursor:pointer;
+  transition:color 160ms,background 160ms;
+}
+html[data-review="on"] .w.is-masked::selection{background:transparent}
+
+/* the cue word in first-word mode reads as the prompt it is */
+html[data-review="on"] .w.is-cue{
+  color:var(--accent);
+  cursor:pointer;
+}
+
+/* the ayah being asked about in "what comes next" */
+html[data-review="on"] .w.is-prompt{
+  color:var(--ink);
+  background:var(--accent-soft);
+  border-radius:3px;
+}
+
+/* revealing is per-ayah, so a tap lifts the whole ayah rather than one word */
+html[data-review="on"] .w.is-shown,
+html[data-review="on"] .a.is-shown{
+  color:var(--ink);background:transparent;box-shadow:none;
+}
+
+/* a page the reciter has flagged */
+html[data-review="on"] .w.is-slip{
+  background:rgba(180,65,59,.16);border-radius:3px;
+}
+html[data-theme="night"][data-review="on"] .w.is-slip{background:rgba(240,145,138,.2)}
+
+/* marking mode changes what a tap means, so it changes the cursor too */
+html[data-review="on"][data-marking="true"] .w{cursor:crosshair}
+
+/* the reader's own decorations are noise during a test */
+html[data-review="on"] .surah-head__facts,
+html[data-review="on"] .surah-intro{display:none}
+
+/* ---------- rating bar ---------- */
+.reviewbar{
+  position:fixed;inset-inline:0;bottom:0;z-index:48;
+  background:var(--scrim,var(--surface));
+  backdrop-filter:saturate(1.6) blur(14px);
+  -webkit-backdrop-filter:saturate(1.6) blur(14px);
+  border-top:1px solid var(--border);
+  padding:.7rem var(--pad) calc(.7rem + env(safe-area-inset-bottom));
+}
+.reviewbar__inner{max-width:var(--maxw);margin:0 auto;display:flex;flex-direction:column;gap:.6rem}
+
+.reviewbar__top{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.reviewbar__where{
+  font-size:.8rem;color:var(--ink-2);font-weight:600;
+  flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.reviewbar__where small{color:var(--ink-3);font-weight:400}
+
+.modes{display:flex;gap:.2rem;background:var(--surface-sunk);padding:.2rem;border-radius:var(--r-full)}
+.modes button{
+  padding:.32rem .7rem;border-radius:var(--r-full);font-size:.76rem;font-weight:600;
+  color:var(--ink-2);transition:background var(--t),color var(--t);white-space:nowrap;
+}
+.modes button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+
+.reviewbar__tools{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center}
+.rbtn{
+  display:inline-flex;align-items:center;gap:.35rem;
+  padding:.42rem .85rem;border-radius:var(--r-full);
+  font-size:.79rem;font-weight:600;color:var(--ink-2);background:var(--surface-sunk);
+  transition:background var(--t),color var(--t);
+}
+.rbtn:hover{background:var(--border-soft);color:var(--ink)}
+.rbtn[aria-pressed="true"]{background:#B4413B;color:#fff}
+.rbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.rbtn--quiet{background:transparent;color:var(--ink-3)}
+.rbtn--quiet:hover{background:var(--surface-sunk)}
+
+/* the three ratings — the point of the whole screen, so they get the width */
+.rates{display:flex;gap:.4rem}
+.rates button{
+  flex:1 1 0;padding:.62rem .5rem;border-radius:var(--r-md);
+  font-size:.86rem;font-weight:700;transition:transform 100ms,filter var(--t);
+}
+.rates button:active{transform:scale(.97)}
+.rates button small{display:block;font-size:.65rem;font-weight:400;opacity:.75;margin-top:.1rem}
+.rate--forgot{background:rgba(180,65,59,.14);color:#B4413B}
+.rate--shaky {background:rgba(196,118,30,.16);color:#9A6B22}
+.rate--clean {background:var(--accent);color:var(--on-accent)}
+html[data-theme="night"] .rate--forgot{background:rgba(240,145,138,.16);color:#F0918A}
+html[data-theme="night"] .rate--shaky {background:rgba(240,180,94,.16);color:#F0B45E}
+
+.reviewbar__count{
+  font-size:.72rem;color:var(--ink-3);font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+
+.reviewbar__span{
+  font-size:.73rem;color:var(--ink-3);line-height:1.6;
+  padding:.4rem .6rem;background:var(--surface-sunk);border-radius:var(--r-sm);
+}
+.reviewbar__span a{font-weight:600}
+
+/* the session pill would collide with all this */
+html[data-review="on"] .sessionbar{display:none}
+/* and the page needs room to scroll clear of the bar */
+html[data-review="on"] .wrap{padding-bottom:13rem}
+
+@media (prefers-reduced-motion:reduce){
+  .w.is-masked,.a.is-masked,.rates button{transition:none}
+}

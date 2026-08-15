@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="day">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>خطط القراءة — القرآن الكريم</title>
+<meta name="description" content="خطط قراءة القرآن الكريم: نصيب اليوم، ومتابعة الختمة، وسجل الجلسات.">
+<meta name="theme-color" content="#0E3B39">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="خطط القراءة">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/quran.css">
+<link rel="stylesheet" href="assets/plan.css">
+<script>
+/* Theme is resolved before first paint so the page never flashes the wrong
+   background. Same rule the reader uses. */
+(function () {
+  try {
+    var T = {paper:['day','paper'], blue:['day','blue'], mono:['day','mono'], night:['night','paper']};
+    var q = JSON.parse(localStorage.getItem('quran.settings.v1') || '{}');
+    var pick = T[q.theme];
+    if (!pick) {
+      var h = new Date().getHours();
+      pick = (h >= 5 && h < 18) ? T.paper : T.night;
+    }
+    document.documentElement.setAttribute('data-theme', pick[0]);
+    document.documentElement.setAttribute('data-palette', pick[1]);
+  } catch (e) {}
+})();
+</script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar__inner">
+    <a class="iconbtn iconbtn--back" href="index.html" aria-label="رجوع إلى فهرس السور">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+    </a>
+    <div class="progress">
+      <div class="progress__row">
+        <span class="progress__label">خطط القراءة</span>
+        <span class="progress__count" id="crumb"></span>
+      </div>
+    </div>
+    <button type="button" class="iconbtn" id="theme-toggle" aria-label="تبديل المظهر">
+      <svg viewBox="0 0 24 24" aria-hidden="true" id="theme-icon"></svg>
+    </button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="hero__inner">
+    <h1>نصيب اليوم</h1>
+    <p class="hero__sub">خطط القراءة ومتابعة الختمة</p>
+    <p>ما تقرؤه اليوم، وأين بلغت من ختمتك، وسجلّ مواظبتك — كلّه محسوبٌ من جلساتك
+    نفسها، لا من عدّادٍ يُضبط باليد.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+
+  <p class="datestrip" id="datestrip"></p>
+
+  <!-- today's assignment across every active plan -->
+  <section id="today-sec"></section>
+
+  <!-- streak + heatmap -->
+  <section class="sec" id="streak-sec" hidden>
+    <div class="sec__head">
+      <h2>المواظبة</h2>
+      <span class="sec__aside" id="heat-range"></span>
+    </div>
+    <div class="streak" id="streak"></div>
+    <div class="heat" id="heat" role="img" aria-label="سجل القراءة اليومي"></div>
+    <div class="heat__key">
+      <span>أقل</span>
+      <i data-l="0"></i><i data-l="1"></i><i data-l="2"></i><i data-l="3"></i><i data-l="4"></i>
+      <span>أكثر</span>
+    </div>
+  </section>
+
+  <!-- all plans -->
+  <section class="sec" id="plans-sec" hidden>
+    <div class="sec__head">
+      <h2>الخطط</h2>
+      <button type="button" class="btn btn--sm" id="add-plan">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        <span>خطة جديدة</span>
+      </button>
+    </div>
+    <div id="plans"></div>
+  </section>
+
+  <!-- lifetime numbers -->
+  <section class="sec" id="stats-sec" hidden>
+    <div class="sec__head"><h2>الإحصاءات</h2></div>
+    <div class="stats" id="stats"></div>
+    <p class="sec__note" id="pace-note"></p>
+  </section>
+
+  <!-- backup -->
+  <section class="sec">
+    <div class="sec__head">
+      <h2>النسخ الاحتياطي</h2>
+      <span class="sec__aside" id="storage-size"></span>
+    </div>
+    <div class="data__row">
+      <button type="button" class="btn" id="export">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        <span>تصدير</span>
+      </button>
+      <button type="button" class="btn" id="import-btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        <span>استيراد</span>
+      </button>
+      <input type="file" id="import-file" accept="application/json,.json" hidden>
+      <button type="button" class="btn btn--danger" id="wipe">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+        <span>مسح الكل</span>
+      </button>
+    </div>
+    <p class="sec__note">
+      كل شيء محفوظ في هذا المتصفح وحده — لا حساب ولا خادم. مسح بيانات الموقع يمحو
+      كل ما سبق، فاحتفظ بنسخة بين حين وآخر.
+    </p>
+    <div id="quota"></div>
+  </section>
+
+  <footer class="pagefoot">
+    <p><a href="index.html">فهرس السور</a> · <a href="../Thekr/index.html">الأذكار</a></p>
+  </footer>
+
+</div>
+
+<!-- new / edit plan -->
+<div class="modal" id="modal" data-open="false">
+  <div class="modal__scrim" id="modal-scrim"></div>
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal__head">
+      <h2 id="modal-title">خطة جديدة</h2>
+      <button type="button" class="iconbtn" id="modal-close" aria-label="إغلاق">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form class="form" id="plan-form" novalidate>
+      <div class="field">
+        <label for="f-name">اسم الخطة</label>
+        <input type="text" id="f-name" placeholder="ختمة" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <span class="field__label">النطاق</span>
+        <div class="field__pair">
+          <select id="f-scope" aria-label="نوع النطاق">
+            <option value="all">المصحف كامل</option>
+            <option value="juz">جزء</option>
+            <option value="surah">سورة</option>
+          </select>
+          <select id="f-scope-arg" aria-label="تحديد النطاق" hidden></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="field__label">
+          الأسلوب
+          <span class="field__hint" id="mode-hint"></span>
+        </span>
+        <div class="seg" role="group" aria-label="أسلوب الخطة">
+          <button type="button" data-mode="perDay" aria-pressed="true">نصيب ثابت</button>
+          <button type="button" data-mode="byDate" aria-pressed="false">موعد محدد</button>
+        </div>
+      </div>
+
+      <div class="field" id="f-amount-field">
+        <span class="field__label">النصيب اليومي</span>
+        <div class="field__pair">
+          <input type="number" id="f-amount" min="1" max="604" value="4" inputmode="numeric">
+          <select id="f-unit" aria-label="الوحدة">
+            <option value="page">صفحة</option>
+            <option value="ayah">آية</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field" id="f-date-field" hidden>
+        <label for="f-end">تاريخ الانتهاء</label>
+        <input type="date" id="f-end">
+        <span class="field__hint" id="date-hint"></span>
+      </div>
+
+      <div class="form__actions">
+        <button type="button" class="btn btn--quiet" id="f-cancel">إلغاء</button>
+        <button type="submit" class="btn btn--go" id="f-save">حفظ</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" data-show="false"></div>
+
+<script src="assets/data/surahs.js"></script>
+<script src="assets/data/index.js"></script>
+<script src="assets/data/programs.js"></script>
+<script src="assets/tracker.js"></script>
+<script src="assets/plan.js"></script>
+</body>
+</html>

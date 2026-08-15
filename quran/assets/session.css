@@ -1,0 +1,67 @@
+@charset "UTF-8";
+/* =========================================================================
+   Reading-session pill for the reader page.
+   Floats above the recitation player without competing with it: idle it is a
+   quiet capsule, running it widens to show the clock and the range so far.
+   ========================================================================= */
+
+.sessionbar{
+  position:fixed;inset-inline:0;bottom:calc(1.1rem + env(safe-area-inset-bottom));
+  z-index:45;display:flex;justify-content:center;pointer-events:none;
+  padding:0 var(--pad);
+  transition:bottom 300ms cubic-bezier(.2,.8,.25,1);
+}
+/* lift clear of the player when it slides up */
+@supports selector(:has(*)){
+  body:has(.player[data-show="true"]) .sessionbar{
+    bottom:calc(5.4rem + env(safe-area-inset-bottom));
+  }
+}
+
+.sessionbar__pill{
+  pointer-events:auto;display:flex;align-items:center;gap:.15rem;
+  background:var(--surface);border:1px solid var(--border-soft);
+  border-radius:var(--r-full);box-shadow:var(--shadow-lg);
+  padding:.28rem;max-width:100%;
+  transition:opacity var(--t);
+}
+
+.sessionbar__btn{
+  display:inline-flex;align-items:center;gap:.45rem;flex:0 0 auto;
+  padding:.42rem .9rem;border-radius:var(--r-full);
+  font-size:.82rem;font-weight:600;color:var(--ink-2);
+  transition:background var(--t),color var(--t);
+}
+.sessionbar__btn:hover{background:var(--surface-sunk);color:var(--ink)}
+.sessionbar__btn svg{
+  width:16px;height:16px;flex:0 0 auto;
+  stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;
+}
+.sessionbar__btn--go{background:var(--accent);color:var(--on-accent)}
+.sessionbar__btn--go:hover{background:var(--accent-2);color:var(--on-accent)}
+.sessionbar__btn--icon{padding:.42rem .55rem}
+
+/* the running read-out */
+.sessionbar__read{
+  display:flex;flex-direction:column;gap:.05rem;padding:.1rem .7rem;min-width:0;
+  border-inline-start:1px solid var(--border-soft);
+  border-inline-end:1px solid var(--border-soft);
+}
+.sessionbar__clock{
+  font-size:.92rem;font-weight:700;color:var(--ink);line-height:1.25;
+  font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;text-align:center;
+}
+.sessionbar__range{
+  font-size:.68rem;color:var(--ink-3);line-height:1.3;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;max-width:11rem;text-align:center;
+}
+.sessionbar[data-paused="true"] .sessionbar__clock{color:var(--ink-3)}
+
+/* the reader dims the pill while the settings sheet is open, so it never
+   sits on top of a control the user is reaching for */
+.settings[data-open="true"] ~ .sessionbar,
+body:has(.settings[data-open="true"]) .sessionbar{opacity:0;pointer-events:none}
+
+@media (prefers-reduced-motion:reduce){
+  .sessionbar{transition:none}
+}

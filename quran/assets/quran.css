@@ -1,12 +1,12 @@
 @charset "UTF-8";
 /* =========================================================================
-   Qur'an reader — layered on top of ../../assets/thekr.css
-   (that file supplies the colour tokens, fonts, top bar and settings shell)
+   Qur'an reader — layered on top of base.css
+   (that file supplies the colour tokens, faces, top bar and settings shell)
    ========================================================================= */
 
 @font-face{
   font-family:'Amiri Quran';font-style:normal;font-weight:400;font-display:swap;
-  src:url('../../assets/fonts/amiri-quran-arabic.woff2') format('woff2');
+  src:url('fonts/amiri-quran-arabic.woff2') format('woff2');
   unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC;
 }
 
@@ -14,8 +14,7 @@
   --ayah-size:1.75rem;
   --ayah-leading:2.35;
 }
-html[data-theme="day"]  { --accent:#0E6E63; --accent-2:#128C7E; --accent-soft:rgba(14,110,99,.09); --on-accent:#fff; }
-html[data-theme="night"]{ --accent:#5FD3C4; --accent-2:#8FE3D8; --accent-soft:rgba(95,211,196,.12); --on-accent:#062521; }
+/* The accent pair now comes from base.css, which owns all four palettes. */
 
 .font-quran{font-family:'Amiri Quran','Amiri',serif}
 
@@ -233,6 +232,9 @@ html[data-palette="blue"]{
   --seam-soft:rgba(28,62,96,.05); --seam-line:rgba(28,62,96,.20);
   --band-fill:rgba(94,140,190,.08); --grain:rgba(40,80,120,.020);
   --pattern-opacity:.045;
+  /* the gold stays in every leaf — it is what makes the section one thing */
+  --gold:#8A6A2E; --gold-2:#B4903F; --gold-soft:rgba(138,106,46,.10);
+  --themed:#6B4A22; --themed-bg:#F6F1E6; --themed-line:#E0D3BB;
 }
 
 /* ---- أبيض وأسود : no colour at all, maximum contrast ---- */
@@ -252,6 +254,9 @@ html[data-palette="mono"]{
   --band-fill:rgba(0,0,0,.04); --grain:rgba(0,0,0,.016);
   --pattern-opacity:.035;
   --done:#1A1A1A; --done-soft:rgba(0,0,0,.07);
+  /* mono means mono — the gold resolves to ink here rather than being kept */
+  --gold:#3A3A3A; --gold-2:#000000; --gold-soft:rgba(0,0,0,.06);
+  --themed:#1A1A1A; --themed-bg:#EFEFEF; --themed-line:#D0D0D0;
 }
 /* the background watermark should not carry a hue in the mono palette */
 html[data-palette="mono"]{

@@ -1,0 +1,107 @@
+@charset "UTF-8";
+/* =========================================================================
+   Hifz dashboard — the three queues, the coverage map and the weak list.
+   Loads on top of plan.css, which carries the shared dashboard components
+   (.btn, .sec, .field, .stat, .modal, .form).
+   ========================================================================= */
+
+/* ---------- queue blocks ---------- */
+.queue{
+  background:var(--surface);border:1px solid var(--border-soft);
+  border-radius:var(--r-lg);padding:1rem 1.05rem;margin:0 0 .8rem;
+  position:relative;overflow:hidden;
+}
+.queue::before{
+  content:'';position:absolute;inset-block:0;inset-inline-start:0;width:3px;
+  background:var(--q-tint,var(--accent));
+}
+/* Each queue reads as its own thing — they are different kinds of work, not
+   three slices of one list. */
+.queue[data-q="sabaq"] { --q-tint:#C4761E }
+.queue[data-q="sabqi"] { --q-tint:var(--accent) }
+.queue[data-q="manzil"]{ --q-tint:#5A6BC0 }
+html[data-theme="night"] .queue[data-q="sabaq"] { --q-tint:#F0B45E }
+html[data-theme="night"] .queue[data-q="manzil"]{ --q-tint:#96A4F0 }
+
+.queue__head{display:flex;align-items:baseline;gap:.6rem;margin:0 0 .2rem}
+.queue__name{font-size:1rem;font-weight:700;color:var(--ink);margin:0}
+.queue__ar{font-size:.78rem;color:var(--q-tint);font-weight:600}
+.queue__n{
+  margin-inline-start:auto;font-size:.8rem;font-weight:700;
+  color:var(--q-tint);font-variant-numeric:tabular-nums;
+}
+.queue__why{font-size:.75rem;color:var(--ink-3);margin:0 0 .85rem;line-height:1.65}
+.queue__empty{font-size:.82rem;color:var(--ink-3);padding:.4rem 0}
+
+.queue__list{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 .9rem}
+.pagechip{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.4rem .7rem;border-radius:var(--r-md);
+  background:var(--surface-sunk);font-size:.8rem;color:var(--ink-2);
+  transition:background var(--t),color var(--t);
+}
+.pagechip:hover{background:var(--border-soft);color:var(--ink)}
+.pagechip b{font-weight:700;font-variant-numeric:tabular-nums}
+.pagechip small{font-size:.7rem;color:var(--ink-3)}
+.pagechip[data-overdue="true"]{background:rgba(180,65,59,.1)}
+.pagechip[data-overdue="true"] small{color:#B4413B}
+html[data-theme="night"] .pagechip[data-overdue="true"] small{color:#F0918A}
+
+.queue__actions{display:flex;gap:.5rem;flex-wrap:wrap}
+
+/* ---------- coverage map ---------- */
+.map{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(9px,1fr));
+  gap:2px;direction:rtl;margin:0 0 .6rem;
+}
+.map i{
+  aspect-ratio:1;border-radius:2px;background:var(--surface-sunk);display:block;
+  transition:transform 120ms;
+}
+.map i[data-s="learning"]{background:#C4761E}
+.map i[data-s="memorized"]{background:color-mix(in srgb,var(--accent) calc(28% + var(--h,0) * 62%),var(--surface-sunk))}
+.map i[data-s="memorized"][data-stale="true"]{background:#B4413B}
+html[data-theme="night"] .map i[data-s="learning"]{background:#F0B45E}
+@supports not (background:color-mix(in srgb,red 50%,transparent)){
+  .map i[data-s="memorized"]{background:var(--accent)}
+}
+.map i:hover{transform:scale(1.6)}
+
+.maplegend{
+  display:flex;flex-wrap:wrap;gap:.25rem 1rem;font-size:.73rem;color:var(--ink-3);
+  margin:.7rem 0 0;
+}
+.maplegend span{display:inline-flex;align-items:center;gap:.35rem}
+.maplegend i{width:9px;height:9px;border-radius:2px;display:block}
+.maplegend i[data-s="none"]{background:var(--surface-sunk)}
+.maplegend i[data-s="learning"]{background:#C4761E}
+.maplegend i[data-s="memorized"]{background:var(--accent)}
+.maplegend i[data-s="stale"]{background:#B4413B}
+
+/* ---------- weak links ---------- */
+.weak{display:flex;flex-direction:column;gap:.4rem}
+.weakrow{
+  display:flex;align-items:center;gap:.75rem;padding:.6rem .8rem;
+  background:var(--surface);border:1px solid var(--border-soft);
+  border-radius:var(--r-md);text-decoration:none;color:inherit;
+}
+.weakrow:hover{border-color:var(--accent)}
+.weakrow__ref{
+  font-family:'Amiri Quran','Amiri',serif;font-size:1.05rem;color:var(--ink);
+  flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.weakrow__n{
+  flex:0 0 auto;font-size:.72rem;font-weight:700;padding:.2rem .5rem;
+  border-radius:var(--r-full);background:rgba(180,65,59,.12);color:#B4413B;
+}
+html[data-theme="night"] .weakrow__n{color:#F0918A}
+.weakrow__x{flex:0 0 auto;color:var(--ink-3);font-size:.75rem;padding:.25rem .45rem;border-radius:var(--r-full)}
+.weakrow__x:hover{background:var(--surface-sunk);color:var(--ink)}
+
+/* ---------- onboarding ---------- */
+.onboard{
+  background:var(--surface);border:1px solid var(--border-soft);
+  border-radius:var(--r-lg);padding:1.3rem 1.25rem;
+}
+.onboard h2{font-size:1.05rem;font-weight:700;margin:0 0 .5rem;color:var(--ink)}
+.onboard p{font-size:.85rem;color:var(--ink-3);line-height:1.8;margin:0 0 1.2rem}

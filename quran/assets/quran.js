@@ -41,6 +41,11 @@
     theme: null, frame: true, pattern: true
   }, read(SET_KEY, {}));
 
+  /* Hifz review needs one span per word, which only the page views produce —
+     the verse view sets each ayah as a single block. So a review link pins the
+     mode regardless of the saved preference, without overwriting it. */
+  if (new URLSearchParams(location.search).has('review') && S.mode === 'verse') S.mode = 'mushaf';
+
   var bookmarks = read(BM_KEY, {});
 
   /* ---------------- helpers ---------------- */

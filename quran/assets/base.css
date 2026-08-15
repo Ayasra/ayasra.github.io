@@ -1,0 +1,408 @@
+@charset "UTF-8";
+/* =========================================================================
+   Qur'an section — foundation sheet.
+
+   Palette and typographic proportions follow the two printed-programme pages:
+   a cream leaf, deep-teal ink for structure, gold for anything that marks or
+   numbers, and a serif doing the display work. Everything else in the section
+   layers on top of this file.
+
+   Deliberately self-contained. The athkar section keeps its own thekr.css and
+   is untouched by anything here — the two are now separate sections of the
+   site and should be free to diverge.
+
+   Token names are carried over from thekr.css unchanged. That is what makes
+   the restyle tractable: the component sheets keep working, and only the
+   values move.
+   ========================================================================= */
+
+/* ---------- faces ----------
+   Amiri ships an old-style Latin cut alongside its Arabic, which is why it can
+   carry the display role for both scripts here. The reference pages reached
+   for Cormorant Garamond to get that texture in Latin; Amiri is already
+   self-hosted, so the section keeps working with no network and no CDN. */
+
+@font-face{
+  font-family:'Amiri';font-style:normal;font-weight:400;font-display:swap;
+  src:url('fonts/amiri-400-arabic.woff2') format('woff2');
+  unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+08A0-08FF,U+200C-200E,U+2010-2011,U+FB50-FDFF,U+FE70-FEFC;
+}
+@font-face{
+  font-family:'Amiri';font-style:normal;font-weight:400;font-display:swap;
+  src:url('fonts/amiri-400-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+2000-206F,U+2122,U+2212;
+}
+@font-face{
+  font-family:'Amiri';font-style:normal;font-weight:700;font-display:swap;
+  src:url('fonts/amiri-700-arabic.woff2') format('woff2');
+  unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+08A0-08FF,U+200C-200E,U+2010-2011,U+FB50-FDFF,U+FE70-FEFC;
+}
+@font-face{
+  font-family:'Amiri';font-style:normal;font-weight:700;font-display:swap;
+  src:url('fonts/amiri-700-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+2000-206F,U+2122,U+2212;
+}
+@font-face{
+  font-family:'Naskh';font-style:normal;font-weight:100 900;font-display:swap;
+  src:url('fonts/naskh-var-arabic.woff2') format('woff2');
+  unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+08A0-08FF,U+200C-200E,U+2010-2011,U+FB50-FDFF,U+FE70-FEFC;
+}
+@font-face{
+  font-family:'Naskh';font-style:normal;font-weight:100 900;font-display:swap;
+  src:url('fonts/naskh-var-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+2000-206F,U+2122,U+2212;
+}
+
+/* ---------- invariants ---------- */
+
+:root{
+  --font-ui: 'Naskh', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Amiri', 'Naskh', Georgia, serif;
+  --font-scripture: 'Amiri', 'Naskh', serif;
+  --font-latin: 'Amiri', Georgia, 'Times New Roman', serif;
+
+  --dhikr-size: 1.45rem;
+  --dhikr-leading: 2.15;
+
+  /* The reference rounds gently — 12–14px on panels, never pill-shaped except
+     on controls that genuinely toggle. */
+  --r-sm: 7px; --r-md: 12px; --r-lg: 16px; --r-full: 999px;
+  --pad: clamp(1rem, 3vw, 1.6rem);
+  --maxw: 60rem;
+  --t: 200ms cubic-bezier(.2,.7,.3,1);
+
+  /* Fallbacks for the two sheet tokens this file actually uses (.ornament and
+     the sūrah name band). quran.css overrides both per palette; these keep a
+     page that loads base.css alone from rendering a colourless rule. */
+  --rule: #C9A45C;
+  --rule-soft: rgba(166,124,52,.30);
+}
+
+/* ---------- palettes ----------
+   Four, as before. `paper` is the reference leaf and the flagship; `night` is
+   the same design after dark, which a Qur'an app cannot do without — it gets
+   opened at tahajjud far more often than at noon. `blue` and `mono` are cooler
+   and neutral leaves for readers who want them, and both keep the gold so the
+   family still reads as one thing. */
+
+html[data-theme="day"]{
+  --bg:            #FAF7F0;
+  --surface:       #FFFDF8;
+  --surface-2:     #F6F2E8;
+  --surface-sunk:  rgba(14,59,57,.045);
+  --ink:           #1D2321;
+  --ink-2:         #4A5551;
+  --ink-3:         #8A918E;
+  --border:        #DDD6C8;
+  --border-soft:   #EEE8DC;
+  --shadow:        0 1px 2px rgba(29,35,33,.04), 0 8px 24px -12px rgba(14,59,57,.18);
+  --shadow-lg:     0 2px 6px rgba(29,35,33,.06), 0 22px 48px -18px rgba(14,59,57,.26);
+  --scrim:         rgba(250,247,240,.88);
+  --done:          #14514E;
+  --done-soft:     rgba(20,81,78,.10);
+}
+html[data-theme="day"]{
+  --accent:#0E3B39; --accent-2:#14514E; --accent-soft:rgba(14,59,57,.07); --on-accent:#F6F1E6;
+  --gold:#A67C34;   --gold-2:#C9A45C;   --gold-soft:rgba(166,124,52,.10);
+  --themed:#7A3F1D; --themed-bg:#FDF4EA; --themed-line:#E6CDB4;
+}
+/* The blue and mono leaves are defined in quran.css, which also owns every
+   token describing the printed sheet itself — the paper, its edge, the ruled
+   frame, the seam between a spread. Those are properties of the muṣḥaf
+   rendering rather than of the section's chrome, and splitting them across two
+   files is how they end up fighting. */
+
+html[data-theme="night"]{
+  --bg:            #0B1412;
+  --surface:       #12201E;
+  --surface-2:     #172B28;
+  --surface-sunk:  rgba(201,164,92,.055);
+  --ink:           #ECE6D9;
+  --ink-2:         #ADBAB4;
+  --ink-3:         #7C8A84;
+  --border:        rgba(201,164,92,.20);
+  --border-soft:   rgba(201,164,92,.11);
+  --shadow:        0 1px 2px rgba(0,0,0,.45), 0 8px 24px -12px rgba(0,0,0,.7);
+  --shadow-lg:     0 2px 6px rgba(0,0,0,.45), 0 22px 48px -18px rgba(0,0,0,.8);
+  --scrim:         rgba(11,20,18,.88);
+  --done:          #7FCEC0;
+  --done-soft:     rgba(127,206,192,.12);
+
+  --accent:#7FCEC0; --accent-2:#A8E0D4; --accent-soft:rgba(127,206,192,.13); --on-accent:#06211F;
+  --gold:#C9A45C;   --gold-2:#E0C286;   --gold-soft:rgba(201,164,92,.13);
+  --themed:#E8B183; --themed-bg:rgba(232,177,131,.10); --themed-line:rgba(232,177,131,.28);
+}
+
+/* ---------- reset ---------- */
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--font-ui);font-size:15.5px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  /* the faint warm bloom the reference carries at the head of the page */
+  background-image:radial-gradient(1200px 520px at 50% -16%, var(--accent-soft), transparent 70%);
+  background-attachment:fixed;
+}
+h1,h2,h3,h4{margin:0;font-weight:600;line-height:1.3}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{color:var(--accent-2)}
+ul,ol{margin:0;padding:0}
+li{list-style:none}
+img,svg{max-width:100%}
+:focus-visible{outline:2.5px solid var(--gold);outline-offset:3px;border-radius:5px}
+[hidden]{display:none!important}
+.visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+::selection{background:var(--gold-soft);color:var(--ink)}
+
+/* ---------- shell ---------- */
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad) 5rem}
+
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:var(--scrim);backdrop-filter:saturate(1.7) blur(14px);
+  -webkit-backdrop-filter:saturate(1.7) blur(14px);
+  border-bottom:1px solid var(--border-soft);
+}
+.topbar__inner{
+  max-width:var(--maxw);margin:0 auto;
+  padding:.55rem var(--pad);display:flex;align-items:center;gap:.5rem;
+}
+.iconbtn{
+  flex:0 0 auto;width:38px;height:38px;display:grid;place-items:center;
+  border-radius:var(--r-full);color:var(--ink-2);
+  transition:background var(--t),color var(--t);
+}
+.iconbtn:hover{background:var(--surface-sunk);color:var(--ink)}
+.iconbtn[aria-expanded="true"]{background:var(--accent);color:var(--on-accent)}
+.iconbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.iconbtn--back svg{transform:scaleX(1)}
+
+.progress{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:.25rem;padding:0 .25rem}
+.progress__row{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;font-size:.76rem;color:var(--ink-3)}
+.progress__label{
+  font-weight:600;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  letter-spacing:.01em;
+}
+.progress__count{font-variant-numeric:tabular-nums;white-space:nowrap;direction:ltr;unicode-bidi:isolate}
+.progress__track{height:3px;border-radius:var(--r-full);background:var(--surface-sunk);overflow:hidden}
+.progress__bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--gold-2));border-radius:var(--r-full);transition:width var(--t)}
+
+/* ---------- the header slab ----------
+   The reference opens every page on a deep panel ruled off in gold. It is the
+   single strongest thing about that design, so it carries over intact. */
+
+.hero{
+  background:linear-gradient(160deg,var(--accent) 0%, color-mix(in srgb,var(--accent) 78%, #000) 100%);
+  border-bottom:3px solid var(--gold);
+  padding:2.6rem var(--pad) 2.2rem;margin-bottom:2rem;
+  position:relative;overflow:hidden;
+}
+html[data-theme="night"] .hero{
+  background:linear-gradient(160deg,#123330 0%, #0A1F1D 100%);
+}
+@supports not (background:color-mix(in srgb,red 50%,#000)){
+  .hero{background:linear-gradient(160deg,var(--accent),var(--accent-2))}
+}
+.hero__inner{max-width:var(--maxw);margin:0 auto;position:relative}
+.hero h1{
+  font-family:var(--font-display);font-size:clamp(1.9rem,5.4vw,2.7rem);
+  font-weight:400;color:#FBF6EA;margin:0 0 .25rem;letter-spacing:.005em;line-height:1.25;
+}
+.hero__sub{
+  font-family:var(--font-display);font-size:clamp(1.05rem,3vw,1.4rem);
+  color:var(--gold-2);margin:0 0 .9rem;
+}
+.hero p{color:#B9CCC7;max-width:64ch;font-size:.92rem;line-height:1.85}
+.hero__kpis{
+  display:flex;flex-wrap:wrap;gap:1.2rem 2rem;margin-top:1.5rem;padding-top:1.2rem;
+  border-top:1px solid rgba(201,164,92,.22);
+}
+.hero__kpi b{
+  display:block;font-family:var(--font-display);font-size:1.7rem;color:#fff;line-height:1;
+  font-weight:400;font-variant-numeric:lining-nums tabular-nums;
+}
+.hero__kpi span{font-size:.72rem;letter-spacing:.06em;color:#8FB0AA;display:block;margin-top:.25rem}
+
+/* the lighter masthead, for pages that do not want the full slab */
+.masthead{text-align:center;padding:2.4rem 0 1.2rem}
+.masthead h1{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(1.8rem,5vw,2.4rem);color:var(--ink);letter-spacing:.005em;
+}
+.masthead .sub{color:var(--ink-3);font-size:.9rem;margin:.35rem 0 0}
+.ornament{display:flex;align-items:center;justify-content:center;gap:.7rem;margin:1rem 0 0;color:var(--rule)}
+.ornament::before,.ornament::after{
+  content:'';height:1px;width:min(7rem,22vw);
+  background:linear-gradient(90deg,transparent,currentColor);
+}
+.ornament::after{background:linear-gradient(270deg,transparent,currentColor)}
+.ornament svg{width:15px;height:15px;fill:currentColor;opacity:.8;flex:0 0 auto}
+
+/* ---------- sections ---------- */
+
+.sec{margin:2.6rem 0 0}
+.sec__head{
+  display:flex;align-items:baseline;justify-content:space-between;gap:.75rem;
+  margin:0 0 1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border-soft);
+  flex-wrap:wrap;
+}
+.sec__head h2{
+  font-family:var(--font-display);font-size:1.35rem;font-weight:400;
+  color:var(--accent);margin:0;letter-spacing:.005em;
+}
+html[data-theme="night"] .sec__head h2{color:var(--ink)}
+.sec__head .sec__aside{font-size:.76rem;color:var(--ink-3);margin-inline-start:auto}
+.sec__note{font-size:.82rem;color:var(--ink-3);margin:.7rem 0 0;line-height:1.85}
+
+.section-label{
+  font-family:var(--font-display);font-size:1.2rem;color:var(--accent);
+  margin:2.4rem 0 .9rem;padding-bottom:.4rem;border-bottom:1px solid var(--border-soft);
+}
+
+/* ---------- panels and cards ---------- */
+
+.panel,.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:1.3rem 1.4rem;
+}
+.panel{margin:0 0 1.2rem}
+
+.tiles{display:grid;gap:.7rem}
+.tile{
+  display:flex;gap:1rem;align-items:flex-start;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:1rem 1.1rem;text-decoration:none;color:inherit;
+  transition:border-color var(--t),box-shadow var(--t);
+}
+.tile:hover{border-color:var(--gold-2);box-shadow:var(--shadow);color:inherit}
+.tile__icon{
+  flex:0 0 auto;width:40px;height:40px;display:grid;place-items:center;
+  border-radius:var(--r-sm);background:var(--accent-soft);color:var(--accent);
+}
+.tile__icon svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tile h2{font-family:var(--font-display);font-size:1.1rem;font-weight:400;color:var(--ink);margin:0 0 .15rem}
+.tile p{font-size:.82rem;color:var(--ink-3);line-height:1.75}
+
+/* ---------- controls ---------- */
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  padding:.55rem 1.05rem;border-radius:var(--r-sm);
+  font-size:.84rem;font-weight:600;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--ink-2);text-decoration:none;
+  transition:border-color var(--t),color var(--t),background var(--t);
+}
+.btn:hover{border-color:var(--gold-2);color:var(--gold);background:var(--surface)}
+.btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.btn--go{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn--go:hover{background:var(--accent-2);border-color:var(--accent-2);color:var(--on-accent)}
+.btn--gold{background:var(--gold);border-color:var(--gold);color:#fff}
+.btn--gold:hover{background:var(--gold-2);border-color:var(--gold-2);color:#3A2A0E}
+.btn--quiet{background:transparent;border-color:transparent;color:var(--ink-3)}
+.btn--quiet:hover{background:var(--surface-sunk);color:var(--ink);border-color:transparent}
+.btn--danger{background:transparent;border-color:transparent;color:#B4413B}
+html[data-theme="night"] .btn--danger{color:#E9938C}
+.btn--danger:hover{background:rgba(180,65,59,.09);border-color:transparent;color:#B4413B}
+.btn--sm{padding:.38rem .75rem;font-size:.78rem}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+.chips{display:flex;gap:.2rem;flex:0 0 auto;background:var(--surface-sunk);padding:.2rem;border-radius:var(--r-sm)}
+.chips--wrap{flex-wrap:wrap}
+.chips button{
+  padding:.35rem .8rem;border-radius:calc(var(--r-sm) - 2px);font-size:.8rem;font-weight:600;
+  color:var(--ink-2);transition:background var(--t),color var(--t);
+}
+.chips button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+
+.stepper{display:flex;align-items:center;gap:.1rem;flex:0 0 auto;background:var(--surface-sunk);border-radius:var(--r-sm);padding:.18rem}
+.stepper button{width:34px;height:30px;border-radius:calc(var(--r-sm) - 2px);font-weight:700;color:var(--ink-2);display:grid;place-items:center;transition:background var(--t)}
+.stepper button:hover:not(:disabled){background:var(--surface)}
+.stepper button:disabled{opacity:.35;cursor:not-allowed}
+.stepper output{min-width:2.6rem;text-align:center;font-size:.8rem;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+
+.switch{position:relative;flex:0 0 auto;width:46px;height:27px;border-radius:var(--r-full);background:var(--surface-sunk);border:1px solid var(--border);transition:background var(--t),border-color var(--t)}
+.switch::after{
+  content:'';position:absolute;top:2px;inset-inline-start:2px;width:19px;height:19px;
+  border-radius:50%;background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.22);
+  transition:transform var(--t);
+}
+.switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.switch[aria-checked="true"]::after{transform:translateX(19px)}
+html[dir="rtl"] .switch[aria-checked="true"]::after{transform:translateX(-19px)}
+
+/* settings shell, kept from the reader */
+.settings{
+  max-height:0;opacity:0;overflow:hidden;
+  transition:max-height 320ms cubic-bezier(.2,.8,.25,1),opacity 220ms;
+}
+.settings[data-open="true"]{max-height:48rem;opacity:1}
+.settings__inner{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);box-shadow:var(--shadow);margin:1rem 0 0;
+}
+.setting{display:flex;align-items:center;gap:1rem;padding:.85rem 1.1rem}
+.setting + .setting{border-top:1px solid var(--border-soft)}
+.setting__label{flex:1 1 auto;min-width:0}
+.setting__label b{display:block;font-size:.87rem;font-weight:600;color:var(--ink)}
+.setting__label small,
+.setting__hint{display:block;font-size:.75rem;font-weight:400;color:var(--ink-3);margin-top:.12rem;line-height:1.65}
+
+/* ---------- forms ---------- */
+
+.form{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.2rem 1.3rem}
+.field{margin:0 0 1.05rem}
+.field:last-of-type{margin-bottom:0}
+.field > label,.field__label{display:block;font-size:.8rem;font-weight:600;color:var(--ink-2);margin:0 0 .4rem;letter-spacing:.01em}
+.field__hint{display:block;font-weight:400;font-size:.75rem;color:var(--ink-3);margin-top:.2rem;line-height:1.7}
+.field input[type="text"],.field input[type="number"],.field input[type="date"],.field select{
+  width:100%;padding:.55rem .75rem;border-radius:var(--r-sm);
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--ink);font-size:.87rem;
+}
+.field input:focus,.field select:focus{outline:2px solid var(--gold);outline-offset:0}
+.field__pair{display:flex;gap:.5rem}
+.field__pair > *{flex:1 1 0;min-width:0}
+.seg{display:flex;gap:.2rem;background:var(--surface-sunk);padding:.2rem;border-radius:var(--r-sm)}
+.seg button{flex:1 1 0;padding:.48rem .5rem;border-radius:calc(var(--r-sm) - 2px);font-size:.8rem;font-weight:600;color:var(--ink-2);transition:background var(--t),color var(--t)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.form__actions{display:flex;gap:.5rem;margin:1.3rem 0 0;justify-content:flex-end}
+
+/* ---------- table ---------- */
+
+table{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:.9rem}
+th,td{text-align:start;padding:.5rem .6rem;border-bottom:1px solid var(--border-soft);vertical-align:top}
+th{font-size:.7rem;letter-spacing:.05em;color:var(--gold);border-bottom:1.5px solid var(--border);font-weight:600}
+
+/* ---------- toast ---------- */
+
+.toast{
+  position:fixed;inset-inline:0;bottom:1.4rem;margin:auto;width:max-content;max-width:88vw;z-index:70;
+  padding:.65rem 1.1rem;border-radius:var(--r-sm);
+  background:var(--accent);color:var(--on-accent);font-size:.85rem;font-weight:600;
+  box-shadow:var(--shadow-lg);
+  opacity:0;transform:translateY(10px);pointer-events:none;
+  transition:opacity 220ms,transform 220ms;
+}
+.toast[data-show="true"]{opacity:1;transform:none}
+
+/* ---------- footer ---------- */
+
+.pagefoot{
+  margin-top:3.5rem;padding-top:1.4rem;border-top:1px solid var(--border-soft);
+  font-size:.79rem;color:var(--ink-3);text-align:center;line-height:1.9;
+}
+.pagefoot p{margin:0}
+.pagefoot a{color:var(--ink-2)}
+.pagefoot a:hover{color:var(--gold)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}

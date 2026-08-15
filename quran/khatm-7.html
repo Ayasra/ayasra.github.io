@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="day">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ختمة الصحابة في سبعة أيام — القرآن الكريم</title>
+<meta name="description" content="ختم القرآن في أسبوع على تقسيم الصحابة رضي الله عنهم: ثلاث سور ثم خمس فسبع فتسع فإحدى عشرة فثلاث عشرة ثم المفصّل.">
+<meta name="theme-color" content="#0E3B39">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/quran.css">
+<link rel="stylesheet" href="assets/program.css">
+<script>
+(function () {
+  try {
+    var T = {paper:['day','paper'], blue:['day','blue'], mono:['day','mono'], night:['night','paper']};
+    var q = JSON.parse(localStorage.getItem('quran.settings.v1') || '{}');
+    var pick = T[q.theme];
+    if (!pick) {
+      var h = new Date().getHours();
+      pick = (h >= 5 && h < 18) ? T.paper : T.night;
+    }
+    document.documentElement.setAttribute('data-theme', pick[0]);
+    document.documentElement.setAttribute('data-palette', pick[1]);
+  } catch (e) {}
+})();
+</script>
+</head>
+<body data-program="manzil7">
+
+<div class="topbar">
+  <div class="topbar__inner">
+    <a class="iconbtn iconbtn--back" href="index.html" aria-label="رجوع">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+    </a>
+    <div class="progress">
+      <div class="progress__row">
+        <span class="progress__label">سبعة أيام</span>
+      </div>
+    </div>
+    <button type="button" class="iconbtn" id="theme-toggle" aria-label="تبديل المظهر">
+      <svg viewBox="0 0 24 24" aria-hidden="true" id="theme-icon"></svg>
+    </button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="hero__inner">
+    <h1>سبعة أيام</h1>
+    <p class="hero__sub">ختمة الصحابة رضي الله عنهم</p>
+    <p>القرآن كاملًا في أسبوع، على التقسيم الذي كان الصحابة يحزّبون به القرآن، وكل يوم يبدأ من رأس سورة. لم يُعَد ترتيبه ولم يُحدَّث.</p>
+    <div class="hero__kpis">
+      <div class="hero__kpi"><b>٦٢٣٦</b><span>آية · كلّها</span></div>
+      <div class="hero__kpi"><b>٧</b><span>منازل</span></div>
+      <div class="hero__kpi"><b>نحو ٣ س</b><span>في اليوم</span></div>
+      <div class="hero__kpi"><b>٣</b><span>جلسات في اليوم</span></div>
+    </div>
+    <div class="mnem">
+      <div class="mnem__lab">مفتاح المنازل</div>
+      <a href="#d1"><b>ف</b><small>الفاتحة</small></a>
+      <a href="#d2"><b>م</b><small>المائدة</small></a>
+      <a href="#d3"><b>ي</b><small>يونس</small></a>
+      <a href="#d4"><b>ب</b><small>الإسراء</small></a>
+      <a href="#d5"><b>ش</b><small>الشعراء</small></a>
+      <a href="#d6"><b>و</b><small>الصافات</small></a>
+      <a href="#d7"><b>ق</b><small>ق</small></a>
+      <div class="mnem__key">
+        <b>فَمِي بِشَوْقٍ</b> — حروفها أوائل السور التي تُفتتح بها الأيام السبعة.
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="progbar" id="progbar" hidden>
+  <div class="progbar__inner">
+    <span class="progbar__state" id="prog-state"></span>
+    <span class="progbar__track"><span class="progbar__bar" id="prog-bar"></span></span>
+    <span class="progbar__tools">
+      <button type="button" class="btn btn--go btn--sm" id="prog-start">ابدأ البرنامج</button>
+      <button type="button" class="btn btn--quiet btn--sm" id="prog-stop" hidden>أوقف المتابعة</button>
+    </span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <p class="note" id="note"></p>
+
+  <div class="filters" id="filters" role="group" aria-label="تصفية" hidden>
+    <button type="button" data-f="all" aria-pressed="true">الكل</button>
+    <button type="button" data-f="todo" aria-pressed="false">المتبقّي</button>
+    <button type="button" data-f="done" aria-pressed="false">المُنجَز</button>
+  </div>
+
+  <div id="steps"></div>
+
+  <footer class="pagefoot">
+    <p><a href="plan.html">خطط القراءة</a> · <a href="index.html">فهرس السور</a> · <a href="hifz.html">الحفظ</a></p>
+  </footer>
+
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" data-show="false"></div>
+
+<script src="assets/data/surahs.js"></script>
+<script src="assets/data/index.js"></script>
+<script src="assets/data/programs.js"></script>
+<script src="assets/tracker.js"></script>
+<script src="assets/program.js"></script>
+<script>
+document.getElementById('note').textContent =
+  (window.QURAN_PROGRAMS && window.QURAN_PROGRAMS['manzil7'] || {}).note || '';
+</script>
+</body>
+</html>

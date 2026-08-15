@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="day">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الحفظ والمراجعة — القرآن الكريم</title>
+<meta name="description" content="متابعة حفظ القرآن الكريم: السبق والسبقي والمنزل، مع المراجعة المتباعدة وخريطة الحفظ.">
+<meta name="theme-color" content="#0E3B39">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="الحفظ">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/quran.css">
+<link rel="stylesheet" href="assets/plan.css">
+<link rel="stylesheet" href="assets/hifz.css">
+<script>
+(function () {
+  try {
+    var T = {paper:['day','paper'], blue:['day','blue'], mono:['day','mono'], night:['night','paper']};
+    var q = JSON.parse(localStorage.getItem('quran.settings.v1') || '{}');
+    var pick = T[q.theme];
+    if (!pick) {
+      var h = new Date().getHours();
+      pick = (h >= 5 && h < 18) ? T.paper : T.night;
+    }
+    document.documentElement.setAttribute('data-theme', pick[0]);
+    document.documentElement.setAttribute('data-palette', pick[1]);
+  } catch (e) {}
+})();
+</script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar__inner">
+    <a class="iconbtn iconbtn--back" href="index.html" aria-label="رجوع إلى فهرس السور">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+    </a>
+    <div class="progress">
+      <div class="progress__row">
+        <span class="progress__label">الحفظ والمراجعة</span>
+        <span class="progress__count" id="crumb"></span>
+      </div>
+    </div>
+    <button type="button" class="iconbtn" id="theme-toggle" aria-label="تبديل المظهر">
+      <svg viewBox="0 0 24 24" aria-hidden="true" id="theme-icon"></svg>
+    </button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="hero__inner">
+    <h1>الحفظ</h1>
+    <p class="hero__sub">سَبْق وسَبْقي ومَنْزِل</p>
+    <p>الجديد الذي تحفظه الآن، والقريب الذي يُراجَع كلّ يوم حتى يستقرّ،
+    والبعيد على مراجعةٍ متباعدة تُقصِّر مواعيد ما تتعثّر فيه وتُباعد ما أتقنته.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+
+  <!-- first run -->
+  <section id="onboard-sec" hidden>
+    <div class="onboard">
+      <h2>كم تحفظ الآن؟</h2>
+      <p>
+        سجّل ما حفظته حتى اليوم دفعةً واحدة، فتدخل صفحاتُه في المراجعة المتباعدة
+        موزَّعةً على أيام بدل أن تحلّ كلُّها غداً. ثم ابدأ سبقك الجديد صفحةً صفحة.
+      </p>
+      <div class="quick">
+        <button type="button" class="btn btn--go" id="ob-range">سجّل ما أحفظ</button>
+        <button type="button" class="btn" id="ob-new">ابدأ صفحة جديدة</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- the three queues -->
+  <section id="queues-sec" hidden>
+    <div class="sec__head" style="margin-bottom:.85rem">
+      <h2>عمل اليوم</h2>
+      <span class="sec__aside" id="due-count"></span>
+      <button type="button" class="btn btn--sm" id="add-pages">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        <span>أضف</span>
+      </button>
+    </div>
+    <div id="queues"></div>
+  </section>
+
+  <!-- coverage map -->
+  <section class="sec" id="map-sec" hidden>
+    <div class="sec__head">
+      <h2>خريطة الحفظ</h2>
+      <span class="sec__aside" id="map-aside"></span>
+    </div>
+    <div class="map" id="map" role="img" aria-label="خريطة صفحات المصحف"></div>
+    <div class="maplegend">
+      <span><i data-s="none"></i>لم يُحفظ</span>
+      <span><i data-s="learning"></i>قيد الحفظ</span>
+      <span><i data-s="memorized"></i>محفوظ — كلّما اشتدّ اللون قَرُبَ عهده بالمراجعة</span>
+      <span><i data-s="stale"></i>تأخّرت مراجعته</span>
+    </div>
+  </section>
+
+  <!-- weakest links -->
+  <section class="sec" id="weak-sec" hidden>
+    <div class="sec__head">
+      <h2>مواضع التعثّر</h2>
+      <span class="sec__aside">الأكثر تكراراً وقُرباً</span>
+    </div>
+    <div class="weak" id="weak"></div>
+    <p class="sec__note">
+      تُسجَّل هذه المواضع حين تُعلِّمها أثناء المراجعة، وتخفّ من تلقاء نفسها
+      كلّما أتقنت صفحتها.
+    </p>
+  </section>
+
+  <!-- numbers -->
+  <section class="sec" id="stats-sec" hidden>
+    <div class="sec__head"><h2>الإحصاءات</h2></div>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <!-- settings -->
+  <section class="sec" id="prefs-sec" hidden>
+    <div class="sec__head"><h2>الإعدادات</h2></div>
+    <div class="form">
+      <div class="field">
+        <label for="pf-sabqi">مدّة السبقي</label>
+        <div class="field__pair">
+          <input type="number" id="pf-sabqi" min="1" max="30" inputmode="numeric">
+          <span class="btn btn--quiet" style="pointer-events:none">يوماً</span>
+        </div>
+        <span class="field__hint">
+          الصفحة المحفوظة حديثاً تُراجَع كلّ يوم طوال هذه المدّة، ثم تنتقل إلى
+          المراجعة المتباعدة.
+        </span>
+      </div>
+      <div class="field">
+        <label for="pf-max">أقصى مدّة بين مراجعتين</label>
+        <div class="field__pair">
+          <input type="number" id="pf-max" min="7" max="365" inputmode="numeric">
+          <span class="btn btn--quiet" style="pointer-events:none">يوماً</span>
+        </div>
+        <span class="field__hint">
+          سقفٌ لا تتجاوزه المدّة مهما أتقنت الصفحة. كلّما رفعته خفّ عمل اليوم
+          وزاد النسيان.
+        </span>
+      </div>
+      <div class="form__actions">
+        <button type="button" class="btn" id="pf-add">أضف صفحات</button>
+        <button type="button" class="btn btn--go" id="pf-save">حفظ</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <p><a href="plan.html">خطط القراءة</a> · <a href="index.html">فهرس السور</a> · <a href="../Thekr/index.html">الأذكار</a></p>
+  </footer>
+
+</div>
+
+<!-- add pages -->
+<div class="modal" id="modal" data-open="false">
+  <div class="modal__scrim" id="modal-scrim"></div>
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal__head">
+      <h2 id="modal-title">أضف صفحات</h2>
+      <button type="button" class="iconbtn" id="modal-close" aria-label="إغلاق">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form class="form" id="add-form" novalidate>
+      <div class="field">
+        <span class="field__label">الحال</span>
+        <div class="seg" role="group" aria-label="حال الصفحات">
+          <button type="button" data-as="memorized" aria-pressed="true">محفوظة</button>
+          <button type="button" data-as="learning" aria-pressed="false">قيد الحفظ</button>
+        </div>
+        <span class="field__hint" id="as-hint"></span>
+      </div>
+
+      <div class="field">
+        <span class="field__label">التحديد</span>
+        <div class="field__pair">
+          <select id="a-kind" aria-label="طريقة التحديد">
+            <option value="juz">بالأجزاء</option>
+            <option value="surah">بالسور</option>
+            <option value="page">بالصفحات</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="field__label">من — إلى</span>
+        <div class="field__pair">
+          <select id="a-from" aria-label="من"></select>
+          <select id="a-to" aria-label="إلى"></select>
+        </div>
+        <span class="field__hint" id="a-summary"></span>
+      </div>
+
+      <div class="form__actions">
+        <button type="button" class="btn btn--quiet" id="a-cancel">إلغاء</button>
+        <button type="submit" class="btn btn--go">أضف</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" data-show="false"></div>
+
+<script src="assets/data/surahs.js"></script>
+<script src="assets/data/index.js"></script>
+<script src="assets/tracker.js"></script>
+<script src="assets/hifz.js"></script>
+</body>
+</html>

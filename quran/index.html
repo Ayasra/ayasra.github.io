@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="day">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>القرآن الكريم — فهرس السور</title>
+<meta name="description" content="فهرس سور القرآن الكريم، مع الترجمة والتفسير ومعاني الكلمات والتلاوة.">
+<meta name="theme-color" content="#0E3B39">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="القرآن">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/quran.css">
+<script>
+(function () {
+  try {
+    var T = {paper:['day','paper'], blue:['day','blue'], mono:['day','mono'], night:['night','paper']};
+    var q = JSON.parse(localStorage.getItem('quran.settings.v1') || '{}');
+    var pick = T[q.theme];
+    if (!pick) {
+      var h = new Date().getHours();
+      pick = (h >= 5 && h < 18) ? T.paper : T.night;
+    }
+    document.documentElement.setAttribute('data-theme', pick[0]);
+    document.documentElement.setAttribute('data-palette', pick[1]);
+  } catch (e) {}
+})();
+</script>
+<style>
+  .resume{
+    display:none;align-items:center;gap:.85rem;margin:1.3rem 0 0;padding:.95rem 1.1rem;
+    background:var(--accent-soft);border-radius:var(--r-md);text-decoration:none;color:inherit;
+  }
+  .resume[data-show="true"]{display:flex}
+  .resume svg{width:20px;height:20px;stroke:var(--accent);fill:none;stroke-width:1.8;flex:0 0 auto}
+  .resume small{display:block;font-size:.75rem;color:var(--ink-3)}
+  .resume b{font-family:'Amiri Quran','Amiri',serif;font-weight:400;font-size:1.15rem}
+  .plans-link{
+    display:flex;align-items:center;gap:.85rem;margin:.6rem 0 0;padding:.95rem 1.1rem;
+    background:var(--surface);border:1px solid var(--border-soft);
+    border-radius:var(--r-md);text-decoration:none;color:inherit;
+    transition:border-color var(--t);
+  }
+  .plans-link:hover{border-color:var(--accent)}
+  .plans-link svg{width:20px;height:20px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+  .plans-link small{display:block;font-size:.75rem;color:var(--ink-3)}
+  .plans-link b{font-weight:600;font-size:.95rem}
+  .plans-link__go{margin-inline-start:auto;font-size:.78rem;color:var(--ink-3)}
+  .filters{display:flex;gap:.3rem;justify-content:center;margin:.9rem 0 0}
+  .filters button{
+    padding:.4rem .9rem;border-radius:var(--r-full);font-size:.83rem;font-weight:600;
+    color:var(--ink-2);background:var(--surface-sunk);transition:background var(--t),color var(--t);
+  }
+  .filters button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+  .empty{text-align:center;padding:2.5rem 1rem;color:var(--ink-3);font-size:.9rem}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar__inner">
+    <a class="iconbtn iconbtn--back" href="../index.html" aria-label="رجوع">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+    </a>
+    <div class="progress">
+      <div class="progress__row">
+        <span class="progress__label">القرآن الكريم</span>
+        <span class="progress__count" id="count"></span>
+      </div>
+    </div>
+    <button type="button" class="iconbtn" id="theme-toggle" aria-label="تبديل المظهر">
+      <svg viewBox="0 0 24 24" aria-hidden="true" id="theme-icon"></svg>
+    </button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="hero__inner">
+    <h1>القرآن الكريم</h1>
+    <p class="hero__sub">بالرسم العثماني</p>
+    <p>مع الترجمة والتفسير ومعاني الكلمات والتلاوة، وخطط للقراءة والحفظ والمراجعة —
+    تعمل كلّها بدون إنترنت.</p>
+    <div class="hero__kpis">
+      <div class="hero__kpi"><b>١١٤</b><span>سورة</span></div>
+      <div class="hero__kpi"><b>٦٢٣٦</b><span>آية</span></div>
+      <div class="hero__kpi"><b>٦٠٤</b><span>صفحة بخطّ المصحف</span></div>
+      <div class="hero__kpi"><b>٣</b><span>تفاسير</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+
+  <a class="resume" id="resume" href="#">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+    <span><small>متابعة القراءة</small><b id="resume-name"></b></span>
+  </a>
+
+  <a class="plans-link" href="plan.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/><path d="M9 16l2 2 4-4"/></svg>
+    <span><small id="plans-sub">نصيب اليوم والختمة</small><b>خطط القراءة</b></span>
+    <span class="plans-link__go" aria-hidden="true">←</span>
+  </a>
+
+  <a class="plans-link" href="hifz.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18"/><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M5 7h3m-3 4h3m-3 4h3m8-8h3m-3 4h3m-3 4h3"/></svg>
+    <span><small id="hifz-sub">السَّبْق والسَّبْقي والمَنْزِل</small><b>الحفظ والمراجعة</b></span>
+    <span class="plans-link__go" aria-hidden="true">←</span>
+  </a>
+
+  <p class="section-label">برامج الختم</p>
+
+  <a class="plans-link" href="qiyam-40.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 100 17 8.5 8.5 0 0010.5-6.5z"/></svg>
+    <span><small>أربع ركعات كل ليلة، ولا ينزل الورد عن مئة آية</small><b>ختمة القيام في أربعين ليلة</b></span>
+    <span class="plans-link__go" aria-hidden="true">←</span>
+  </a>
+
+  <a class="plans-link" href="khatm-7.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5A2.5 2.5 0 016.5 2H20v18H6.5A2.5 2.5 0 004 22z"/><path d="M4 17.5A2.5 2.5 0 016.5 15H20"/></svg>
+    <span><small>على تحزيب الصحابة: فَمِي بِشَوْقٍ</small><b>ختمة الصحابة في سبعة أيام</b></span>
+    <span class="plans-link__go" aria-hidden="true">←</span>
+  </a>
+
+  <div class="searchbar">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    <input type="search" id="q" placeholder="ابحث باسم السورة أو رقمها…" aria-label="بحث عن سورة">
+  </div>
+
+  <div class="filters" role="group" aria-label="تصفية">
+    <button type="button" data-f="all" aria-pressed="true">الكل</button>
+    <button type="button" data-f="makkah" aria-pressed="false">مكّية</button>
+    <button type="button" data-f="madinah" aria-pressed="false">مدنيّة</button>
+  </div>
+
+  <ul class="surah-grid" id="grid"></ul>
+  <p class="empty" id="empty" hidden>لا توجد نتائج مطابقة.</p>
+
+  <footer class="pagefoot">
+    <p>النص بالرسم العثماني · الترجمة: Saheeh International · التفسير: الميسر، السعدي، وابن كثير</p>
+    <p><a href="../index.html">مصعب الأياصرة</a> · <a href="../Thekr/index.html">الأذكار</a></p>
+  </footer>
+
+</div>
+
+<script src="assets/data/surahs.js"></script>
+<script>
+(function () {
+  var grid = document.getElementById('grid');
+  var empty = document.getElementById('empty');
+  var q = document.getElementById('q');
+  var countEl = document.getElementById('count');
+  var list = [], filter = 'all';
+
+  var AR = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  function ar(n){ return String(n).split('').map(function(c){ return AR[+c] != null ? AR[+c] : c; }).join(''); }
+  function norm(s){
+    return (s||'').toLowerCase()
+      .replace(/[ً-ْٰ]/g,'')
+      .replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه')
+      .replace(/['`\-’]/g,'');
+  }
+
+  function draw() {
+    var term = norm(q.value.trim());
+    var shown = list.filter(function (s) {
+      if (filter !== 'all' && s.place !== filter) return false;
+      if (!term) return true;
+      return String(s.id) === term
+          || norm(s.nameAr).indexOf(term) !== -1
+          || norm(s.nameEn).indexOf(term) !== -1
+          || norm(s.meaning).indexOf(term) !== -1;
+    });
+    grid.innerHTML = '';
+    shown.forEach(function (s) {
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.className = 'surah-link';
+      a.href = 'surah.html?s=' + s.id;
+      a.innerHTML =
+        '<span class="surah-link__n">' + s.id + '</span>' +
+        '<span class="surah-link__body">' +
+          '<span class="surah-link__ar">' + s.nameAr + '</span>' +
+          '<span class="surah-link__en">' + s.nameEn + ' · ' + s.meaning + '</span>' +
+        '</span>' +
+        '<span class="surah-link__meta">' + (s.place === 'makkah' ? 'مكّية' : 'مدنيّة') +
+          '<br>' + ar(s.verses) + ' آية</span>';
+      li.appendChild(a);
+      grid.appendChild(li);
+    });
+    empty.hidden = shown.length > 0;
+    countEl.textContent = shown.length + ' / ' + list.length;
+  }
+
+  /* surahs.js assigns window.QURAN_SURAHS; a plain <script> works over
+     file:// too, which fetch() does not. */
+  if (window.QURAN_SURAHS) {
+    list = window.QURAN_SURAHS; draw(); resume(list); plansTeaser();
+  } else {
+    empty.textContent = 'تعذّر تحميل فهرس السور.';
+    empty.hidden = false;
+  }
+
+  q.addEventListener('input', draw);
+  Array.prototype.forEach.call(document.querySelectorAll('.filters button'), function (b) {
+    b.addEventListener('click', function () {
+      filter = b.dataset.f;
+      Array.prototype.forEach.call(document.querySelectorAll('.filters button'), function (x) {
+        x.setAttribute('aria-pressed', String(x === b));
+      });
+      draw();
+    });
+  });
+
+  function resume(all) {
+    try {
+      var last = JSON.parse(localStorage.getItem('quran.last.v1') || 'null');
+      if (!last) return;
+      var m = all.filter(function (s) { return s.id === last.surah; })[0];
+      if (!m) return;
+      var box = document.getElementById('resume');
+      document.getElementById('resume-name').textContent = 'سورة ' + m.nameAr + ' · آية ' + ar(last.ayah || 1);
+      box.href = 'surah.html?s=' + last.surah + '&a=' + (last.ayah || 1);
+      box.setAttribute('data-show', 'true');
+    } catch (e) {}
+  }
+
+  /* A one-line status on the plans card, read straight from storage so this
+     page does not have to pull in the tracker module just to say "3 plans". */
+  function plansTeaser() {
+    try {
+      var plans = JSON.parse(localStorage.getItem('quran.plans.v1') || '[]')
+        .filter(function (p) { return !p.archived; });
+      if (!plans.length) return;
+      var sessions = JSON.parse(localStorage.getItem('quran.sessions.v1') || '[]');
+      var d = new Date(), pad = function (n) { return (n < 10 ? '0' : '') + n; };
+      var today = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+      var readToday = sessions.some(function (s) {
+        var t = new Date(s.at);
+        return (t.getFullYear() + '-' + pad(t.getMonth() + 1) + '-' + pad(t.getDate())) === today;
+      });
+      document.getElementById('plans-sub').textContent =
+        readToday ? 'قرأت اليوم · ' + ar(plans.length) + ' خطة'
+                  : 'نصيب اليوم بانتظارك';
+    } catch (e) {}
+
+    /* Same idea for hifz: a page count, without loading the tracker module. */
+    try {
+      var hifz = JSON.parse(localStorage.getItem('quran.hifz.v1') || '{}');
+      var n = hifz.pages ? Object.keys(hifz.pages).length : 0;
+      if (n) document.getElementById('hifz-sub').textContent =
+        ar(n) + (n === 1 ? ' صفحة متابَعة' : ' صفحة متابَعة');
+    } catch (e) {}
+  }
+
+  /* theme: cycles the four reader themes, kept in step with the surah page */
+  var THEMES = [
+    {id:'paper', label:'ورقي',       base:'day',   palette:'paper'},
+    {id:'blue',  label:'أزرق',       base:'day',   palette:'blue'},
+    {id:'mono',  label:'أبيض وأسود', base:'day',   palette:'mono'},
+    {id:'night', label:'ليلي',       base:'night', palette:'paper'}
+  ];
+  var SUN = '<circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66l1.42-1.42M4.92 19.08l1.42-1.42m0-11.32L4.92 4.92m14.16 14.16l-1.42-1.42" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>';
+  var MOON = '<path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 100 17 8.5 8.5 0 0010.5-6.5z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>';
+  var icon = document.getElementById('theme-icon');
+  var btn  = document.getElementById('theme-toggle');
+
+  function currentIndex() {
+    var q = {};
+    try { q = JSON.parse(localStorage.getItem('quran.settings.v1') || '{}'); } catch (e) {}
+    for (var i = 0; i < THEMES.length; i++) if (THEMES[i].id === q.theme) return i;
+    return document.documentElement.getAttribute('data-theme') === 'night' ? 3 : 0;
+  }
+  function paintIcon() {
+    var t = THEMES[currentIndex()];
+    icon.innerHTML = t.base === 'night' ? SUN : MOON;
+    btn.setAttribute('aria-label', 'السمة: ' + t.label);
+    btn.title = 'السمة: ' + t.label;
+  }
+  paintIcon();
+  btn.addEventListener('click', function () {
+    var t = THEMES[(currentIndex() + 1) % THEMES.length];
+    document.documentElement.setAttribute('data-theme', t.base);
+    document.documentElement.setAttribute('data-palette', t.palette);
+    document.querySelector('meta[name="theme-color"]').setAttribute('content',
+      t.base === 'night' ? '#0B1412' : t.palette === 'blue' ? '#EEF4FA' : t.palette === 'mono' ? '#F4F4F4' : '#0E3B39');
+    try {
+      var q = JSON.parse(localStorage.getItem('quran.settings.v1') || '{}');
+      q.theme = t.id; localStorage.setItem('quran.settings.v1', JSON.stringify(q));
+      var k = JSON.parse(localStorage.getItem('thekr.settings.v1') || '{}');
+      k.theme = t.base; localStorage.setItem('thekr.settings.v1', JSON.stringify(k));
+    } catch (e) {}
+    paintIcon();
+  });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js', { scope: './' }).catch(function () {});
+    });
+  }
+})();
+</script>
+</body>
+</html>
