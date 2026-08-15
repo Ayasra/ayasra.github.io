@@ -2,7 +2,7 @@
    Scope is /quran/ only; the athkar section keeps its own worker at
    /Thekr/sw.js and the two never see each other's caches.
    Bump CACHE when any precached file changes. */
-const CACHE = 'quran-v1';
+const CACHE = 'quran-v2';
 
 const PRECACHE = [
   './',
@@ -10,6 +10,7 @@ const PRECACHE = [
   'surah.html',
   'plan.html',
   'hifz.html',
+  'marks.html',
   'qiyam-40.html',
   'khatm-7.html',
   'manifest.webmanifest',
@@ -20,6 +21,8 @@ const PRECACHE = [
   'assets/session.css',
   'assets/test.css',
   'assets/program.css',
+  'assets/marks.css',
+  'assets/marklist.css',
   'assets/quran.js',
   'assets/intros.js',
   'assets/tracker.js',
@@ -28,6 +31,8 @@ const PRECACHE = [
   'assets/session.js',
   'assets/test.js',
   'assets/program.js',
+  'assets/marks.js',
+  'assets/marklist.js',
   'assets/data/surahs.js',
   'assets/data/index.js',
   'assets/data/programs.js',

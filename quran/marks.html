@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="day">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>العلامات — القرآن الكريم</title>
+<meta name="description" content="علاماتك على آيات القرآن الكريم، مصنّفةً بالألوان مع ملاحظاتك.">
+<meta name="theme-color" content="#0E3B39">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="العلامات">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/quran.css">
+<link rel="stylesheet" href="assets/plan.css">
+<link rel="stylesheet" href="assets/marks.css">
+<link rel="stylesheet" href="assets/marklist.css">
+<script>
+(function () {
+  try {
+    var T = {paper:['day','paper'], blue:['day','blue'], mono:['day','mono'], night:['night','paper']};
+    var q = JSON.parse(localStorage.getItem('quran.settings.v1') || '{}');
+    var pick = T[q.theme];
+    if (!pick) {
+      var h = new Date().getHours();
+      pick = (h >= 5 && h < 18) ? T.paper : T.night;
+    }
+    document.documentElement.setAttribute('data-theme', pick[0]);
+    document.documentElement.setAttribute('data-palette', pick[1]);
+  } catch (e) {}
+})();
+</script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar__inner">
+    <a class="iconbtn iconbtn--back" href="index.html" aria-label="رجوع">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+    </a>
+    <div class="progress">
+      <div class="progress__row">
+        <span class="progress__label">العلامات</span>
+        <span class="progress__count" id="crumb"></span>
+      </div>
+    </div>
+    <button type="button" class="iconbtn" id="theme-toggle" aria-label="تبديل المظهر">
+      <svg viewBox="0 0 24 24" aria-hidden="true" id="theme-icon"></svg>
+    </button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="hero__inner">
+    <h1>العلامات</h1>
+    <p class="hero__sub">ما وقفت عنده</p>
+    <p>آياتٌ ومقاطعُ علّمتها أثناء القراءة، مصنّفةً بالألوان ومعها ملاحظاتك.
+    التصنيفات لك — سمِّها كما تشاء وأضف إليها.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="filters" id="filters" role="group" aria-label="تصفية بالتصنيف"></div>
+
+  <div id="list"></div>
+
+  <div class="blank" id="blank" hidden>
+    <p>
+      لا علامات بعد. افتح أي آية في المصحف، ثم اختر لها تصنيفًا من لوحة العلامات —
+      ولتعليم مقطع كامل، حدّد آخر آية فيه أولًا.
+    </p>
+    <div class="quick">
+      <a class="btn btn--go" href="index.html">افتح المصحف</a>
+    </div>
+  </div>
+
+  <section class="sec" id="cats-sec">
+    <div class="sec__head">
+      <h2>التصنيفات</h2>
+      <button type="button" class="btn btn--sm" id="add-cat">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        <span>تصنيف جديد</span>
+      </button>
+    </div>
+    <div id="cats"></div>
+    <p class="sec__note">
+      حذف تصنيفٍ يسألك أين تذهب علاماته. ولا يمكن حذف آخر تصنيف — العلامة لا بدّ لها
+      من تصنيف تنتمي إليه.
+    </p>
+  </section>
+
+  <footer class="pagefoot">
+    <p><a href="index.html">فهرس السور</a> · <a href="plan.html">خطط القراءة</a> · <a href="hifz.html">الحفظ</a></p>
+  </footer>
+
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" data-show="false"></div>
+
+<script src="assets/data/surahs.js"></script>
+<script src="assets/data/index.js"></script>
+<script src="assets/tracker.js"></script>
+<script src="assets/marklist.js"></script>
+</body>
+</html>

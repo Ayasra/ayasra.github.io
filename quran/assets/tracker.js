@@ -37,6 +37,7 @@
     active:   'quran.active.v1',
     hifz:     'quran.hifz.v1',
     notes:    'quran.notes.v1',
+    marks:    'quran.marks.v1',
     prefs:    'quran.tracker.v1'
   };
 
@@ -1151,6 +1152,248 @@
     ratings: RATINGS
   };
 
+  /* ---------------- marks ----------------
+     Coloured bookmarks. A mark is a range — one ayah is just a range of one —
+     belonging to a category, optionally carrying a note.
+
+     Categories are data, not constants. A fixed list never fits everyone and a
+     bare colour is undecipherable months later, so the app ships a working set
+     and lets the reader rename, recolour, add and delete. Deleting a category
+     therefore has to say what happens to its marks; see removeCat. */
+
+  var DEFAULT_CATS = [
+    { id: 'tadabbur', name: 'للتدبّر',      color: '#A67C34' },
+    { id: 'hifz',     name: 'للحفظ',        color: '#0E3B39' },
+    { id: 'dua',      name: 'دعاء',         color: '#5A6BC0' },
+    { id: 'question', name: 'سؤال',         color: '#7A3F1D' },
+    { id: 'slip',     name: 'موضع تعثّر',   color: '#B4413B' }
+  ];
+
+  function marksStore() {
+    var s = read(K.marks, null);
+    if (!s || typeof s !== 'object') s = {};
+    if (!Array.isArray(s.cats) || !s.cats.length) {
+      s.cats = DEFAULT_CATS.map(function (c) { return { id: c.id, name: c.name, color: c.color }; });
+    }
+    if (!Array.isArray(s.items)) s.items = [];
+    return s;
+  }
+  function saveMarks(s) { return write(K.marks, s); }
+
+  /* The reader shipped with a plain {surah: [ayah]} bookmark map. Those are
+     real bookmarks somebody made, so they are carried over into the new model
+     the first time this runs rather than being dropped on the floor. The old
+     key is left in place — untouched, in case anything else still reads it. */
+  function migrateBookmarks(s) {
+    if (s.migrated) return false;
+    s.migrated = true;
+    var old = read('quran.bookmarks.v1', null);
+    if (!old || typeof old !== 'object') return false;
+
+    var moved = 0;
+    for (var sid in old) {
+      if (!Object.prototype.hasOwnProperty.call(old, sid)) continue;
+      var list = old[sid];
+      if (!Array.isArray(list)) continue;
+      for (var i = 0; i < list.length; i++) {
+        var g = Index.toGlobal(+sid, list[i]);
+        s.items.push({
+          id: uid('m_'), cat: 'tadabbur', from: g, to: g,
+          note: '', at: Date.now(), legacy: true
+        });
+        moved++;
+      }
+    }
+    return moved;
+  }
+
+  var Marks = {
+    /* ---- categories ---- */
+
+    cats: function () { return marksStore().cats; },
+
+    cat: function (id) {
+      var cs = marksStore().cats;
+      for (var i = 0; i < cs.length; i++) if (cs[i].id === id) return cs[i];
+      return null;
+    },
+
+    addCat: function (name, color) {
+      var s = marksStore();
+      var c = {
+        id: uid('c_'),
+        name: (name || '').trim() || 'تصنيف',
+        color: color || '#0E3B39'
+      };
+      s.cats.push(c);
+      saveMarks(s);
+      return c;
+    },
+
+    updateCat: function (id, patch) {
+      var s = marksStore();
+      for (var i = 0; i < s.cats.length; i++) {
+        if (s.cats[i].id !== id) continue;
+        if (patch.name != null) s.cats[i].name = String(patch.name).trim() || s.cats[i].name;
+        if (patch.color != null) s.cats[i].color = patch.color;
+        saveMarks(s);
+        return s.cats[i];
+      }
+      return null;
+    },
+
+    /* `moveTo` names the category the orphaned marks join. Passing nothing
+       deletes them with the category, which is destructive enough that the UI
+       asks first. The last category cannot be removed — a mark with nowhere to
+       belong is not representable. */
+    removeCat: function (id, moveTo) {
+      var s = marksStore();
+      if (s.cats.length <= 1) return false;
+      s.cats = s.cats.filter(function (c) { return c.id !== id; });
+      if (moveTo) {
+        s.items.forEach(function (m) { if (m.cat === id) m.cat = moveTo; });
+      } else {
+        s.items = s.items.filter(function (m) { return m.cat !== id; });
+      }
+      saveMarks(s);
+      return true;
+    },
+
+    /* ---- marks ---- */
+
+    list: function (filter) {
+      var s = marksStore();
+      var out = s.items;
+      if (filter && filter.cat) {
+        out = out.filter(function (m) { return m.cat === filter.cat; });
+      }
+      if (filter && filter.surah) {
+        var r = Index.surahRange(filter.surah);
+        out = out.filter(function (m) { return m.to >= r[0] && m.from <= r[1]; });
+      }
+      return out.slice().sort(function (a, b) { return a.from - b.from || a.to - b.to; });
+    },
+
+    get: function (id) {
+      var items = marksStore().items;
+      for (var i = 0; i < items.length; i++) if (items[i].id === id) return items[i];
+      return null;
+    },
+
+    add: function (spec) {
+      requireIndex();
+      var s = marksStore();
+      var from = Index.clamp(spec.from);
+      var to = Index.clamp(spec.to == null ? spec.from : spec.to);
+      if (to < from) { var t = from; from = to; to = t; }
+
+      var cat = spec.cat && Marks.cat(spec.cat) ? spec.cat : s.cats[0].id;
+
+      /* Marking the same span in the same category twice is a mis-tap, not an
+         intention — the existing one is returned so the caller can treat the
+         gesture as idempotent. */
+      for (var i = 0; i < s.items.length; i++) {
+        var m = s.items[i];
+        if (m.cat === cat && m.from === from && m.to === to) return m;
+      }
+
+      var rec = {
+        id: uid('m_'), cat: cat, from: from, to: to,
+        note: spec.note || '', at: Date.now()
+      };
+      s.items.push(rec);
+      saveMarks(s);
+      return rec;
+    },
+
+    update: function (id, patch) {
+      var s = marksStore();
+      for (var i = 0; i < s.items.length; i++) {
+        if (s.items[i].id !== id) continue;
+        if (patch.cat != null && Marks.cat(patch.cat)) s.items[i].cat = patch.cat;
+        if (patch.note != null) s.items[i].note = String(patch.note);
+        if (patch.from != null) s.items[i].from = Index.clamp(patch.from);
+        if (patch.to != null) s.items[i].to = Index.clamp(patch.to);
+        if (s.items[i].to < s.items[i].from) {
+          var t = s.items[i].from; s.items[i].from = s.items[i].to; s.items[i].to = t;
+        }
+        saveMarks(s);
+        return s.items[i];
+      }
+      return null;
+    },
+
+    remove: function (id) {
+      var s = marksStore();
+      var before = s.items.length;
+      s.items = s.items.filter(function (m) { return m.id !== id; });
+      if (s.items.length !== before) saveMarks(s);
+      return before - s.items.length;
+    },
+
+    /* Toggle a single-ayah mark in one category — what a tap on a chip does. */
+    toggle: function (g, cat) {
+      var s = marksStore();
+      g = Index.clamp(g);
+      for (var i = 0; i < s.items.length; i++) {
+        var m = s.items[i];
+        if (m.cat === cat && m.from === g && m.to === g) {
+          s.items.splice(i, 1);
+          saveMarks(s);
+          return null;
+        }
+      }
+      return Marks.add({ cat: cat, from: g, to: g });
+    },
+
+    /* ---- lookup ---- */
+
+    at: function (g) {
+      g = Index.clamp(g);
+      return marksStore().items.filter(function (m) { return g >= m.from && g <= m.to; });
+    },
+
+    inRange: function (from, to) {
+      return marksStore().items
+        .filter(function (m) { return m.to >= from && m.from <= to; })
+        .sort(function (a, b) { return a.from - b.from; });
+    },
+
+    onPage: function (p) {
+      var r = Index.pageRange(p);
+      return Marks.inRange(r[0], r[1]);
+    },
+
+    /* ayah index -> the categories covering it, for painting a page in one
+       pass instead of asking per ayah */
+    mapOver: function (from, to) {
+      var out = {};
+      Marks.inRange(from, to).forEach(function (m) {
+        for (var g = Math.max(m.from, from); g <= Math.min(m.to, to); g++) {
+          if (!out[g]) out[g] = [];
+          if (out[g].indexOf(m.cat) === -1) out[g].push(m.cat);
+        }
+      });
+      return out;
+    },
+
+    counts: function () {
+      var out = {};
+      marksStore().items.forEach(function (m) { out[m.cat] = (out[m.cat] || 0) + 1; });
+      return out;
+    },
+
+    /* Runs once, on first read of the new store. */
+    migrate: function () {
+      var s = marksStore();
+      var n = migrateBookmarks(s);
+      if (n !== false) saveMarks(s);
+      return n;
+    },
+
+    defaults: DEFAULT_CATS
+  };
+
   /* ---------------- stats ---------------- */
 
   var Stats = {
@@ -1365,6 +1608,10 @@
     return !!IDX;
   }
 
+  /* The legacy bookmark map is folded in on first load rather than behind a
+     button nobody would press. */
+  function initMarks() { try { Marks.migrate(); } catch (e) {} }
+
   root.QuranTracker = {
     init: init,
     ready: function () { return !!IDX; },
@@ -1374,6 +1621,7 @@
     live: Live,
     plans: Plans,
     hifz: Hifz,
+    marks: Marks,
     stats: Stats,
     io: IO,
     fmt: Fmt,
@@ -1385,6 +1633,6 @@
                  blankPage: blankPage, DEFAULT_PREFS: DEFAULT_PREFS }
   };
 
-  init();
+  if (init()) initMarks();
 
 }(typeof window !== 'undefined' ? window : this));

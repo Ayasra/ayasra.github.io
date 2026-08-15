@@ -1,0 +1,99 @@
+@charset "UTF-8";
+/* =========================================================================
+   The bookmarks page. Layers on base.css and plan.css.
+   ========================================================================= */
+
+.filters{display:flex;gap:.35rem;flex-wrap:wrap;margin:0 0 1.4rem}
+.filters button{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.4rem .85rem;border-radius:var(--r-full);
+  font-size:.8rem;font-weight:600;color:var(--ink-2);
+  background:var(--surface);border:1px solid var(--border);
+  transition:background var(--t),color var(--t),border-color var(--t);
+}
+.filters button i{width:9px;height:9px;border-radius:50%;background:var(--c,var(--accent));flex:0 0 auto}
+.filters button small{font-variant-numeric:tabular-nums;color:var(--ink-3)}
+.filters button[aria-pressed="true"]{
+  background:var(--c,var(--accent));border-color:var(--c,var(--accent));color:#fff;
+}
+.filters button[aria-pressed="true"] i{background:rgba(255,255,255,.85)}
+.filters button[aria-pressed="true"] small{color:rgba(255,255,255,.75)}
+
+/* ---------- a group of marks under one category ---------- */
+.mgroup{margin:0 0 1.8rem}
+.mgroup__head{
+  display:flex;align-items:baseline;gap:.6rem;margin:0 0 .8rem;
+  padding-bottom:.45rem;border-bottom:1px solid var(--border-soft);
+}
+.mgroup__dot{width:11px;height:11px;border-radius:50%;background:var(--c);flex:0 0 auto}
+.mgroup__name{font-family:var(--font-display);font-size:1.15rem;font-weight:400;color:var(--ink);margin:0}
+.mgroup__n{margin-inline-start:auto;font-size:.76rem;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+/* ---------- one mark ---------- */
+.mark{
+  background:var(--surface);border:1px solid var(--border);
+  border-inline-start:3px solid var(--c,var(--accent));
+  border-radius:var(--r-md);padding:.9rem 1.05rem;margin:0 0 .6rem;
+}
+.mark__top{display:flex;align-items:baseline;gap:.6rem;margin:0 0 .5rem;flex-wrap:wrap}
+.mark__ref{
+  font-family:var(--font-display);font-size:1rem;font-weight:700;
+  color:var(--accent);text-decoration:none;
+}
+html[data-theme="night"] .mark__ref{color:var(--gold-2)}
+.mark__ref:hover{color:var(--gold)}
+.mark__meta{font-size:.72rem;color:var(--ink-3)}
+.mark__tools{margin-inline-start:auto;display:flex;gap:.2rem}
+.mark__tools button{
+  font-size:.72rem;color:var(--ink-3);padding:.24rem .5rem;border-radius:var(--r-full);
+  transition:background var(--t),color var(--t);
+}
+.mark__tools button:hover{background:var(--surface-sunk);color:var(--ink)}
+
+.mark__ar{
+  font-family:'Amiri Quran','Amiri',serif;
+  font-size:1.35rem;line-height:2.1;color:var(--ink);
+  margin:0 0 .5rem;direction:rtl;text-align:start;
+}
+.mark__ar.is-clipped{
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+.mark__more{font-size:.74rem;color:var(--ink-3);padding:.1rem 0}
+.mark__more:hover{color:var(--gold)}
+
+.mark__note{
+  font-size:.83rem;color:var(--ink-2);line-height:1.9;
+  background:var(--surface-2);border-radius:var(--r-sm);
+  padding:.5rem .75rem;margin:.5rem 0 0;
+}
+.mark__note[data-empty="true"]{color:var(--ink-3);font-style:italic}
+.mark__noteedit{
+  width:100%;padding:.5rem .7rem;border-radius:var(--r-sm);
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--ink);font:inherit;font-size:.83rem;line-height:1.8;resize:vertical;
+  min-height:2.6rem;margin:.5rem 0 0;
+}
+.mark__noteedit:focus{outline:2px solid var(--gold);outline-offset:0}
+
+/* ---------- category management ---------- */
+.catline{
+  display:flex;align-items:center;gap:.7rem;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:.6rem .8rem;margin:0 0 .5rem;
+}
+.catline input[type="color"]{
+  width:34px;height:30px;padding:0;border:1px solid var(--border);
+  border-radius:var(--r-sm);background:none;cursor:pointer;flex:0 0 auto;
+}
+.catline input[type="text"]{
+  flex:1 1 auto;min-width:0;padding:.4rem .6rem;border-radius:var(--r-sm);
+  border:1px solid var(--border);background:var(--surface);color:var(--ink);font-size:.86rem;
+}
+.catline input:focus{outline:2px solid var(--gold);outline-offset:0}
+.catline__n{font-size:.74rem;color:var(--ink-3);flex:0 0 auto;font-variant-numeric:tabular-nums}
+.catline__x{
+  flex:0 0 auto;font-size:.74rem;color:#B4413B;padding:.25rem .55rem;border-radius:var(--r-full);
+}
+html[data-theme="night"] .catline__x{color:#E9938C}
+.catline__x:hover{background:rgba(180,65,59,.1)}
+.catline__x:disabled{opacity:.35;cursor:not-allowed}

@@ -533,6 +533,145 @@ function eqv(name, got, want) {
     ok('plans list shows it', doc.querySelectorAll('.plan').length === 1);
   }
 
+  /* ---------- marks in the reader ---------- */
+  {
+    const { win, doc, errors } = await loadPage('surah.html?s=2&a=255', 'marks in reader');
+    const real = errors.filter(e => !/Could not load|net::|ENOENT|font/i.test(e));
+    ok('reader boots with the marks layer', real.length === 0, real.join(' | '));
+
+    const QT = win.QuranTracker;
+    ok('the marks module reached the page', !!QT.marks);
+    ok('default categories present', QT.marks.cats().length === 5);
+
+    /* open the verse sheet the way a reader does */
+    const medallion = doc.querySelector('.mushaf__line .w--end[data-n="255"]') ||
+                      doc.querySelector('.w[data-n="255"]');
+    ok('the ayah is on the page', !!medallion);
+    medallion.dispatchEvent(new win.MouseEvent('click', { bubbles: true, cancelable: true }));
+    await new Promise(r => setTimeout(r, 200));
+
+    ok('the sheet opened', doc.querySelector('#sheet').getAttribute('data-open') === 'true');
+    const panel = doc.querySelector('.marks');
+    ok('the marks panel was appended', !!panel);
+    ok('a chip per category', doc.querySelectorAll('.catchip').length === 5);
+    ok('a range end picker is offered', !!doc.querySelector('.marks__span select'));
+    ok('a note field is offered', !!doc.querySelector('.marks__note'));
+
+    /* mark it */
+    const chip = doc.querySelectorAll('.catchip')[0];
+    chip.click();
+    await new Promise(r => setTimeout(r, 120));
+    const g255 = QT.index.toGlobal(2, 255);
+    eqv('the ayah was marked', QT.marks.at(g255).length, 1);
+    ok('the chip reads as pressed',
+       doc.querySelectorAll('.catchip')[0].getAttribute('aria-pressed') === 'true');
+
+    /* and painted onto the page */
+    const painted = doc.querySelectorAll('.w[data-n="255"][data-marked]');
+    ok('the words were underlined', painted.length > 0, `${painted.length} words`);
+    ok('the colour was stamped as a property',
+       /#|var\(/.test(painted[0].style.getPropertyValue('--mark-1')),
+       painted[0].style.getPropertyValue('--mark-1'));
+
+    /* a second category stacks rather than replacing */
+    doc.querySelectorAll('.catchip')[1].click();
+    await new Promise(r => setTimeout(r, 120));
+    eqv('two categories on the ayah', QT.marks.at(g255).length, 2);
+    eqv('two stripes drawn',
+        doc.querySelector('.w[data-n="255"][data-marked]').getAttribute('data-marked'), '2');
+
+    /* unmark */
+    doc.querySelectorAll('.catchip')[0].click();
+    await new Promise(r => setTimeout(r, 120));
+    eqv('one category left', QT.marks.at(g255).length, 1);
+
+    /* a range: pick an end ayah, then a category */
+    const endSel = doc.querySelector('.marks__span select');
+    endSel.value = '257';
+    doc.querySelectorAll('.catchip')[2].click();
+    await new Promise(r => setTimeout(r, 120));
+    const ranged = QT.marks.list().filter(m => m.to > m.from);
+    eqv('a range mark was made', ranged.length, 1);
+    eqv('it spans three ayahs', ranged[0].to - ranged[0].from + 1, 3);
+    ok('the middle ayah is painted too',
+       doc.querySelectorAll('.w[data-n="256"][data-marked]').length > 0);
+
+    ok('reader clean after marking',
+       errors.filter(e => !/Could not load|net::|ENOENT|font/i.test(e)).length === 0);
+  }
+
+  /* ---------- the bookmarks page ---------- */
+  {
+    const seed = win => {
+      win.localStorage.setItem('quran.marks.v1', JSON.stringify({
+        migrated: true,
+        cats: [
+          { id: 'tadabbur', name: 'للتدبّر', color: '#A67C34' },
+          { id: 'hifz', name: 'للحفظ', color: '#0E3B39' }
+        ],
+        items: [
+          { id: 'm1', cat: 'tadabbur', from: 262, to: 262, note: 'آية الكرسي', at: Date.now() },
+          { id: 'm2', cat: 'hifz', from: 293, to: 293, note: '', at: Date.now() },
+          { id: 'm3', cat: 'hifz', from: 490, to: 494, note: 'دعاء أولي الألباب', at: Date.now() }
+        ]
+      }));
+    };
+    const { win, doc, errors } = await loadPage('marks.html', 'marks.html', seed);
+    ok('marks.html boots clean', errors.length === 0, errors.join(' | '));
+    ok('grouped by category', doc.querySelectorAll('.mgroup').length === 2);
+    eqv('three marks listed', doc.querySelectorAll('.mark').length, 3);
+    ok('a filter chip per used category', doc.querySelectorAll('#filters button').length === 3);
+    ok('counts shown on the filters', /٣/.test(doc.querySelector('#filters button').textContent));
+    ok('notes rendered', /آية الكرسي/.test(doc.querySelector('#list').textContent));
+    ok('a range is labelled as such', /٥/.test(doc.querySelector('#list').textContent));
+    ok('each mark links into the reader',
+       /surah\.html\?s=\d+&a=\d+/.test(doc.querySelector('.mark__ref').getAttribute('href')));
+
+    /* the ayah text is fetched lazily, per surah */
+    await new Promise(r => setTimeout(r, 900));
+    const arText = doc.querySelector('.mark__ar').textContent;
+    ok('ayah text loaded in', arText.trim().length > 5 && arText.trim() !== '…', arText.slice(0, 40));
+
+    /* filter */
+    doc.querySelectorAll('#filters button')[2].click();
+    await new Promise(r => setTimeout(r, 80));
+    eqv('filtering narrows the list', doc.querySelectorAll('.mgroup').length, 1);
+
+    /* category management */
+    doc.querySelectorAll('#filters button')[0].click();
+    await new Promise(r => setTimeout(r, 60));
+    eqv('a row per category', doc.querySelectorAll('.catline').length, 2);
+    const nameInput = doc.querySelector('.catline input[type="text"]');
+    nameInput.value = 'وقفات';
+    nameInput.dispatchEvent(new win.Event('change'));
+    await new Promise(r => setTimeout(r, 80));
+    eqv('renaming sticks', win.QuranTracker.marks.cats()[0].name, 'وقفات');
+
+    doc.querySelector('#add-cat').click();
+    await new Promise(r => setTimeout(r, 80));
+    eqv('a category can be added', win.QuranTracker.marks.cats().length, 3);
+
+    /* deleting: the harness answers yes, so marks move rather than die */
+    const rows = doc.querySelectorAll('.catline .catline__x');
+    rows[0].click();
+    await new Promise(r => setTimeout(r, 100));
+    eqv('the category went', win.QuranTracker.marks.cats().length, 2);
+    eqv('but its marks survived', win.QuranTracker.marks.list().length, 3);
+
+    ok('marks.html clean after interaction', errors.length === 0, errors.join(' | '));
+  }
+
+  /* ---------- legacy bookmarks are carried over ---------- */
+  {
+    const seed = win => {
+      win.localStorage.setItem('quran.bookmarks.v1', JSON.stringify({ 2: [255, 285] }));
+    };
+    const { win, doc } = await loadPage('marks.html', 'legacy migration', seed);
+    eqv('old bookmarks became marks', win.QuranTracker.marks.list().length, 2);
+    ok('and are shown on the page', doc.querySelectorAll('.mark').length === 2);
+    ok('the empty state is not shown', doc.querySelector('#blank').hidden === true);
+  }
+
   /* ---------- the old paths still resolve ---------- */
   {
     const fs2 = require('fs');

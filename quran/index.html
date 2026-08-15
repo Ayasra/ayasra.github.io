@@ -111,6 +111,12 @@
     <span class="plans-link__go" aria-hidden="true">←</span>
   </a>
 
+  <a class="plans-link" href="marks.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+    <span><small id="marks-sub">آياتٌ ومقاطع علّمتها بالألوان</small><b>العلامات</b></span>
+    <span class="plans-link__go" aria-hidden="true">←</span>
+  </a>
+
   <p class="section-label">برامج الختم</p>
 
   <a class="plans-link" href="qiyam-40.html">
@@ -245,6 +251,13 @@
       document.getElementById('plans-sub').textContent =
         readToday ? 'قرأت اليوم · ' + ar(plans.length) + ' خطة'
                   : 'نصيب اليوم بانتظارك';
+    } catch (e) {}
+
+    /* And the marks count, read straight from its store. */
+    try {
+      var mk = JSON.parse(localStorage.getItem('quran.marks.v1') || '{}');
+      var mn = mk.items ? mk.items.length : 0;
+      if (mn) document.getElementById('marks-sub').textContent = ar(mn) + ' علامة';
     } catch (e) {}
 
     /* Same idea for hifz: a page count, without loading the tracker module. */

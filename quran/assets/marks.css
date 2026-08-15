@@ -1,0 +1,128 @@
+@charset "UTF-8";
+/* =========================================================================
+   Coloured marks — the reader-side painting and the sheet panel.
+
+   Every colour comes from the category record at runtime, so nothing here
+   hard-codes one. What this file owns is *how* a colour is applied: a rule
+   down the side in verse view, an underline beneath the words in the muṣḥaf.
+   ========================================================================= */
+
+/* ---------- verse view ----------
+   The rule sits on the leading edge, and a second category adds a second
+   stripe rather than replacing the first — an ayah can be both a du'a and
+   something to memorise. */
+.ayah[data-marked]{
+  border-inline-start:3px solid var(--mark-1, var(--accent));
+  padding-inline-start:calc(var(--pad) - 3px);
+}
+.ayah[data-marked="2"]{
+  box-shadow:inset 6px 0 0 -3px var(--mark-2, transparent);
+}
+.ayah[data-marked="3"]{
+  box-shadow:inset 6px 0 0 -3px var(--mark-2, transparent),
+             inset 12px 0 0 -3px var(--mark-3, transparent);
+}
+html[dir="rtl"] .ayah[data-marked="2"]{
+  box-shadow:inset -6px 0 0 -3px var(--mark-2, transparent);
+}
+html[dir="rtl"] .ayah[data-marked="3"]{
+  box-shadow:inset -6px 0 0 -3px var(--mark-2, transparent),
+             inset -12px 0 0 -3px var(--mark-3, transparent);
+}
+
+/* ---------- mushaf pages ----------
+   An underline rather than a fill: a wash of colour behind Uthmani script
+   fights the diacritics and makes the page harder to read, which defeats the
+   point of marking it. The line sits clear of the descenders. */
+.w[data-marked]{
+  background-image:linear-gradient(var(--mark-1), var(--mark-1));
+  background-repeat:no-repeat;
+  background-position:0 100%;
+  background-size:100% 2px;
+  padding-bottom:1px;
+}
+.w[data-marked="2"]{
+  background-image:linear-gradient(var(--mark-1), var(--mark-1)),
+                   linear-gradient(var(--mark-2), var(--mark-2));
+  background-size:100% 2px, 100% 2px;
+  background-position:0 100%, 0 calc(100% - 3px);
+}
+.w[data-marked="3"]{
+  background-image:linear-gradient(var(--mark-1), var(--mark-1)),
+                   linear-gradient(var(--mark-2), var(--mark-2)),
+                   linear-gradient(var(--mark-3), var(--mark-3));
+  background-size:100% 2px, 100% 2px, 100% 2px;
+  background-position:0 100%, 0 calc(100% - 3px), 0 calc(100% - 6px);
+}
+/* the plain-text fallback rendering */
+.a[data-marked]{
+  border-bottom:2px solid var(--mark-1);
+}
+
+/* ---------- the panel inside the verse sheet ---------- */
+.marks{
+  margin:1.1rem 0 0;padding:.95rem 1rem;
+  background:var(--surface-2);border-radius:var(--r-md);
+}
+.marks__head{
+  display:flex;align-items:baseline;justify-content:space-between;gap:.6rem;
+  margin:0 0 .7rem;
+}
+.marks__head h3{
+  font-family:var(--font-display);font-size:1rem;font-weight:400;color:var(--ink);margin:0;
+}
+.marks__head a{font-size:.74rem;color:var(--ink-3)}
+
+.catrow{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 .75rem}
+.catchip{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.36rem .7rem;border-radius:var(--r-full);
+  font-size:.79rem;font-weight:600;color:var(--ink-2);
+  background:var(--surface);border:1px solid var(--border);
+  transition:background var(--t),color var(--t),border-color var(--t);
+}
+.catchip i{
+  width:9px;height:9px;border-radius:50%;flex:0 0 auto;
+  background:var(--c, var(--accent));
+}
+.catchip:hover{border-color:var(--c, var(--accent))}
+.catchip[aria-pressed="true"]{
+  background:var(--c, var(--accent));border-color:var(--c, var(--accent));color:#fff;
+}
+.catchip[aria-pressed="true"] i{background:rgba(255,255,255,.85)}
+
+.marks__span{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:0 0 .7rem}
+.marks__span label{font-size:.76rem;color:var(--ink-3)}
+.marks__span select{
+  padding:.35rem .5rem;border-radius:var(--r-sm);
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--ink);font-size:.8rem;
+}
+.marks__note{
+  width:100%;padding:.5rem .7rem;border-radius:var(--r-sm);
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--ink);font:inherit;font-size:.83rem;line-height:1.8;resize:vertical;
+  min-height:2.6rem;
+}
+.marks__note:focus{outline:2px solid var(--gold);outline-offset:0}
+.marks__hint{font-size:.72rem;color:var(--ink-3);margin:.45rem 0 0;line-height:1.7}
+
+/* existing marks on this ayah */
+.marks__list{display:flex;flex-direction:column;gap:.35rem;margin:.7rem 0 0}
+.markrow{
+  display:flex;align-items:center;gap:.55rem;padding:.4rem .6rem;
+  background:var(--surface);border-radius:var(--r-sm);
+  border-inline-start:3px solid var(--c, var(--accent));
+  font-size:.79rem;color:var(--ink-2);
+}
+.markrow b{color:var(--ink);font-weight:600}
+.markrow span{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.markrow button{
+  flex:0 0 auto;font-size:.72rem;color:var(--ink-3);
+  padding:.2rem .45rem;border-radius:var(--r-full);
+}
+.markrow button:hover{background:var(--surface-sunk);color:var(--ink)}
+
+@media (prefers-reduced-motion:reduce){
+  .catchip{transition:none}
+}

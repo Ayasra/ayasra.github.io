@@ -789,6 +789,190 @@ QT.io.import(hdump, 'replace');
 eq('hifz pages restored', H.all().length, 5);
 eq('slips restored', H.weakest().length, 1);
 
+/* ===================== marks ===================== */
+
+const MK = QT.marks;
+const kursiG = QT.index.toGlobal(2, 255);
+
+reset();
+ok('ships default categories', MK.cats().length === 5);
+ok('every default has a colour', MK.cats().every(c => /^#[0-9A-F]{6}$/i.test(c.color)));
+
+/* single ayah */
+reset();
+const m1 = MK.add({ cat: 'tadabbur', from: kursiG });
+eq('a single ayah is a range of one', m1.from, m1.to);
+eq('it is findable at that ayah', MK.at(kursiG).length, 1);
+eq('and nowhere else', MK.at(kursiG + 1).length, 0);
+eq('it appears in the list', MK.list().length, 1);
+
+/* a range */
+reset();
+const from = QT.index.toGlobal(3, 190), to = QT.index.toGlobal(3, 194);
+MK.add({ cat: 'dua', from: from, to: to });
+eq('the whole range is covered', MK.at(QT.index.toGlobal(3, 192)).length, 1);
+eq('the first ayah is in', MK.at(from).length, 1);
+eq('the last ayah is in', MK.at(to).length, 1);
+eq('one before is out', MK.at(from - 1).length, 0);
+eq('one after is out', MK.at(to + 1).length, 0);
+
+/* reversed input is normalised, not rejected */
+reset();
+const rev2 = MK.add({ cat: 'dua', from: to, to: from });
+eq('a reversed range is flipped', rev2.from, from);
+eq('and its end is right', rev2.to, to);
+
+/* the same span twice in one category is one mark */
+reset();
+const a1m = MK.add({ cat: 'hifz', from: kursiG });
+const a2m = MK.add({ cat: 'hifz', from: kursiG });
+eq('marking twice is idempotent', MK.list().length, 1);
+eq('and returns the same record', a1m.id, a2m.id);
+
+/* but the same ayah can carry several categories */
+reset();
+MK.add({ cat: 'hifz', from: kursiG });
+MK.add({ cat: 'dua', from: kursiG });
+MK.add({ cat: 'tadabbur', from: kursiG });
+eq('three categories on one ayah', MK.at(kursiG).length, 3);
+
+/* toggle */
+reset();
+MK.toggle(kursiG, 'hifz');
+eq('toggle marks', MK.at(kursiG).length, 1);
+MK.toggle(kursiG, 'hifz');
+eq('toggle unmarks', MK.at(kursiG).length, 0);
+MK.toggle(kursiG, 'hifz');
+MK.toggle(kursiG, 'dua');
+eq('toggling another category is independent', MK.at(kursiG).length, 2);
+MK.toggle(kursiG, 'hifz');
+eq('and removes only its own', MK.at(kursiG).length, 1);
+eq('leaving the right one', MK.at(kursiG)[0].cat, 'dua');
+
+/* a toggle must not remove a range that merely contains the ayah */
+reset();
+MK.add({ cat: 'hifz', from: from, to: to });
+MK.toggle(QT.index.toGlobal(3, 192), 'hifz');
+eq('toggling inside a range adds rather than deletes', MK.list().length, 2);
+
+/* notes */
+reset();
+const nm = MK.add({ cat: 'question', from: kursiG, note: 'لماذا هنا؟' });
+eq('a note is stored', MK.get(nm.id).note, 'لماذا هنا؟');
+MK.update(nm.id, { note: 'سؤال آخر' });
+eq('and can be edited', MK.get(nm.id).note, 'سؤال آخر');
+MK.update(nm.id, { cat: 'dua' });
+eq('a mark can change category', MK.get(nm.id).cat, 'dua');
+MK.update(nm.id, { cat: 'nonexistent' });
+eq('an unknown category is refused', MK.get(nm.id).cat, 'dua');
+
+/* lookup by page and range */
+reset();
+MK.add({ cat: 'hifz', from: kursiG });
+const kursiPage = QT.index.pageOf(kursiG);
+eq('found on its page', MK.onPage(kursiPage).length, 1);
+eq('not on the next page', MK.onPage(kursiPage + 1).length, 0);
+eq('found by range query', MK.inRange(1, 6236).length, 1);
+
+/* mapOver: what the reader paints from */
+reset();
+MK.add({ cat: 'hifz', from: from, to: to });
+MK.add({ cat: 'dua', from: from, to: from });
+const map = MK.mapOver(from - 2, to + 2);
+eq('the first ayah carries two categories', map[from].length, 2);
+eq('a middle ayah carries one', map[from + 1].length, 1);
+ok('outside the range is unpainted', map[from - 1] === undefined);
+ok('mapOver clips to the window', MK.mapOver(from + 1, from + 1)[from] === undefined);
+
+/* counts and filters */
+reset();
+MK.add({ cat: 'hifz', from: 10 });
+MK.add({ cat: 'hifz', from: 20 });
+MK.add({ cat: 'dua', from: 30 });
+eq('counted per category', MK.counts().hifz, 2);
+eq('and the other', MK.counts().dua, 1);
+eq('filtered by category', MK.list({ cat: 'hifz' }).length, 2);
+/* globals 10, 20 and 30 all fall in Al-Baqarah — Al-Fatihah ends at 7 */
+eq('filtered by surah', MK.list({ surah: 2 }).length, 3);
+eq('Al-Fatihah holds none of them', MK.list({ surah: 1 }).length, 0);
+eq('a surah with none', MK.list({ surah: 50 }).length, 0);
+eq('the list is sorted by position', MK.list()[0].from, 10);
+
+/* a mark spanning a surah boundary shows up under both */
+reset();
+MK.add({ cat: 'hifz', from: QT.index.toGlobal(1, 6), to: QT.index.toGlobal(2, 3) });
+eq('found under the first surah', MK.list({ surah: 1 }).length, 1);
+eq('and under the second', MK.list({ surah: 2 }).length, 1);
+eq('but not a third', MK.list({ surah: 3 }).length, 0);
+
+/* categories */
+reset();
+const nc = MK.addCat('ليلي', '#123456');
+eq('a category can be added', MK.cats().length, 6);
+eq('with its colour', MK.cat(nc.id).color, '#123456');
+MK.updateCat(nc.id, { name: 'مُعاد التسمية', color: '#654321' });
+eq('renamed', MK.cat(nc.id).name, 'مُعاد التسمية');
+eq('recoloured', MK.cat(nc.id).color, '#654321');
+
+/* deleting a category takes its marks, or moves them */
+reset();
+MK.add({ cat: 'hifz', from: 10 });
+MK.add({ cat: 'hifz', from: 20 });
+MK.add({ cat: 'dua', from: 30 });
+MK.removeCat('hifz', 'dua');
+eq('moved marks survive', MK.list().length, 3);
+eq('and all belong to the new category', MK.list({ cat: 'dua' }).length, 3);
+eq('the category is gone', MK.cat('hifz'), null);
+
+reset();
+MK.add({ cat: 'hifz', from: 10 });
+MK.add({ cat: 'dua', from: 30 });
+MK.removeCat('hifz');
+eq('deleting without a target drops its marks', MK.list().length, 1);
+eq('and leaves the others', MK.list()[0].cat, 'dua');
+
+/* the last category cannot go */
+reset();
+let cats = MK.cats().slice();
+for (let i = 0; i < cats.length - 1; i++) MK.removeCat(cats[i].id);
+eq('one category left', MK.cats().length, 1);
+ok('the last one is refused', MK.removeCat(MK.cats()[0].id) === false);
+eq('still there', MK.cats().length, 1);
+
+/* migration from the old single-colour bookmarks */
+reset();
+store.set('quran.bookmarks.v1', JSON.stringify({ 2: [255, 285], 3: [190] }));
+QT.marks.migrate();
+eq('legacy bookmarks carried over', MK.list().length, 3);
+ok('all landed in one category', new Set(MK.list().map(m => m.cat)).size === 1);
+ok('positions are right', MK.at(QT.index.toGlobal(2, 255)).length === 1);
+ok('and the second surah too', MK.at(QT.index.toGlobal(3, 190)).length === 1);
+ok('they are flagged as legacy', MK.list().every(m => m.legacy === true));
+QT.marks.migrate();
+eq('migration does not run twice', MK.list().length, 3);
+
+/* no legacy data is not an error */
+reset();
+QT.marks.migrate();
+eq('nothing to migrate is fine', MK.list().length, 0);
+
+/* marks survive export and import */
+reset();
+MK.add({ cat: 'hifz', from: kursiG, note: 'ملاحظة' });
+MK.addCat('خاص', '#ABCDEF');
+const mdump = QT.io.export();
+reset();
+QT.io.import(mdump, 'replace');
+eq('marks restored', MK.list().length, 1);
+eq('the note came with it', MK.list()[0].note, 'ملاحظة');
+ok('custom categories restored', MK.cats().some(c => c.name === 'خاص'));
+
+/* clamping */
+reset();
+const clamped = MK.add({ cat: 'hifz', from: 0, to: 99999 });
+eq('range start clamped', clamped.from, 1);
+eq('range end clamped', clamped.to, 6236);
+
 /* ===================== report ===================== */
 
 console.log('');

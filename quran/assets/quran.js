@@ -7,7 +7,8 @@
   'use strict';
 
   var SET_KEY = 'quran.settings.v1';
-  var BM_KEY = 'quran.bookmarks.v1';
+  /* quran.bookmarks.v1 is read once by tracker.js, which folds the old
+     single-colour bookmarks into the coloured marks store. */
   var LAST_KEY = 'quran.last.v1';
   var THEKR_SET = 'thekr.settings.v1';
   var SIZES = [1.35, 1.55, 1.75, 2.0, 2.35];
@@ -46,7 +47,6 @@
      mode regardless of the saved preference, without overwriting it. */
   if (new URLSearchParams(location.search).has('review') && S.mode === 'verse') S.mode = 'mushaf';
 
-  var bookmarks = read(BM_KEY, {});
 
   /* ---------------- helpers ---------------- */
   var $ = function (s, r) { return (r || document).querySelector(s); };
@@ -455,11 +455,6 @@
     return box;
   }
 
-  function isBookmarked(n) {
-    var a = bookmarks[sid] || [];
-    return a.indexOf(n) !== -1;
-  }
-
   function vbtn(cls, icon, label, text) {
     var b = document.createElement('button');
     b.type = 'button';
@@ -482,7 +477,6 @@
     li.className = 'ayah';
     li.id = 'a' + v.n;
     li.dataset.n = v.n;
-    if (isBookmarked(v.n)) li.classList.add('is-bookmarked');
 
     var p = document.createElement('p');
     p.className = 'ayah__ar';
@@ -527,16 +521,10 @@
     wbw.setAttribute('aria-expanded', 'false');
     bar.appendChild(wbw);
 
-    var bm = vbtn('', ICON.bookmark, 'حفظ علامة');
-    bm.setAttribute('aria-pressed', String(isBookmarked(v.n)));
-    bm.addEventListener('click', function () {
-      var arr = bookmarks[sid] || (bookmarks[sid] = []);
-      var i = arr.indexOf(v.n);
-      if (i === -1) arr.push(v.n); else arr.splice(i, 1);
-      write(BM_KEY, bookmarks);
-      bm.setAttribute('aria-pressed', String(i === -1));
-      li.classList.toggle('is-bookmarked', i === -1);
-    });
+    /* Marking is a category choice now, not a single toggle, so the button
+       opens the verse sheet where the colours live rather than doing it here. */
+    var bm = vbtn('', ICON.bookmark, 'العلامات');
+    bm.addEventListener('click', function () { openSheet(v.n); });
     bar.appendChild(bm);
 
     var cp = vbtn('', ICON.copy, 'نسخ الآية');
@@ -946,18 +934,18 @@
     play.addEventListener('click', function () { togglePlay(v.n); });
     bar.appendChild(play);
 
-    var bm = vbtn('', ICON.bookmark, 'حفظ علامة', 'علامة');
-    bm.setAttribute('aria-pressed', String(isBookmarked(v.n)));
-    bm.addEventListener('click', function () {
-      var arr = bookmarks[sid] || (bookmarks[sid] = []);
-      var i = arr.indexOf(v.n);
-      if (i === -1) arr.push(v.n); else arr.splice(i, 1);
-      write(BM_KEY, bookmarks);
-      bm.setAttribute('aria-pressed', String(i === -1));
-      var card = document.getElementById('a' + v.n);
-      if (card && card.classList.contains('ayah')) card.classList.toggle('is-bookmarked', i === -1);
-    });
-    bar.appendChild(bm);
+    /* The single-colour bookmark button that used to sit here was replaced by
+       the coloured-mark panel marks.js appends to the sheet body.
+
+       The coloured-mark panel is appended by marks.js. Announcing the
+       open sheet rather than building the panel inline keeps this file about
+       rendering the muṣḥaf — the same arrangement as the session pill and the
+       review surface. */
+    setTimeout(function () {
+      document.dispatchEvent(new CustomEvent('quran:sheet', {
+        detail: { surah: sid, ayah: v.n, bar: bar }
+      }));
+    }, 0);
 
     var cp = vbtn('', ICON.copy, 'نسخ الآية', 'نسخ');
     cp.addEventListener('click', function () {
