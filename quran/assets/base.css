@@ -185,25 +185,39 @@ html[data-theme="night"]{
 
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad) 5rem}
 
+/* Slimmer than it was, and it now retreats as you read down, returning the
+   moment you scroll up. What it never takes with it is the progress rail along
+   its bottom edge — see the translate below. */
 .topbar{
   position:sticky;top:0;z-index:40;
   background:var(--scrim);backdrop-filter:saturate(1.7) blur(14px);
   -webkit-backdrop-filter:saturate(1.7) blur(14px);
   border-bottom:1px solid var(--border-soft);
+  --topbar-rail:3px;
+  transition:transform 260ms cubic-bezier(.2,.8,.25,1);
+}
+/* It withdraws by its own height less the rail, so the rail ends up flush with
+   the top of the viewport and the reader never loses their place. */
+.topbar[data-hidden="true"]{transform:translateY(calc(-100% + var(--topbar-rail)))}
+@media (prefers-reduced-motion:reduce){
+  .topbar{transition:none}
 }
 .topbar__inner{
   max-width:var(--maxw);margin:0 auto;
-  padding:.55rem var(--pad);display:flex;align-items:center;gap:.5rem;
+  padding:.3rem var(--pad);display:flex;align-items:center;gap:.35rem;
 }
 .iconbtn{
-  flex:0 0 auto;width:38px;height:38px;display:grid;place-items:center;
+  flex:0 0 auto;width:34px;height:34px;display:grid;place-items:center;
   border-radius:var(--r-full);color:var(--ink-2);
   transition:background var(--t),color var(--t);
 }
 .iconbtn:hover{background:var(--surface-sunk);color:var(--ink)}
 .iconbtn[aria-expanded="true"]{background:var(--accent);color:var(--on-accent)}
-.iconbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.iconbtn--back svg{transform:scaleX(1)}
+.iconbtn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+/* Back points the way the reader came from, which on a right-to-left page is
+   rightward. The glyph is drawn pointing left, so it is mirrored. This rule
+   existed in the athkar sheet and was lost when the section forked its own. */
+html[dir="rtl"] .iconbtn--back svg{transform:scaleX(-1)}
 
 .progress{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:.25rem;padding:0 .25rem}
 .progress__row{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;font-size:.76rem;color:var(--ink-3)}
@@ -427,3 +441,6 @@ th{font-size:.7rem;letter-spacing:.05em;color:var(--gold);border-bottom:1.5px so
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+/* The reader supersedes this with a position read-out; see reader-ui.js. */
+.progress__count.is-superseded{display:none}

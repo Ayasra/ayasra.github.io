@@ -39,7 +39,7 @@
   var S = Object.assign({
     size: 2, translation: true, translit: false, mode: 'mushaf',
     tafsir: 'muyassar', reciter: 'Minshawy_Murattal_128kbps', autoscroll: true,
-    theme: null, frame: true, pattern: true
+    theme: null, frame: true, pattern: true, flip: false
   }, read(SET_KEY, {}));
 
   /* Hifz review needs one span per word, which only the page views produce —
@@ -96,7 +96,16 @@
       'font-display:swap;font-weight:normal;font-style:normal}';
     document.head.appendChild(css);
   }
-  function applyMode() { document.documentElement.setAttribute('data-mode', S.mode); }
+  function applyMode() { document.documentElement.setAttribute('data-mode', S.mode); applyFlip(); }
+
+  /* Page-flip mode: one sheet at a time, turned sideways. It only means
+     anything where there are sheets, so the verse view never enters it however
+     the setting is left. The layout itself lives in reader-ui.css; all this
+     file does is publish the state. */
+  function applyFlip() {
+    var on = !!S.flip && S.mode !== 'verse';
+    document.documentElement.setAttribute('data-flip', on ? 'on' : 'off');
+  }
 
   /* The two decorative rules a reader may want out of the way: the ruled box
      drawn around the text on every sheet, and the geometric watermark behind
@@ -821,9 +830,15 @@
     if (n < 1 || n > surah.versesCount) return stop();
     playing = n;
     audio.src = audioUrl(n);
-    audio.play().catch(function () {
-      elPlayLabel.innerHTML = '<b>تعذّر تشغيل الصوت</b> — تحقّق من الاتصال';
-    });
+    /* play() returns a promise in current browsers but undefined in older
+       ones, so the rejection handler is attached only when there is something
+       to attach it to. */
+    var started = audio.play();
+    if (started && typeof started.catch === 'function') {
+      started.catch(function () {
+        elPlayLabel.innerHTML = '<b>تعذّر تشغيل الصوت</b> — تحقّق من الاتصال';
+      });
+    }
     markPlaying(n);
     elPlayer.setAttribute('data-show', 'true');
     elPlayLabel.innerHTML = '<b>' + surah.nameAr + ' · آية ' + ar(n) + '</b>';
@@ -1100,6 +1115,11 @@
 
     box.appendChild(chips('طريقة العرض', 'mode',
       [['verse', 'آية آية'], ['mushaf', 'صفحة'], ['spread', 'صفحتان']], render));
+
+    box.appendChild(toggle('تقليب الصفحات', 'اسحب أفقيًا، وتملأ الصفحة الشاشة', 'flip', function () {
+      applyFlip();
+      scheduleFit();
+    }));
 
     box.appendChild(toggle('الترجمة الإنجليزية', 'Saheeh International', 'translation', function () {
       Array.prototype.forEach.call(document.querySelectorAll('[data-role="translation"]'), function (n) { n.hidden = !S.translation; });

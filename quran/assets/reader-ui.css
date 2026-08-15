@@ -1,0 +1,142 @@
+@charset "UTF-8";
+/* =========================================================================
+   Reader chrome — the progress rail, the retreating top bar, and page-flip
+   mode. Layers on base.css and quran.css.
+   ========================================================================= */
+
+/* ---------- the progress rail ----------
+   Sits along the bottom edge of the top bar. When the bar withdraws it stops
+   just short, leaving the rail flush with the top of the viewport — so the
+   reader always knows where they are in the sūrah, even with every other
+   control out of the way. */
+.rail{
+  position:absolute;inset-inline:0;bottom:0;height:var(--topbar-rail,3px);
+  background:var(--surface-sunk);overflow:hidden;
+}
+.rail__bar{
+  height:100%;width:0;
+  background:linear-gradient(90deg,var(--accent),var(--rule));
+  transition:width 200ms linear;
+}
+@media (prefers-reduced-motion:reduce){
+  .rail__bar{transition:none}
+}
+
+/* the position read-out that lives in the bar itself */
+.where{
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+  font-size:.72rem;color:var(--ink-3);
+}
+.where b{color:var(--ink-2);font-weight:600}
+
+/* ---------- page-flip mode ----------
+   One sheet at a time, filling the screen, turned by dragging sideways.
+   Built on scroll snapping rather than a custom drag handler: it inherits the
+   platform's own momentum, rubber-banding and accessibility, and a trackpad,
+   a touchscreen and the arrow keys all drive it without special cases.
+
+   The document direction already runs right-to-left, so the next page lies to
+   the left exactly as it does in a bound mus'haf. */
+html[data-flip="on"]{overflow:hidden}
+html[data-flip="on"] body{overflow:hidden;height:100dvh}
+html[data-flip="on"] .wrap{
+  padding:0;max-width:none;height:100dvh;display:flex;flex-direction:column;
+}
+html[data-flip="on"] #main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+/* The settings sheet is a child of .wrap, which is now a full-height column —
+   left in flow it would squeeze the sheet to nothing when opened. Taking it
+   out of flow keeps the page at full height and lets the panel overlay it.
+   max-height is untouched, so its open/close animation still runs. */
+html[data-flip="on"] .wrap{position:relative}
+html[data-flip="on"] .settings{
+  position:absolute;inset-inline:0;top:0;z-index:41;padding:0 var(--pad);
+}
+
+/* the header card, the sūrah nav and the intro are not part of a sheet */
+html[data-flip="on"] .surah-head,
+html[data-flip="on"] .surah-nav,
+html[data-flip="on"] .bismillah{display:none}
+
+html[data-flip="on"] .mushaf{
+  flex:1 1 auto;min-height:0;margin:0;
+  display:flex;flex-direction:row;gap:0;
+  overflow-x:auto;overflow-y:hidden;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  overscroll-behavior-x:contain;
+  scrollbar-width:none;
+}
+html[data-flip="on"] .mushaf::-webkit-scrollbar{display:none}
+
+html[data-flip="on"] .mushaf__spread{
+  flex:0 0 100%;width:100%;height:100%;
+  scroll-snap-align:center;scroll-snap-stop:always;
+  display:flex;align-items:stretch;justify-content:center;
+  padding:.5rem clamp(.4rem,2vw,1.4rem) .9rem;
+  animation:none;                     /* the entry fade belongs to scrolling */
+}
+html[data-flip="on"] .mushaf__page{
+  flex:1 1 0;min-width:0;height:100%;display:flex;flex-direction:column;
+}
+html[data-flip="on"] .mushaf__frame{flex:1 1 auto;min-height:0}
+
+/* chrome out of the way: the sheet gets the whole screen */
+html[data-flip="on"][data-chrome="hidden"] .topbar{
+  transform:translateY(calc(-100% + var(--topbar-rail)));
+}
+html[data-flip="on"][data-chrome="hidden"] .flipbar{
+  transform:translateY(calc(100% + 1px));
+}
+html[data-flip="on"] .sessionbar{display:none}
+
+/* ---------- the flip bar ---------- */
+.flipbar{
+  position:fixed;inset-inline:0;bottom:0;z-index:44;
+  background:var(--scrim);backdrop-filter:saturate(1.7) blur(14px);
+  -webkit-backdrop-filter:saturate(1.7) blur(14px);
+  border-top:1px solid var(--border-soft);
+  padding:.4rem var(--pad) calc(.4rem + env(safe-area-inset-bottom));
+  transition:transform 260ms cubic-bezier(.2,.8,.25,1);
+  display:none;
+}
+html[data-flip="on"] .flipbar{display:block}
+.flipbar__inner{
+  max-width:var(--maxw);margin:0 auto;
+  display:flex;align-items:center;gap:.6rem;
+}
+.flipbar__btn{
+  flex:0 0 auto;width:34px;height:34px;display:grid;place-items:center;
+  border-radius:var(--r-full);color:var(--ink-2);
+  transition:background var(--t),color var(--t),opacity var(--t);
+}
+.flipbar__btn:hover{background:var(--surface-sunk);color:var(--ink)}
+.flipbar__btn:disabled{opacity:.3;cursor:not-allowed}
+.flipbar__btn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.flipbar__mid{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:.3rem}
+.flipbar__where{
+  display:flex;align-items:baseline;justify-content:space-between;gap:.6rem;
+  font-size:.74rem;color:var(--ink-3);
+}
+.flipbar__where b{color:var(--ink-2);font-weight:600;font-variant-numeric:tabular-nums}
+.flipbar__track{height:3px;border-radius:var(--r-full);background:var(--surface-sunk);overflow:hidden}
+.flipbar__bar{
+  height:100%;width:0;border-radius:var(--r-full);
+  background:linear-gradient(90deg,var(--accent),var(--rule));
+  transition:width 200ms linear;
+}
+@media (prefers-reduced-motion:reduce){
+  .flipbar,.flipbar__bar{transition:none}
+}
+
+/* a hint the first time flip mode is entered */
+.fliphint{
+  position:fixed;inset-inline:0;bottom:5.2rem;z-index:46;
+  display:flex;justify-content:center;pointer-events:none;
+  opacity:0;transition:opacity 300ms;
+}
+.fliphint[data-show="true"]{opacity:1}
+.fliphint span{
+  background:var(--accent);color:var(--on-accent);
+  padding:.5rem 1rem;border-radius:var(--r-full);
+  font-size:.79rem;font-weight:600;box-shadow:var(--shadow-lg);
+}

@@ -533,6 +533,150 @@ function eqv(name, got, want) {
     ok('plans list shows it', doc.querySelectorAll('.plan').length === 1);
   }
 
+  /* ---------- the reader's chrome ---------- */
+  {
+    const fs5 = require('fs');
+    const base = fs5.readFileSync(path.join(ROOT, 'assets/base.css'), 'utf8');
+
+    /* the arrow that was pointing the wrong way */
+    ok('the back arrow is mirrored for right-to-left',
+       /html\[dir="rtl"\]\s*\.iconbtn--back svg\{transform:scaleX\(-1\)\}/.test(base));
+    ok('the no-op rule is gone', !/\.iconbtn--back svg\{transform:scaleX\(1\)\}/.test(base));
+
+    /* the bar retreats but leaves the rail behind */
+    ok('the bar can hide', /\.topbar\[data-hidden="true"\]/.test(base));
+    ok('it stops short by the rail height',
+       /translateY\(calc\(-100% \+ var\(--topbar-rail[^)]*\)\)\)/.test(base),
+       'the rail must stay flush with the top of the viewport');
+
+    const { win, doc, errors } = await loadPage('surah.html?s=2', 'reader chrome');
+    const real = errors.filter(e => !/Could not load|net::|ENOENT|font/i.test(e));
+    ok('reader boots with the chrome layer', real.length === 0, real.join(' | '));
+
+    ok('the progress rail was inserted', !!doc.querySelector('.topbar .rail'));
+    ok('the rail has a bar', !!doc.querySelector('.rail__bar'));
+    ok('a position read-out was added', !!doc.querySelector('.where'));
+    ok('the old crumb is kept, not detached',
+       !!doc.getElementById('crumb') && doc.getElementById('crumb').isConnected);
+    ok('but it is superseded',
+       doc.getElementById('crumb').classList.contains('is-superseded'));
+    ok('the read-out shows a position', /\d|[٠-٩]/.test(doc.querySelector('.where').textContent));
+
+    /* the bar starts visible */
+    eqv('the bar is shown at the top', doc.querySelector('.topbar').getAttribute('data-hidden'), 'false');
+
+    /* scrolling down hides it, scrolling up brings it back */
+    win.scrollY = 400;
+    win.dispatchEvent(new win.Event('scroll'));
+    await new Promise(r => setTimeout(r, 60));
+    eqv('scrolling down hides the bar',
+        doc.querySelector('.topbar').getAttribute('data-hidden'), 'true');
+
+    win.scrollY = 260;
+    win.dispatchEvent(new win.Event('scroll'));
+    await new Promise(r => setTimeout(r, 60));
+    eqv('scrolling up brings it back',
+        doc.querySelector('.topbar').getAttribute('data-hidden'), 'false');
+
+    /* near the top it never hides */
+    win.scrollY = 300;
+    win.dispatchEvent(new win.Event('scroll'));
+    await new Promise(r => setTimeout(r, 40));
+    win.scrollY = 20;
+    win.dispatchEvent(new win.Event('scroll'));
+    await new Promise(r => setTimeout(r, 40));
+    win.scrollY = 50;
+    win.dispatchEvent(new win.Event('scroll'));
+    await new Promise(r => setTimeout(r, 40));
+    eqv('it stays put near the top of the page',
+        doc.querySelector('.topbar').getAttribute('data-hidden'), 'false');
+
+    /* the settings sheet lives in the bar, so the bar must not walk off */
+    doc.getElementById('gear').click();
+    await new Promise(r => setTimeout(r, 60));
+    win.scrollY = 900;
+    win.dispatchEvent(new win.Event('scroll'));
+    await new Promise(r => setTimeout(r, 60));
+    eqv('the bar holds still while settings are open',
+        doc.querySelector('.topbar').getAttribute('data-hidden'), 'false');
+    doc.getElementById('gear').click();
+
+    ok('the flip toggle is offered',
+       /تقليب الصفحات/.test(doc.querySelector('#settings').textContent));
+  }
+
+  /* ---------- page-flip mode ---------- */
+  {
+    const seed = win => {
+      win.localStorage.setItem('quran.settings.v1',
+        JSON.stringify({ mode: 'mushaf', flip: true, flipSeen: true }));
+    };
+    const { win, doc, errors } = await loadPage('surah.html?s=2', 'flip mode', seed);
+    const real = errors.filter(e => !/Could not load|net::|ENOENT|font/i.test(e));
+    ok('flip mode boots clean', real.length === 0, real.join(' | '));
+
+    eqv('the root announces flip mode', doc.documentElement.getAttribute('data-flip'), 'on');
+    ok('the flip bar is present', !!doc.querySelector('.flipbar'));
+    ok('it carries its own progress bar', !!doc.querySelector('.flipbar__bar'));
+    ok('and page controls', !!doc.getElementById('flip-prev') && !!doc.getElementById('flip-next'));
+    ok('the position is stated', /صفحة/.test(doc.getElementById('flip-label').textContent));
+    ok('and the count', /\//.test(doc.getElementById('flip-count').textContent));
+
+    /* on the first sheet there is nowhere back to */
+    ok('back is disabled on the first sheet', doc.getElementById('flip-prev').disabled === true);
+    ok('forward is available', doc.getElementById('flip-next').disabled === false);
+
+    /* stepping forward moves the page and the progress */
+    const before = doc.getElementById('flip-count').textContent;
+    doc.getElementById('flip-next').click();
+    await new Promise(r => setTimeout(r, 120));
+    ok('stepping forward advances the count',
+       doc.getElementById('flip-count').textContent !== before,
+       `${before} -> ${doc.getElementById('flip-count').textContent}`);
+    ok('back is now available', doc.getElementById('flip-prev').disabled === false);
+
+    /* the arrow keys drive it, and right goes back in a right-to-left mushaf */
+    const afterNext = doc.getElementById('flip-count').textContent;
+    doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    await new Promise(r => setTimeout(r, 120));
+    ok('the right arrow steps back through the mushaf',
+       doc.getElementById('flip-count').textContent !== afterNext,
+       `${afterNext} -> ${doc.getElementById('flip-count').textContent}`);
+
+    /* chrome hides itself and a tap on the sheet brings it back */
+    doc.documentElement.setAttribute('data-chrome', 'hidden');
+    const page = doc.querySelector('.mushaf__page');
+    page.dispatchEvent(new win.MouseEvent('click', { bubbles: true, cancelable: true }));
+    await new Promise(r => setTimeout(r, 60));
+    eqv('tapping the sheet restores the chrome',
+        doc.documentElement.getAttribute('data-chrome'), 'shown');
+
+    /* but tapping a word must still play it, not toggle chrome */
+    const word = doc.querySelector('.mushaf__line .w[data-n]');
+    if (word) {
+      doc.documentElement.setAttribute('data-chrome', 'shown');
+      word.dispatchEvent(new win.MouseEvent('click', { bubbles: true, cancelable: true }));
+      await new Promise(r => setTimeout(r, 60));
+      eqv('tapping a word leaves the chrome alone',
+          doc.documentElement.getAttribute('data-chrome'), 'shown');
+    }
+
+    ok('flip mode clean after interaction',
+       errors.filter(e => !/Could not load|net::|ENOENT|font/i.test(e)).length === 0);
+  }
+
+  /* flip is meaningless in verse view and must not engage there */
+  {
+    const seed = win => {
+      win.localStorage.setItem('quran.settings.v1',
+        JSON.stringify({ mode: 'verse', flip: true, flipSeen: true }));
+    };
+    const { doc } = await loadPage('surah.html?s=1', 'flip + verse view', seed);
+    eqv('verse view never enters flip mode',
+        doc.documentElement.getAttribute('data-flip'), 'off');
+    ok('the flip bar stays out of the way', !!doc.querySelector('.flipbar'));
+  }
+
   /* ---------- night mode is one hue family ----------
      The sheet used to keep the day leaf's gold rule on a blue-grey paper while
      the shell around it went green, so the muṣḥaf looked like it belonged to a
