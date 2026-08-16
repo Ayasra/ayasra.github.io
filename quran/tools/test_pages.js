@@ -616,9 +616,23 @@ function eqv(name, got, want) {
     ok('flip mode boots clean', real.length === 0, real.join(' | '));
 
     eqv('the root announces flip mode', doc.documentElement.getAttribute('data-flip'), 'on');
+
+    /* ---- the page owns the whole screen ---- */
+    eqv('flip mode opens with the bars out of the way',
+        doc.documentElement.getAttribute('data-chrome'), 'hidden');
     ok('the flip bar is present', !!doc.querySelector('.flipbar'));
     ok('it carries its own progress bar', !!doc.querySelector('.flipbar__bar'));
     ok('and page controls', !!doc.getElementById('flip-prev') && !!doc.getElementById('flip-next'));
+
+    /* Right-to-left: previous is the right-hand button and must point right,
+       toward the earlier page; next is on the left and points left. */
+    eqv('the previous arrow points right, at the earlier page',
+        doc.querySelector('#flip-prev path').getAttribute('d'), 'M9 18l6-6-6-6');
+    eqv('the next arrow points left, at the later page',
+        doc.querySelector('#flip-next path').getAttribute('d'), 'M15 18l-6-6 6-6');
+    ok('the two arrows are not the same glyph',
+       doc.querySelector('#flip-prev path').getAttribute('d') !==
+       doc.querySelector('#flip-next path').getAttribute('d'));
     ok('the position is stated', /صفحة/.test(doc.getElementById('flip-label').textContent));
     ok('and the count', /\//.test(doc.getElementById('flip-count').textContent));
 
@@ -643,12 +657,14 @@ function eqv(name, got, want) {
        doc.getElementById('flip-count').textContent !== afterNext,
        `${afterNext} -> ${doc.getElementById('flip-count').textContent}`);
 
-    /* chrome hides itself and a tap on the sheet brings it back */
+    /* A tap on empty space is what summons them. The earlier button clicks
+       left the bars up, so the starting state is set explicitly rather than
+       assumed. */
     doc.documentElement.setAttribute('data-chrome', 'hidden');
     const page = doc.querySelector('.mushaf__page');
     page.dispatchEvent(new win.MouseEvent('click', { bubbles: true, cancelable: true }));
     await new Promise(r => setTimeout(r, 60));
-    eqv('tapping the sheet restores the chrome',
+    eqv('tapping the sheet summons the chrome',
         doc.documentElement.getAttribute('data-chrome'), 'shown');
 
     /* but tapping a word must still play it, not toggle chrome */
@@ -661,8 +677,259 @@ function eqv(name, got, want) {
           doc.documentElement.getAttribute('data-chrome'), 'shown');
     }
 
+    /* ---- the settings panel must never strand itself ----
+       The panel is a child of .wrap, not of the bar that opens it. A tap
+       inside it used to hide the chrome, which carried the gear off screen
+       and left the panel open with nothing able to close it. */
+    const gear = doc.getElementById('gear');
+    const settings = doc.getElementById('settings');
+
+    gear.click();
+    await new Promise(r => setTimeout(r, 60));
+    eqv('the gear opens the panel', settings.getAttribute('data-open'), 'true');
+    eqv('opening it pins the chrome', doc.documentElement.getAttribute('data-chrome'), 'shown');
+
+    /* a tap on a control inside the panel must not touch the chrome */
+    const inner = settings.querySelector('button, .switch, .setting') || settings;
+    inner.dispatchEvent(new win.MouseEvent('click', { bubbles: true, cancelable: true }));
+    await new Promise(r => setTimeout(r, 60));
+    eqv('using a setting leaves the chrome shown',
+        doc.documentElement.getAttribute('data-chrome'), 'shown');
+    eqv('and leaves the panel open', settings.getAttribute('data-open'), 'true');
+
+    /* the idle timer must not steal the gear either */
+    await new Promise(r => setTimeout(r, 2900));
+    eqv('the chrome does not time out while settings are open',
+        doc.documentElement.getAttribute('data-chrome'), 'shown');
+
+    /* and the gear still closes it */
+    gear.click();
+    await new Promise(r => setTimeout(r, 60));
+    eqv('the gear closes the panel again', settings.getAttribute('data-open'), 'false');
+
+    /* a tap on the page dismisses the panel rather than hiding the chrome */
+    gear.click();
+    await new Promise(r => setTimeout(r, 60));
+    const sheet2 = doc.querySelector('.mushaf__page');
+    sheet2.dispatchEvent(new win.MouseEvent('click', { bubbles: true, cancelable: true }));
+    await new Promise(r => setTimeout(r, 80));
+    eqv('an outside tap closes the panel', settings.getAttribute('data-open'), 'false');
+    eqv('and does not hide the chrome in the same gesture',
+        doc.documentElement.getAttribute('data-chrome'), 'shown');
+
+    /* with the panel closed, the next tap does toggle the chrome */
+    sheet2.dispatchEvent(new win.MouseEvent('click', { bubbles: true, cancelable: true }));
+    await new Promise(r => setTimeout(r, 60));
+    eqv('a second tap hides the chrome',
+        doc.documentElement.getAttribute('data-chrome'), 'hidden');
+
+    /* ---- tap zones ----
+       A band down each side turns the page; the middle, and the strips along
+       the top and bottom, summon the chrome. */
+    function tapAt(x, y) {
+      const ev = new win.MouseEvent('click', { bubbles: true, cancelable: true });
+      Object.defineProperty(ev, 'clientX', { value: x });
+      Object.defineProperty(ev, 'clientY', { value: y });
+      doc.querySelector('.mushaf__page').dispatchEvent(ev);
+    }
+    const W = win.innerWidth, H = win.innerHeight;
+    ok('the harness has a viewport to divide', W > 0 && H > 0, `${W}x${H}`);
+
+    /* right band -> the earlier page; left band -> the later one */
+    doc.documentElement.setAttribute('data-chrome', 'hidden');
+    doc.getElementById('flip-next').click();          /* move off the first page */
+    await new Promise(r => setTimeout(r, 120));
+    const midCount = doc.getElementById('flip-count').textContent;
+
+    doc.documentElement.setAttribute('data-chrome', 'hidden');
+    tapAt(W * 0.95, H * 0.5);
+    await new Promise(r => setTimeout(r, 120));
+    ok('a tap on the right band turns back',
+       doc.getElementById('flip-count').textContent !== midCount,
+       `${midCount} -> ${doc.getElementById('flip-count').textContent}`);
+    eqv('and does not summon the chrome',
+        doc.documentElement.getAttribute('data-chrome'), 'hidden');
+
+    const backCount = doc.getElementById('flip-count').textContent;
+    tapAt(W * 0.05, H * 0.5);
+    await new Promise(r => setTimeout(r, 120));
+    ok('a tap on the left band turns forward',
+       doc.getElementById('flip-count').textContent !== backCount,
+       `${backCount} -> ${doc.getElementById('flip-count').textContent}`);
+
+    /* the middle toggles */
+    const midBefore = doc.getElementById('flip-count').textContent;
+    doc.documentElement.setAttribute('data-chrome', 'hidden');
+    tapAt(W * 0.5, H * 0.5);
+    await new Promise(r => setTimeout(r, 80));
+    eqv('the middle summons the chrome',
+        doc.documentElement.getAttribute('data-chrome'), 'shown');
+    eqv('and leaves the page alone',
+        doc.getElementById('flip-count').textContent, midBefore);
+
+    /* the top and bottom strips toggle even at the edges — that is where a
+       hand reaches for the controls */
+    doc.documentElement.setAttribute('data-chrome', 'hidden');
+    tapAt(W * 0.95, H * 0.04);
+    await new Promise(r => setTimeout(r, 80));
+    eqv('the top strip summons the chrome even at the right edge',
+        doc.documentElement.getAttribute('data-chrome'), 'shown');
+    eqv('without turning the page',
+        doc.getElementById('flip-count').textContent, midBefore);
+
+    doc.documentElement.setAttribute('data-chrome', 'hidden');
+    tapAt(W * 0.03, H * 0.97);
+    await new Promise(r => setTimeout(r, 80));
+    eqv('and so does the bottom strip at the left edge',
+        doc.documentElement.getAttribute('data-chrome'), 'shown');
+    eqv('still without turning the page',
+        doc.getElementById('flip-count').textContent, midBefore);
+
+    /* ---- the text block is measured, not assumed ----
+       A .mushaf__line is always the full width of the frame, but the words on
+       it often are not: the height veto narrows the type on a short viewport,
+       opening real margin beside each line. Asking whether the click was
+       inside the line *element* called that margin text, and the sides of the
+       sheet stopped turning the page as soon as the type scaled down.
+
+       jsdom lays nothing out, so the words are given rects: ink from 300 to
+       1100 on a 1024-wide window, leaving genuine margin either side. */
+    function tapNode(node, x, y) {
+      const ev = new win.MouseEvent('click', { bubbles: true, cancelable: true });
+      Object.defineProperty(ev, 'clientX', { value: x });
+      Object.defineProperty(ev, 'clientY', { value: y });
+      node.dispatchEvent(ev);
+    }
+    function rect(left, right) {
+      return () => ({ left, right, width: right - left, top: 300, bottom: 340,
+                      height: 40, x: left, y: 300 });
+    }
+
+    /* Not merely "not blank": the basmala line carries text but no word spans,
+       so it has no ink to measure and is treated as margin. Pick a line that
+       actually holds calligraphy. */
+    const textLine = Array.from(doc.querySelectorAll('.mushaf__line:not(.is-blank)'))
+      .find(l => l.querySelector('.w[data-n]'));
+    ok('the sheet has a line of calligraphy', !!textLine);
+    const lineWords = textLine ? textLine.querySelectorAll('.w[data-n]') : [];
+    ok('the line has words to measure', lineWords.length > 0);
+    if (!textLine || !lineWords.length) throw new Error('no calligraphy line to measure');
+
+    const INK_LO = 300, INK_HI = 1100;
+    lineWords.forEach((wnode, i) => {
+      const step = (INK_HI - INK_LO) / lineWords.length;
+      wnode.getBoundingClientRect = rect(INK_LO + i * step, INK_LO + (i + 1) * step);
+    });
+
+    const pageBefore = doc.getElementById('flip-count').textContent;
+
+    /* beside the ink, in the side band: this must turn the page */
+    doc.documentElement.setAttribute('data-chrome', 'hidden');
+    tapNode(textLine, INK_HI + 120, 320);
+    await new Promise(r => setTimeout(r, 140));
+    ok('the margin beside a short line still turns the page',
+       doc.getElementById('flip-count').textContent !== pageBefore,
+       `${pageBefore} -> ${doc.getElementById('flip-count').textContent}`);
+    eqv('and does not summon the chrome',
+        doc.documentElement.getAttribute('data-chrome'), 'hidden');
+
+    /* on the ink: this must reach the ayah, not the page turn */
+    const onInk = doc.getElementById('flip-count').textContent;
+    doc.documentElement.setAttribute('data-chrome', 'hidden');
+    tapNode(textLine, (INK_LO + INK_HI) / 2, 320);
+    await new Promise(r => setTimeout(r, 140));
+    eqv('a click on the calligraphy never turns the page',
+        doc.getElementById('flip-count').textContent, onInk);
+
+    /* just off the last glyph is still the ayah — a forgiving edge */
+    doc.documentElement.setAttribute('data-chrome', 'hidden');
+    tapNode(textLine, INK_HI + 4, 320);
+    await new Promise(r => setTimeout(r, 140));
+    eqv('a few pixels past the last glyph still belongs to the ayah',
+        doc.getElementById('flip-count').textContent, onInk);
+
+    /* A blank line is empty at any x. Which side is tapped depends on where in
+       the sūrah the earlier assertions left us — at either end one direction
+       has nowhere to go, and a no-op would read as a failure. */
+    const blankLine = doc.querySelector('.mushaf__line.is-blank');
+    if (blankLine) {
+      const beforeBlank = doc.getElementById('flip-count').textContent;
+      const hasRoomBack = !doc.getElementById('flip-prev').disabled;
+      doc.documentElement.setAttribute('data-chrome', 'hidden');
+      tapNode(blankLine, hasRoomBack ? W * 0.95 : W * 0.05, H * 0.5);
+      await new Promise(r => setTimeout(r, 140));
+      ok('a blank line is empty space at any width',
+         doc.getElementById('flip-count').textContent !== beforeBlank,
+         `${beforeBlank} -> ${doc.getElementById('flip-count').textContent}` +
+         ` (went ${hasRoomBack ? 'back' : 'forward'})`);
+    }
+
+    /* a word itself still reaches the reader */
+    const wordNode = lineWords[0];
+    const beforeWord = doc.getElementById('flip-count').textContent;
+    doc.documentElement.setAttribute('data-chrome', 'shown');
+    tapNode(wordNode, INK_LO + 5, 320);
+    await new Promise(r => setTimeout(r, 140));
+    eqv('tapping a word never turns the page',
+        doc.getElementById('flip-count').textContent, beforeWord);
+    eqv('and never toggles the chrome',
+        doc.documentElement.getAttribute('data-chrome'), 'shown');
+
+    const uiSrc = require('fs').readFileSync(path.join(ROOT, 'assets/reader-ui.js'), 'utf8');
+    ok('the ink is measured per line', /function lineInk\(line\)/.test(uiSrc));
+    ok('and the test is against the ink, not the element',
+       /x >= ink\.lo - INK_SLACK && x <= ink\.hi \+ INK_SLACK/.test(uiSrc));
+    ok('the line element is no longer what decides it',
+       !/return !!line && !line\.classList\.contains\('is-blank'\);/.test(uiSrc));
+
+    /* a click with no position must not be read as aiming at a corner */
+    const beforeBlind = doc.getElementById('flip-count').textContent;
+    doc.documentElement.setAttribute('data-chrome', 'hidden');
+    tapAt(0, 0);
+    await new Promise(r => setTimeout(r, 80));
+    eqv('an unpositioned click toggles rather than turning',
+        doc.documentElement.getAttribute('data-chrome'), 'shown');
+    eqv('leaving the page where it was',
+        doc.getElementById('flip-count').textContent, beforeBlind);
+
+    /* the flip bar's own buttons must keep working, not toggle chrome */
+    doc.documentElement.setAttribute('data-chrome', 'shown');
+    doc.getElementById('flip-next').click();
+    await new Promise(r => setTimeout(r, 80));
+    eqv('the page buttons do not toggle the chrome',
+        doc.documentElement.getAttribute('data-chrome'), 'shown');
+
+    /* turning a page must not summon the bars by itself */
+    doc.documentElement.setAttribute('data-chrome', 'hidden');
+    doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+    await new Promise(r => setTimeout(r, 120));
+    eqv('the arrow keys turn pages without summoning the chrome',
+        doc.documentElement.getAttribute('data-chrome'), 'hidden');
+
+    const scroller0 = doc.querySelector('.mushaf');
+    scroller0.dispatchEvent(new win.Event('scroll'));
+    await new Promise(r => setTimeout(r, 140));
+    eqv('and neither does scrolling the pages',
+        doc.documentElement.getAttribute('data-chrome'), 'hidden');
+
+    /* ---- the mouse drag was removed ----
+       Synthesising a scroll and then synthesising its settle never matched
+       what the browser does natively, and a gesture that fights the hand is
+       worse than none. Pages turn by the side bands, the arrow keys and the
+       two buttons; trackpad and touch keep the native scroll they always had. */
+    const readerJs = require('fs').readFileSync(path.join(ROOT, 'assets/reader-ui.js'), 'utf8');
+    const readerCss = require('fs').readFileSync(path.join(ROOT, 'assets/reader-ui.css'), 'utf8');
+    ok('no drag handler remains', !/bindDrag/.test(readerJs));
+    ok('no pointer capture remains', !/setPointerCapture/.test(readerJs));
+    ok('no drag state remains', !/draggingNow|data-dragging/.test(readerJs));
+    ok('and none of its styling', !/cursor:grab|data-dragging/.test(readerCss));
+    ok('native scroll snapping still settles a page',
+       /scroll-snap-type:x mandatory/.test(readerCss));
+    ok('the sheet may be selected again', !/user-select:none/.test(readerCss));
+
     ok('flip mode clean after interaction',
        errors.filter(e => !/Could not load|net::|ENOENT|font/i.test(e)).length === 0);
+
   }
 
   /* flip is meaningless in verse view and must not engage there */
@@ -675,6 +942,113 @@ function eqv(name, got, want) {
     eqv('verse view never enters flip mode',
         doc.documentElement.getAttribute('data-flip'), 'off');
     ok('the flip bar stays out of the way', !!doc.querySelector('.flipbar'));
+  }
+
+  /* ---------- the sheet is sized against real space ---------- */
+  {
+    const fs6 = require('fs');
+    const js = fs6.readFileSync(path.join(ROOT, 'assets/quran.js'), 'utf8');
+    const rui = fs6.readFileSync(path.join(ROOT, 'assets/reader-ui.css'), 'utf8');
+    const qcss = fs6.readFileSync(path.join(ROOT, 'assets/quran.css'), 'utf8');
+
+    /* the height veto */
+    const min = (js.match(/var MIN_LINE = ([\d.]+);/) || [])[1];
+    ok('a minimum line height is defined', !!min, min);
+    ok('it leaves room for marks above and below the baseline',
+       parseFloat(min) >= 1.4 && parseFloat(min) <= 2.0, min);
+    ok('the fit takes the smaller of width and height',
+       /var size = Math\.min\(byWidth, byHeight\);/.test(js));
+    ok('the height budget is per line', /byHeight = h \/ LINES_PER_PAGE \/ minLine/.test(js));
+
+    /* The floor is asked of the font rather than assumed: each page is set in
+       its own face and their metrics differ. */
+    ok('the font is measured for its own line demand',
+       /probe\.style\.lineHeight = 'normal';/.test(js));
+    ok('measured against the reference size',
+       /natural = probe\.getBoundingClientRect\(\)\.height \/ REF;/.test(js));
+    ok('and the probe is put back as it was',
+       /probe\.style\.lineHeight = keep;/.test(js));
+    ok('the larger of the two floors wins',
+       /var minLine = Math\.max\(MIN_LINE, natural \* LINE_BREATH\);/.test(js));
+    const breath = parseFloat((js.match(/var LINE_BREATH = ([\d.]+);/) || [])[1]);
+    ok('clear air is kept above the font metric', breath > 1 && breath <= 1.25, String(breath));
+    ok('the width fit is no longer used directly',
+       !/var size = REF \* \(w \/ widest\);/.test(js));
+
+    /* the formula must never produce an overlapping line */
+    const MIN = parseFloat(min), L = 15, REF = 40;
+    let worst = Infinity, bad = null;
+    for (const h of [280, 320, 380, 480, 560, 700, 900, 1200]) {
+      for (const w of [300, 420, 560, 700, 900]) {
+        for (const widest of [700, 1000, 1400]) {
+          const size = Math.min(REF * (w / widest), h / L / MIN);
+          const line = h / L / size;
+          if (line < worst) { worst = line; bad = { h, w, widest, line }; }
+        }
+      }
+    }
+    ok('no viewport produces an overlapping line',
+       worst >= MIN - 1e-9, JSON.stringify(bad));
+
+    /* the padding that was collapsing the page */
+    ok('flip mode answers the player padding rule',
+       /html\[data-flip="on"\] body:has\(\.player\[data-show="true"\]\) \.wrap/.test(rui),
+       'it must match the same condition or quran.css wins on specificity');
+    ok('quran.css still pads for the player when scrolling',
+       /body:has\(\.player\[data-show="true"\]\) \.wrap\{padding-bottom/.test(qcss));
+    ok('the flip page takes the whole screen',
+       /html\[data-flip="on"\] body \.wrap,[\s\S]{0,200}?height:100dvh/.test(rui));
+    ok('the bar floats over it rather than displacing it',
+       /html\[data-flip="on"\] \.topbar\{position:fixed/.test(rui));
+    ok('the rail survives the bar withdrawing',
+       /html\[data-flip="on"\]\[data-chrome="hidden"\] \.topbar\{[\s\S]*?translateY\(calc\(-100% \+ var\(--topbar-rail/.test(rui));
+
+    /* verses beat the page number for space */
+    ok('the page number is kept on the sheet',
+       !/html\[data-flip="on"\] \.mushaf__foot\{display:none\}/.test(rui));
+    ok('and set tighter so it costs the text less',
+       /html\[data-flip="on"\] \.mushaf__foot\{margin-top:/.test(rui));
+    ok('the flip bar clears the player',
+       /html\[data-flip="on"\] \.flipbar\{bottom:var\(--player-h[^)]*\)\}/.test(rui));
+
+    /* reader-ui.css must load after quran.css for the override to hold */
+    const html = fs6.readFileSync(path.join(ROOT, 'surah.html'), 'utf8');
+    ok('reader-ui.css is loaded after quran.css',
+       html.indexOf('reader-ui.css') > html.indexOf('assets/quran.css'));
+  }
+
+  /* the space measurements reach the document */
+  {
+    const seed = win => {
+      win.localStorage.setItem('quran.settings.v1',
+        JSON.stringify({ mode: 'mushaf', flip: true, flipSeen: true }));
+    };
+    const { win, doc } = await loadPage('surah.html?s=2', 'measured chrome', seed);
+    const rootStyle = doc.documentElement.style;
+    ok('the top bar height is published', rootStyle.getPropertyValue('--topbar-h') !== '');
+
+    ok('the player height is published', rootStyle.getPropertyValue('--player-h') !== '');
+
+    /* The player's height is still measured — the flip bar has to sit above it
+       rather than under it — but it no longer changes the page's height, so
+       the sheet is never re-fitted when a verse is tapped. jsdom performs no
+       layout, so the player is given a height for the observer to notice. */
+    const playerEl = doc.getElementById('player');
+    playerEl.getBoundingClientRect = () => ({
+      height: 120, width: 400, top: 0, left: 0, right: 400, bottom: 120, x: 0, y: 0
+    });
+    playerEl.setAttribute('data-show', 'true');
+    await new Promise(r => setTimeout(r, 150));
+    eqv('the player height is measured for the flip bar to clear it',
+        doc.documentElement.style.getPropertyValue('--player-h'), '120.0px');
+
+    playerEl.getBoundingClientRect = () => ({
+      height: 0, width: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0
+    });
+    playerEl.setAttribute('data-show', 'false');
+    await new Promise(r => setTimeout(r, 150));
+    eqv('and released when it goes',
+        doc.documentElement.style.getPropertyValue('--player-h'), '0.0px');
   }
 
   /* ---------- night mode is one hue family ----------

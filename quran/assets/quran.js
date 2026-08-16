@@ -150,6 +150,16 @@
      naskh. Compute that, cap it at the reader's size, and if the result would
      fall below the legibility floor, stack the pages instead. */
   var LINES_PER_PAGE = 15;    /* every muṣḥaf page, by construction */
+  /* Floor for the line height, and the margin kept above whatever the font
+     itself asks for. Each muṣḥaf page has its own font with its own metrics,
+     so the real floor is measured per page (see fitExactPages) and this is
+     only the value used when that measurement is unavailable.
+
+     1.28 was tried first and was still too tight: the em box of these fonts
+     does not contain their ink. The marks above and below the baseline reach
+     well past it, so rows set to the em box alone still touched. */
+  var MIN_LINE = 1.45;
+  var LINE_BREATH = 1.08;   /* clear air on top of the font's own demand */
   var MIN_PAGE_SIZE = 1.05;   /* rem — below this the spread gives up */
   var EM_PER_LINE = 18;       /* target measure per line */
 
@@ -229,7 +239,35 @@
         });
         if (!widest) return;
 
-        var size = REF * (w / widest);
+        /* How much room this page's font actually needs for a line. Every
+           muṣḥaf page is set in its own font, and their metrics differ, so
+           the floor is asked of the font rather than assumed: line-height
+           normal resolves to the face's own ascent + descent + line gap, and
+           dividing by the size it was measured at gives the ratio. */
+        var natural = 0;
+        var probe = frame.querySelector('.mushaf__line .w');
+        if (probe) {
+          var keep = probe.style.lineHeight;
+          probe.style.lineHeight = 'normal';
+          natural = probe.getBoundingClientRect().height / REF;
+          probe.style.lineHeight = keep;
+        }
+        var minLine = Math.max(MIN_LINE, natural * LINE_BREATH);
+
+        /* Two constraints, not one. Fitting the widest line to the width is
+           what makes the sheet match print — but on a short viewport that size
+           leaves fifteen lines no room, and the line height computed below
+           would fall under the floor, crowding the marks of one row into the
+           row above. So the height gets a veto: whatever size lets fifteen
+           lines breathe is the ceiling, and the calligraphy shrinks to meet it.
+
+           In the scrolling view the sheet is tall enough that this rarely
+           binds; in page-flip mode, where the sheet must fit a laptop in
+           landscape, it is what keeps the page legible rather than overlapping. */
+        var byWidth = REF * (w / widest);
+        var byHeight = h / LINES_PER_PAGE / minLine;
+        var size = Math.min(byWidth, byHeight);
+
         frame.style.setProperty('--exact-size', size.toFixed(2) + 'px');
         frame.style.setProperty('--exact-line', (h / LINES_PER_PAGE / size).toFixed(4));
       });

@@ -30,18 +30,35 @@
 .where b{color:var(--ink-2);font-weight:600}
 
 /* ---------- page-flip mode ----------
-   One sheet at a time, filling the screen, turned by dragging sideways.
-   Built on scroll snapping rather than a custom drag handler: it inherits the
-   platform's own momentum, rubber-banding and accessibility, and a trackpad,
-   a touchscreen and the arrow keys all drive it without special cases.
+   One sheet at a time, filling the screen. Built on native scroll snapping: a
+   trackpad and a touchscreen scroll it themselves, with the platform's own
+   momentum and rubber-banding. A mouse turns pages by the bands down either
+   side, by the arrow keys, or by the two buttons in the bar.
 
    The document direction already runs right-to-left, so the next page lies to
    the left exactly as it does in a bound mus'haf. */
 html[data-flip="on"]{overflow:hidden}
 html[data-flip="on"] body{overflow:hidden;height:100dvh}
-html[data-flip="on"] .wrap{
-  padding:0;max-width:none;height:100dvh;display:flex;flex-direction:column;
+
+/* The sheet takes the entire screen. Nothing is reserved for the bars: they
+   are summoned, used, and dismissed, so holding a strip of the mus'haf empty
+   against the chance of wanting them is the wrong trade. They overlay instead.
+
+   The selector has to out-specify quran.css's
+       body:has(.player[data-show="true"]) .wrap{padding-bottom:10rem}
+   which is (0,3,1). That rule is right for a scrolling page, where the padding
+   keeps the last ayah clear of the player. Here .wrap *is* the page and is
+   border-box, so the same padding was carving ten rem out of the mus'haf
+   itself — the sheet visibly collapsed the moment a verse was tapped. */
+html[data-flip="on"] body .wrap,
+html[data-flip="on"] body:has(.player[data-show="true"]) .wrap{
+  padding:0;max-width:none;height:100dvh;
+  display:flex;flex-direction:column;
 }
+
+/* Out of the flow, so it costs the page no height. In the scrolling view it
+   stays sticky and in flow, where taking its own space is correct. */
+html[data-flip="on"] .topbar{position:fixed;inset-inline:0;top:0}
 html[data-flip="on"] #main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
 /* The settings sheet is a child of .wrap, which is now a full-height column —
    left in flow it would squeeze the sheet to nothing when opened. Taking it
@@ -49,7 +66,8 @@ html[data-flip="on"] #main{flex:1 1 auto;min-height:0;display:flex;flex-directio
    max-height is untouched, so its open/close animation still runs. */
 html[data-flip="on"] .wrap{position:relative}
 html[data-flip="on"] .settings{
-  position:absolute;inset-inline:0;top:0;z-index:41;padding:0 var(--pad);
+  position:absolute;inset-inline:0;top:var(--topbar-h,0px);z-index:39;
+  padding:0 var(--pad);
 }
 
 /* the header card, the sūrah nav and the intro are not part of a sheet */
@@ -68,6 +86,10 @@ html[data-flip="on"] .mushaf{
 }
 html[data-flip="on"] .mushaf::-webkit-scrollbar{display:none}
 
+/* No grab cursor: the mouse no longer drags the sheet. It turns pages by the
+   side bands, and selecting the text is once again something the reader is
+   free to do. */
+
 html[data-flip="on"] .mushaf__spread{
   flex:0 0 100%;width:100%;height:100%;
   scroll-snap-align:center;scroll-snap-stop:always;
@@ -79,6 +101,19 @@ html[data-flip="on"] .mushaf__page{
   flex:1 1 0;min-width:0;height:100%;display:flex;flex-direction:column;
 }
 html[data-flip="on"] .mushaf__frame{flex:1 1 auto;min-height:0}
+
+/* The page number belongs on the sheet, as it does in print. It is set tighter
+   here than in the scrolling view so it costs the calligraphy as little height
+   as possible — and because the fit is height-aware, whatever it does take is
+   accounted for rather than pushing a line off the page. */
+html[data-flip="on"] .mushaf__foot{margin-top:.4rem}
+html[data-flip="on"] .mushaf__num{width:26px;height:26px;font-size:.82rem}
+html[data-flip="on"] .mushaf__foot::before,
+html[data-flip="on"] .mushaf__foot::after{max-width:4rem}
+
+/* When the player slides up it would otherwise sit on top of the flip bar —
+   it has the higher stacking order. Lift the bar clear of it instead. */
+html[data-flip="on"] .flipbar{bottom:var(--player-h,0px)}
 
 /* chrome out of the way: the sheet gets the whole screen */
 html[data-flip="on"][data-chrome="hidden"] .topbar{
@@ -140,3 +175,8 @@ html[data-flip="on"] .flipbar{display:block}
   padding:.5rem 1rem;border-radius:var(--r-full);
   font-size:.79rem;font-weight:600;box-shadow:var(--shadow-lg);
 }
+
+/* The tap zones themselves are geometry, not style — see tapZone() in
+   reader-ui.js. No cursor is set for them: the whole sheet already shows a
+   grab handle, which stays true, because dragging still works everywhere
+   including over the side bands. */
