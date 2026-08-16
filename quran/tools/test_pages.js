@@ -670,8 +670,11 @@ function eqv(name, got, want) {
     ok('the position is stated', /صفحة/.test(doc.getElementById('flip-label').textContent));
     ok('and the count', /\//.test(doc.getElementById('flip-count').textContent));
 
-    /* on the first sheet there is nowhere back to */
-    ok('back is disabled on the first sheet', doc.getElementById('flip-prev').disabled === true);
+    /* Back is no longer spent on the first sheet: the cover sits behind it,
+       and beyond that the previous sūrah. It is only spent on the cover of
+       al-Fātiḥah, and forward only on the last page of an-Nās. */
+    ok('back leads somewhere from the first sheet',
+       doc.getElementById('flip-prev').disabled === false);
     ok('forward is available', doc.getElementById('flip-next').disabled === false);
 
     /* stepping forward moves the page and the progress */
@@ -945,6 +948,50 @@ function eqv(name, got, want) {
     await new Promise(r => setTimeout(r, 140));
     eqv('and neither does scrolling the pages',
         doc.documentElement.getAttribute('data-chrome'), 'hidden');
+
+    /* ---- the end of a sūrah is not a dead end ----
+       Flip mode hides the sūrah nav that carries a scrolling reader onward, so
+       the page controls have to cross the boundary themselves. */
+    const uiJs = require('fs').readFileSync(path.join(ROOT, 'assets/reader-ui.js'), 'utf8');
+    ok('a step past the last sheet leaves for the next sūrah',
+       /gotoSurah\(sid \+ dir, dir < 0\);/.test(uiJs));
+    ok('going back lands on the end of the previous one',
+       /at=end/.test(uiJs));
+    ok('the buttons are only spent where there is nowhere to go',
+       /var canBack = !atFirst \|\| \(!!coverEl\(\) && !onCover\) \|\| sid > 1;/.test(uiJs) &&
+       /var canFwd = onCover \|\| !atLast \|\| sid < 114;/.test(uiJs));
+    ok('and they name the sūrah they lead to',
+       /prev\.title = atFirst/.test(uiJs) && /surahName\(sid \+ 1\)/.test(uiJs));
+
+    /* on Al-Baqarah both directions have somewhere to go */
+    ok('back is available from the first page of sūrah 2',
+       doc.getElementById('flip-prev').disabled === false);
+    ok('forward is available from its last',
+       doc.getElementById('flip-next').disabled === false);
+
+    /* ---- the sūrah header is the sheet before the first page ---- */
+    const uiCss = require('fs').readFileSync(path.join(ROOT, 'assets/reader-ui.css'), 'utf8');
+    ok('the header card is not hidden in flip mode',
+       !/html\[data-flip="on"\] \.surah-head,/.test(uiCss));
+    ok('it is mounted as a cover sheet', /function mountCover\(\)/.test(uiJs));
+    ok('the cover sits first in the scroller',
+       /sc\.insertBefore\(cover, sc\.firstChild\)/.test(uiJs));
+    ok('and is moved back out when flip mode is off',
+       /main\.insertBefore\(card, main\.firstChild\)/.test(uiJs));
+
+    const cover = doc.querySelector('.mushaf__cover');
+    ok('a cover sheet exists', !!cover);
+    ok('it holds the sūrah header', !!(cover && cover.querySelector('.surah-head')));
+    ok('it is the first sheet', cover === doc.querySelector('.mushaf > *'));
+    ok('it names the sūrah', /البقرة/.test(cover ? cover.textContent : ''));
+    ok('and carries its facts', /مدنيّة|آية/.test(cover ? cover.textContent : ''));
+
+    /* stepping back from the first page reaches the cover, not the next sūrah */
+    doc.getElementById('flip-prev').click();
+    await new Promise(r => setTimeout(r, 150));
+    ok('stepping back from page one lands on the cover',
+       /تعريف السورة/.test(doc.getElementById('flip-label').textContent),
+       doc.getElementById('flip-label').textContent);
 
     /* ---- the mouse drag was removed ----
        Synthesising a scroll and then synthesising its settle never matched

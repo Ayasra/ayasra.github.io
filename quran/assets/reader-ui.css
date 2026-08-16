@@ -70,8 +70,10 @@ html[data-flip="on"] .settings{
   padding:0 var(--pad);
 }
 
-/* the header card, the sūrah nav and the intro are not part of a sheet */
-html[data-flip="on"] .surah-head,
+/* The sūrah nav belongs at the foot of a scrolling page; here the flip bar's
+   own buttons cross into the neighbouring sūrah instead. The standalone
+   basmala is printed on the sheet itself. The header card is not hidden — it
+   becomes the cover sheet; see the bottom of this file. */
 html[data-flip="on"] .surah-nav,
 html[data-flip="on"] .bismillah{display:none}
 
@@ -180,3 +182,16 @@ html[data-flip="on"] .flipbar{display:block}
    reader-ui.js. No cursor is set for them: the whole sheet already shows a
    grab handle, which stays true, because dragging still works everywhere
    including over the side bands. */
+
+/* ---------- the cover sheet ----------
+   The sūrah's header card, standing as the sheet before its first page. Flip
+   mode used to hide it, which left the reader arriving mid-mus'haf with
+   nothing naming the sūrah they had landed in. */
+html[data-flip="on"] .mushaf__cover{
+  align-items:center;justify-content:center;
+  padding:1rem clamp(.8rem,4vw,2rem);
+}
+html[data-flip="on"] .mushaf__cover .surah-head{
+  width:100%;max-width:34rem;margin:0;
+  max-height:100%;overflow-y:auto;
+}

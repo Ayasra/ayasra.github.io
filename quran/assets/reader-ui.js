@@ -22,6 +22,28 @@
   var main = document.getElementById('main');
   if (!topbar || !main) return;
 
+  var params = new URLSearchParams(location.search);
+  var sid = parseInt(params.get('s'), 10);
+  if (!(sid >= 1 && sid <= 114)) sid = 1;
+
+  /* quran.js loads the sūrah index itself, and asynchronously, so this is
+     asked for rather than cached. */
+  function surahName(id) {
+    var list = window.QURAN_SURAHS;
+    if (!list || id < 1 || id > 114) return '';
+    for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i].nameAr;
+    return '';
+  }
+
+  /* Leaving for a neighbouring sūrah. Going forward lands on its first sheet;
+     going back lands on its last, so that reversing out of a sūrah puts you
+     where you would have been had you read up to its end. */
+  function gotoSurah(id, atEnd) {
+    if (id < 1 || id > 114) return false;
+    location.href = 'surah.html?s=' + id + (atEnd ? '&at=end' : '');
+    return true;
+  }
+
   /* ---------------- the rail in the top bar ---------------- */
 
   var rail = document.createElement('div');
@@ -77,6 +99,7 @@
   var pages = [];          /* the .mushaf__page nodes, in order */
   var current = null;      /* page number */
   var surahPages = null;   /* [first, last] from the reader's own data */
+  var onCover = false;     /* looking at the sūrah's header rather than a page */
 
   function collect() {
     pages = Array.prototype.slice.call(main.querySelectorAll('.mushaf__page[data-page]'));
@@ -112,7 +135,14 @@
   function paint() {
     var pct, label = '', count = '';
 
-    if (surahPages && current != null) {
+    if (onCover && surahPages) {
+      /* The cover is not a page, so it reports none — but it is the beginning
+         of the sūrah, so the rail sits at zero. */
+      pct = 0;
+      label = 'تعريف السورة';
+      count = '—';
+      where.innerHTML = '<b>—</b>';
+    } else if (surahPages && current != null) {
       var total = surahPages[1] - surahPages[0] + 1;
       var idx = current - surahPages[0] + 1;
       pct = total > 1 ? (idx - 1) / (total - 1) : 1;
@@ -126,6 +156,39 @@
       where.innerHTML = '<b>' + count + '</b>';
     }
 
+    var prev = document.getElementById('flip-prev');
+    var next = document.getElementById('flip-next');
+    if (prev && next && surahPages) {
+      /* At the edge of a sūrah the buttons do not stop — they cross into the
+         next one. They are only spent at the two ends of the muṣḥaf itself. */
+      var atFirst = current <= surahPages[0];
+      var atLast = current >= surahPages[1];
+
+      /* A button is only spent when there is genuinely nowhere left to go.
+         Back still has somewhere from the first page of al-Fātiḥah — the cover
+         sits before it — so it is disabled only on the cover of the first
+         sūrah, and forward only on the last page of the last. */
+      var canBack = !atFirst || (!!coverEl() && !onCover) || sid > 1;
+      var canFwd = onCover || !atLast || sid < 114;
+      prev.disabled = !canBack;
+      next.disabled = !canFwd;
+
+      var before = surahName(sid - 1), after = surahName(sid + 1);
+      prev.title = atFirst
+        ? (before ? 'سورة ' + before : 'السورة السابقة')
+        : 'الصفحة السابقة';
+      next.title = atLast
+        ? (after ? 'سورة ' + after : 'السورة التالية')
+        : 'الصفحة التالية';
+      prev.setAttribute('aria-label', prev.title);
+      next.setAttribute('aria-label', next.title);
+
+      /* and the bar says so plainly, since a chevron alone cannot */
+      if (onCover) label = 'تعريف السورة';
+      else if (atLast && after) label = 'آخر صفحة · التالية سورة ' + after;
+      else if (atFirst && before) label = 'أول صفحة · السابقة سورة ' + before;
+    }
+
     railBar.style.width = (pct * 100).toFixed(1) + '%';
 
     var fb = document.getElementById('flip-bar');
@@ -134,13 +197,6 @@
     if (fl) fl.textContent = label;
     var fc = document.getElementById('flip-count');
     if (fc) fc.textContent = count;
-
-    var prev = document.getElementById('flip-prev');
-    var next = document.getElementById('flip-next');
-    if (prev && next && surahPages) {
-      prev.disabled = current <= surahPages[0];
-      next.disabled = current >= surahPages[1];
-    }
   }
 
   /* ---------------- the top bar getting out of the way ---------------- */
@@ -187,6 +243,38 @@
 
   function scroller() { return main.querySelector('.mushaf'); }
 
+  /* The sūrah's header card — its name, its meaning, where it was revealed,
+     how many ayahs — is a sibling of the sheets in the scrolling view. Flip
+     mode used to hide it outright, which meant the reader arrived in the
+     middle of a sūrah with nothing telling them which one.
+
+     It becomes the sheet before the first page instead: swipe back from page
+     one and there it is. Moving the node rather than duplicating it keeps a
+     single copy, so the reader's own render owns its contents as it always
+     did; when flip mode is turned off it goes back where it came from. */
+  function mountCover() {
+    var sc = scroller();
+    var head = main.querySelector('.surah-head');
+    if (!sc || !head) return;
+
+    if (isFlip()) {
+      if (head.parentNode && head.parentNode.classList.contains('mushaf__cover')) return;
+      var cover = document.createElement('div');
+      cover.className = 'mushaf__spread mushaf__cover';
+      cover.dataset.cover = '1';
+      sc.insertBefore(cover, sc.firstChild);
+      cover.appendChild(head);
+    } else {
+      var old = main.querySelector('.mushaf__cover');
+      if (!old) return;
+      var card = old.querySelector('.surah-head');
+      if (card) main.insertBefore(card, main.firstChild);
+      old.remove();
+    }
+  }
+
+  function coverEl() { return main.querySelector('.mushaf__cover'); }
+
   function spreadOf(pageNo) {
     var p = main.querySelector('.mushaf__page[data-page="' + pageNo + '"]');
     return p ? p.closest('.mushaf__spread') : null;
@@ -209,14 +297,29 @@
   function step(dir) {
     if (!surahPages) return;
     /* In a spread the two sheets turn together, so a step moves a whole
-       spread rather than a single page. */
-    var sp = spreadOf(current);
+       spread rather than a single page. The cover counts as one of them, so
+       stepping back from the first page lands on it rather than leaving the
+       sūrah outright. */
+    var sp = onCover ? coverEl() : spreadOf(current);
     var all = Array.prototype.slice.call(main.querySelectorAll('.mushaf__spread'));
     var i = all.indexOf(sp);
     var to = all[i + dir];
-    if (!to) return;
+    if (!to) {
+      /* The sheets ran out. In the scrolling view the sūrah nav at the foot of
+         the page carries the reader onward, but flip mode hides it — so the
+         page controls have to, or the end of a sūrah is a dead end. */
+      gotoSurah(sid + dir, dir < 0);
+      return;
+    }
+    if (to.dataset.cover) {
+      onCover = true;
+      try { to.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); }
+      catch (e) { to.scrollIntoView(); }
+      paint();
+      return;
+    }
     var pg = to.querySelector('.mushaf__page[data-page]');
-    if (pg) { current = +pg.dataset.page; goTo(current); paint(); }
+    if (pg) { onCover = false; current = +pg.dataset.page; goTo(current); paint(); }
   }
 
   function currentFromScroll() {
@@ -232,6 +335,7 @@
       if (d < bestD) { bestD = d; best = all[i]; }
     }
     if (best) {
+      onCover = !!best.dataset.cover;
       var pg = best.querySelector('.mushaf__page[data-page]');
       if (pg) current = +pg.dataset.page;
     }
@@ -443,8 +547,15 @@
 
   function sync() {
     collect();
+    mountCover();
     if (isFlip()) {
       bindScroller();
+      /* Arriving backwards out of the next sūrah: land on the last sheet, so
+         reversing puts the reader where reading up to the end would have. */
+      if (params.get('at') === 'end' && pages.length && !landed) {
+        current = +pages[pages.length - 1].dataset.page;
+        landed = true;
+      }
       /* land on the page the reader was already looking at */
       if (current) goTo(current, false);
       /* Opens bare. The bars are summoned when wanted rather than shown and
@@ -494,6 +605,7 @@
       .observe(player, { attributes: true, attributeFilter: ['data-show'] });
   }
 
+  var landed = false;      /* the ?at=end jump is honoured once, on arrival */
   var resync = null;
   new MutationObserver(function () {
     clearTimeout(resync);
