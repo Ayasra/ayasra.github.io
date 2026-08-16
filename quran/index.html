@@ -55,29 +55,28 @@
   }
   .filters button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
   .empty{text-align:center;padding:2.5rem 1rem;color:var(--ink-3);font-size:.9rem}
+  /* The count only says something while a filter or a search is narrowing the
+     list. Sitting there permanently reading 114/114 it said nothing at all. */
+  .found{text-align:center;margin:.9rem 0 0;font-size:.78rem;color:var(--ink-3)}
+  .hero__theme{
+    position:absolute;top:0;inset-inline-end:0;
+    width:36px;height:36px;display:grid;place-items:center;
+    border-radius:var(--r-full);color:#B9CCC7;
+    transition:background var(--t),color var(--t);
+  }
+  .hero__theme:hover{background:rgba(255,255,255,.10);color:#fff}
+  .hero__theme svg{width:19px;height:19px}
+  /* keep the title clear of the switch on a narrow screen */
+  .hero h1,.hero .hero__sub{padding-inline-end:2.8rem}
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="topbar__inner">
-    <a class="iconbtn iconbtn--back" href="../index.html" aria-label="رجوع">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
-    </a>
-    <div class="progress">
-      <div class="progress__row">
-        <span class="progress__label">القرآن الكريم</span>
-        <span class="progress__count" id="count"></span>
-      </div>
-    </div>
-    <button type="button" class="iconbtn" id="theme-toggle" aria-label="تبديل المظهر">
-      <svg viewBox="0 0 24 24" aria-hidden="true" id="theme-icon"></svg>
-    </button>
-  </div>
-</div>
-
 <header class="hero">
   <div class="hero__inner">
+    <button type="button" class="hero__theme" id="theme-toggle" aria-label="تبديل المظهر">
+      <svg viewBox="0 0 24 24" aria-hidden="true" id="theme-icon"></svg>
+    </button>
     <h1>القرآن الكريم</h1>
     <p class="hero__sub">بالرسم العثماني</p>
     <p>مع الترجمة والتفسير ومعاني الكلمات والتلاوة، وخطط للقراءة والحفظ والمراجعة —
@@ -142,12 +141,13 @@
     <button type="button" data-f="madinah" aria-pressed="false">مدنيّة</button>
   </div>
 
+  <p class="found" id="count" hidden></p>
   <ul class="surah-grid" id="grid"></ul>
   <p class="empty" id="empty" hidden>لا توجد نتائج مطابقة.</p>
 
   <footer class="pagefoot">
     <p>النص بالرسم العثماني · الترجمة: Saheeh International · التفسير: الميسر، السعدي، وابن كثير</p>
-    <p><a href="../index.html">مصعب الأياصرة</a> · <a href="../Thekr/index.html">الأذكار</a></p>
+    <p><a href="../index.html">الرئيسية</a> · <a href="../Thekr/index.html">الأذكار</a></p>
   </footer>
 
 </div>
@@ -198,7 +198,9 @@
       grid.appendChild(li);
     });
     empty.hidden = shown.length > 0;
-    countEl.textContent = shown.length + ' / ' + list.length;
+    var narrowed = filter !== 'all' || !!term;
+    countEl.hidden = !narrowed || !shown.length;
+    countEl.textContent = narrowed ? ar(shown.length) + ' من ' + ar(list.length) + ' سورة' : '';
   }
 
   /* surahs.js assigns window.QURAN_SURAHS; a plain <script> works over

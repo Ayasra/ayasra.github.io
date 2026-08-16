@@ -238,8 +238,42 @@ function eqv(name, got, want) {
 
   /* ---------- Quran/index.html ---------- */
   {
-    const { doc, errors } = await loadPage('index.html', 'index.html');
+    const { win, doc, errors } = await loadPage('index.html', 'index.html');
     ok('index.html boots clean', errors.length === 0, errors.join(' | '));
+
+    /* The bar there carried a back arrow the footer already provides, a title
+       the hero already states, and a count that read 114/114 forever. */
+    ok('the surah index has no top bar', !doc.querySelector('.topbar'));
+    ok('and the hero still names the section', !!doc.querySelector('.hero h1'));
+    ok('the footer still leads back out',
+       !!doc.querySelector('.pagefoot a[href="../index.html"]'));
+    ok('and no longer carries a name',
+       !/مصعب/.test(doc.querySelector('.pagefoot').textContent),
+       doc.querySelector('.pagefoot').textContent.trim());
+
+    /* the one control that had nowhere else to live */
+    const themeBtn = doc.getElementById('theme-toggle');
+    ok('the theme switch survived the bar', !!themeBtn);
+    ok('it moved into the hero', !!doc.querySelector('.hero .hero__theme'));
+    ok('and it is painted', doc.getElementById('theme-icon').innerHTML.length > 0);
+    const themeBefore = JSON.parse(win.localStorage.getItem('quran.settings.v1') || '{}').theme;
+    themeBtn.click();
+    await new Promise(r => setTimeout(r, 60));
+    const themeAfter = JSON.parse(win.localStorage.getItem('quran.settings.v1') || '{}').theme;
+    ok('and it still changes the theme', themeAfter && themeAfter !== themeBefore,
+       `${themeBefore} -> ${themeAfter}`);
+
+    /* the count now only speaks when it has something to say */
+    const countEl = doc.getElementById('count');
+    ok('the count is silent on a full list', countEl.hidden === true);
+    doc.querySelector('.filters button[data-f="makkah"]').click();
+    await new Promise(r => setTimeout(r, 60));
+    ok('and appears once the list is narrowed', countEl.hidden === false);
+    ok('reading how many of how many', /من/.test(countEl.textContent), countEl.textContent);
+    doc.querySelector('.filters button[data-f="all"]').click();
+    await new Promise(r => setTimeout(r, 60));
+    ok('then goes quiet again', countEl.hidden === true);
+
     ok('plans link present', !!doc.querySelector('.plans-link[href="plan.html"]'));
     ok('hifz link present', !!doc.querySelector('.plans-link[href="hifz.html"]'));
     ok('surah grid rendered', doc.querySelectorAll('.surah-link').length === 114);
