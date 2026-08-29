@@ -38,6 +38,7 @@
     hifz:     'quran.hifz.v1',
     notes:    'quran.notes.v1',
     marks:    'quran.marks.v1',
+    tombs:    'quran.tombs.v1',
     prefs:    'quran.tracker.v1'
   };
 
@@ -45,8 +46,32 @@
     try { var r = localStorage.getItem(k); return r ? JSON.parse(r) : d; }
     catch (e) { return d; }
   }
+  /* Anything that wants to know the store changed — the sync layer, chiefly —
+     registers here rather than polling. */
+  var watchers = [];
+  var muted = 0;
+
+  function notify(k) {
+    if (muted) return;
+    for (var i = 0; i < watchers.length; i++) {
+      try { watchers[i](k); } catch (e) {}
+    }
+  }
+
+  /* Applying a merge writes many keys, and each would otherwise be announced
+     as a local change and pushed straight back to where it came from. Work
+     done inside `silently` is not reported. */
+  function silently(fn) {
+    muted++;
+    try { return fn(); } finally { muted--; }
+  }
+
   function write(k, v) {
-    try { localStorage.setItem(k, JSON.stringify(v)); return true; }
+    try {
+      localStorage.setItem(k, JSON.stringify(v));
+      notify(k);
+      return true;
+    }
     catch (e) {
       /* Quota. The caller decides what to do; the dashboard surfaces it. */
       if (root.console) console.warn('tracker: could not save ' + k, e);
@@ -57,6 +82,81 @@
   function uid(prefix) {
     return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
+
+  function now() { return Date.now(); }
+
+  /* ---------------- tombstones ----------------
+     A delete has to leave something behind. Without a record that a thing was
+     deliberately removed, a merge cannot tell "deleted here" from "not yet
+     seen here" — so the next sync from another device hands the mark, the
+     plan or the memorised page straight back, and it looks to the reader like
+     the app ignored them.
+
+     One register for the whole store, keyed by kind and id, holding the moment
+     of death. Small: a few dozen bytes per grave, and they are swept once a
+     resurrection is no longer plausible. */
+
+  var TOMB_TTL_DAYS = 180;
+
+  var Tombs = {
+    all: function () {
+      var t = read(K.tombs, null);
+      return (t && typeof t === 'object') ? t : {};
+    },
+
+    key: function (kind, id) { return kind + ':' + id; },
+
+    /* Record a death. Returns the timestamp written, so callers can stamp the
+       same moment onto anything derived from it. */
+    mark: function (kind, id, at) {
+      var t = Tombs.all();
+      t[Tombs.key(kind, id)] = at || now();
+      write(K.tombs, t);
+      return t[Tombs.key(kind, id)];
+    },
+
+    markAll: function (kind, ids, at) {
+      var t = Tombs.all();
+      var stamp = at || now();
+      for (var i = 0; i < ids.length; i++) t[Tombs.key(kind, ids[i])] = stamp;
+      write(K.tombs, t);
+      return stamp;
+    },
+
+    /* When was this buried? 0 means it never was. */
+    at: function (kind, id) { return Tombs.all()[Tombs.key(kind, id)] || 0; },
+
+    has: function (kind, id) { return !!Tombs.all()[Tombs.key(kind, id)]; },
+
+    /* A record survives a merge only if it was touched after it was buried —
+       which is how an edit on one device can legitimately undo a delete on
+       another, rather than the delete always winning by virtue of being last
+       in the code. */
+    buries: function (kind, id, updatedAt) {
+      var died = Tombs.at(kind, id);
+      return died > 0 && died >= (updatedAt || 0);
+    },
+
+    /* Resurrect: used when a record legitimately comes back. */
+    lift: function (kind, id) {
+      var t = Tombs.all();
+      delete t[Tombs.key(kind, id)];
+      write(K.tombs, t);
+    },
+
+    prune: function (maxAgeDays) {
+      var cutoff = now() - (maxAgeDays || TOMB_TTL_DAYS) * 86400000;
+      var t = Tombs.all(), kept = {}, dropped = 0;
+      for (var k in t) {
+        if (!Object.prototype.hasOwnProperty.call(t, k)) continue;
+        if (t[k] >= cutoff) kept[k] = t[k]; else dropped++;
+      }
+      if (dropped) write(K.tombs, kept);
+      return dropped;
+    },
+
+    count: function () { return Object.keys(Tombs.all()).length; }
+  };
 
   /* ---------------- dates ----------------
      All day keys are local-time 'YYYY-MM-DD'. Deliberately not UTC: a session
@@ -293,6 +393,7 @@
     remove: function (id) {
       var all = read(K.sessions, []).filter(function (s) { return s.id !== id; });
       write(K.sessions, all);
+      Tombs.mark('session', id);
     },
 
     /* Merged coverage for a type, optionally limited to one plan.
@@ -490,7 +591,8 @@
            moves the finish line. */
         behind: spec.behind === 'extend' ? 'extend' : 'redistribute',
         archived: false,
-        createdAt: Date.now()
+        createdAt: now(),
+        updatedAt: now()
       };
       all.push(p);
       write(K.plans, all);
@@ -502,6 +604,7 @@
       for (var i = 0; i < all.length; i++) {
         if (all[i].id === id) {
           for (var k in patch) if (Object.prototype.hasOwnProperty.call(patch, k)) all[i][k] = patch[k];
+          all[i].updatedAt = now();
           write(K.plans, all);
           return all[i];
         }
@@ -511,6 +614,7 @@
 
     remove: function (id) {
       write(K.plans, read(K.plans, []).filter(function (p) { return p.id !== id; }));
+      Tombs.mark('plan', id);
     },
 
     /* Everything the dashboard needs about one plan, derived fresh. */
@@ -731,7 +835,8 @@
         startDate: today(),
         behind: 'extend',
         archived: false,
-        createdAt: Date.now()
+        createdAt: now(),
+        updatedAt: now()
       };
       plans.push(p);
       write(K.plans, plans);
@@ -763,15 +868,15 @@
       if (!step) return 0;
       var rs = stepRanges(step);
       var all = read(K.sessions, []);
-      var keep = [], dropped = 0;
+      var keep = [], gone = [], dropped = 0;
       for (var i = 0; i < all.length; i++) {
         var s = all[i];
         var inside = s.planId === plan.id && s.manual && rs.some(function (r) {
           return s.from >= r[0] && s.to <= r[1];
         });
-        if (inside) dropped++; else keep.push(s);
+        if (inside) { dropped++; gone.push(s.id); } else keep.push(s);
       }
-      if (dropped) write(K.sessions, keep);
+      if (dropped) { write(K.sessions, keep); Tombs.markAll('session', gone); }
       return dropped;
     },
 
@@ -821,8 +926,52 @@
     var s = read(K.hifz, null);
     if (!s || typeof s !== 'object') s = {};
     if (!s.pages || typeof s.pages !== 'object') s.pages = {};
-    if (!s.slips || typeof s.slips !== 'object') s.slips = {};
+
+    /* Slips used to be a counter per ayah: { "262": { n: 3, last: … } }.
+       A counter cannot survive being edited on two devices — each raises it to
+       4, last-write-wins keeps one, and a stumble is silently forgotten. They
+       are events now, appended and never mutated, exactly like the session log,
+       which is why that log has never needed conflict handling.
+
+       Old counters are converted on first read: n events, dated to the last
+       time the ayah was flagged, since that is all the original recorded. */
+    s.slips = normalizeSlips(s.slips);
     return s;
+  }
+
+  /* Counters in, events out. Used both when reading our own store and when
+     merging one that arrived from a device that has not migrated yet. */
+  function normalizeSlips(slips) {
+    if (Array.isArray(slips)) return slips;
+    var old = slips && typeof slips === 'object' ? slips : {};
+    var events = [];
+    for (var g in old) {
+      if (!Object.prototype.hasOwnProperty.call(old, g)) continue;
+      var v = old[g] || {};
+      for (var i = 0; i < (v.n || 0); i++) {
+        events.push({ id: uid('sl_'), g: +g, at: v.last || now(), k: 's' });
+      }
+    }
+    return events;
+  }
+
+  /* Count and recency per ayah, folded out of the events. A clear cancels a
+     slip; the tally never goes below zero, so two devices both clearing the
+     same stumble is harmless rather than negative. */
+  function slipTally(s) {
+    var out = {};
+    var ev = Array.isArray(s.slips) ? s.slips : [];
+    for (var i = 0; i < ev.length; i++) {
+      var e = ev[i], key = String(e.g);
+      if (!out[key]) out[key] = { n: 0, last: 0 };
+      if (e.k === 'c') out[key].n -= 1;
+      else {
+        out[key].n += 1;
+        if (e.at > out[key].last) out[key].last = e.at;
+      }
+    }
+    for (var k in out) if (out[k].n < 0) out[k].n = 0;
+    return out;
   }
   function saveHifz(s) { return write(K.hifz, s); }
 
@@ -840,6 +989,7 @@
   function blankPage(p, state, learnedOn) {
     return {
       p: p,
+      updatedAt: now(),
       state: state || 'learning',
       learnedOn: learnedOn || null,
       interval: 0,
@@ -915,6 +1065,7 @@
     setPrefs: function (patch) {
       var p = read(K.prefs, {});
       for (var k in patch) if (Object.prototype.hasOwnProperty.call(patch, k)) p[k] = patch[k];
+      p.updatedAt = now();
       write(K.prefs, p);
       return prefs();
     },
@@ -973,6 +1124,7 @@
       var s = hifzStore();
       delete s.pages[String(p)];
       saveHifz(s);
+      Tombs.mark('hifz', String(p));
     },
 
     /* sabaq -> sabqi. Logs a hifz session for the page's ayahs. */
@@ -984,6 +1136,7 @@
       rec.learnedOn = today();
       rec.due = addDays(rec.learnedOn, 1);
       rec.interval = 1;
+      rec.updatedAt = now();
       saveHifz(s);
 
       var r = Index.pageRange(p);
@@ -1003,6 +1156,7 @@
       var wasQueue = queueOf(rec, day);
       reschedule(rec, rating, day);
       rec.lastReview = day;
+      rec.updatedAt = now();
       rec.history.push({ d: day, r: rating });
       if (rec.history.length > 12) rec.history = rec.history.slice(-12);
 
@@ -1010,12 +1164,12 @@
          settled, so its slips fade rather than accumulating for ever. */
       if (rating === 'clean') {
         var r = Index.pageRange(p);
-        for (var key in s.slips) {
-          if (!Object.prototype.hasOwnProperty.call(s.slips, key)) continue;
+        var tally = slipTally(s);
+        for (var key in tally) {
+          if (!Object.prototype.hasOwnProperty.call(tally, key)) continue;
           var g = +key;
-          if (g < r[0] || g > r[1]) continue;
-          s.slips[key].n -= 1;
-          if (s.slips[key].n <= 0) delete s.slips[key];
+          if (g < r[0] || g > r[1] || !tally[key].n) continue;
+          s.slips.push({ id: uid('sl_'), g: g, at: now(), k: 'c' });
         }
       }
       saveHifz(s);
@@ -1052,26 +1206,32 @@
     slip: function (g) {
       var s = hifzStore();
       g = Index.clamp(g);
-      var k = String(g);
-      if (!s.slips[k]) s.slips[k] = { n: 0, last: 0 };
-      s.slips[k].n++;
-      s.slips[k].last = Date.now();
+      s.slips.push({ id: uid('sl_'), g: g, at: now(), k: 's' });
       saveHifz(s);
-      return s.slips[k];
+      return slipTally(s)[String(g)];
     },
 
+    /* Clearing is itself an event, not a deletion: enough cancellations to
+       bring this ayah to zero. Appending rather than removing is what lets two
+       devices reconcile without either of them losing a stumble. */
     clearSlip: function (g) {
       var s = hifzStore();
-      delete s.slips[String(g)];
-      saveHifz(s);
+      g = Index.clamp(g);
+      var have = (slipTally(s)[String(g)] || { n: 0 }).n;
+      for (var i = 0; i < have; i++) {
+        s.slips.push({ id: uid('sl_'), g: g, at: now(), k: 'c' });
+      }
+      if (have) saveHifz(s);
+      return have;
     },
 
     slipsOn: function (p) {
-      var r = Index.pageRange(p), s = hifzStore(), out = [];
-      for (var k in s.slips) {
-        if (!Object.prototype.hasOwnProperty.call(s.slips, k)) continue;
+      var r = Index.pageRange(p), tally = slipTally(hifzStore()), out = [];
+      for (var k in tally) {
+        if (!Object.prototype.hasOwnProperty.call(tally, k)) continue;
         var g = +k;
-        if (g >= r[0] && g <= r[1]) out.push({ g: g, n: s.slips[k].n, last: s.slips[k].last });
+        if (!tally[k].n) continue;
+        if (g >= r[0] && g <= r[1]) out.push({ g: g, n: tally[k].n, last: tally[k].last });
       }
       return out.sort(function (a, b) { return a.g - b.g; });
     },
@@ -1079,11 +1239,12 @@
     /* Ranked by how often you slip and how recently. A page you stumbled on
        twice last week outranks one you stumbled on three times a year ago. */
     weakest: function (limit) {
-      var s = hifzStore(), now = Date.now(), out = [];
-      for (var k in s.slips) {
-        if (!Object.prototype.hasOwnProperty.call(s.slips, k)) continue;
-        var v = s.slips[k];
-        var ageDays = (now - (v.last || now)) / 86400000;
+      var tally = slipTally(hifzStore()), t = now(), out = [];
+      for (var k in tally) {
+        if (!Object.prototype.hasOwnProperty.call(tally, k)) continue;
+        var v = tally[k];
+        if (!v.n) continue;
+        var ageDays = (t - (v.last || t)) / 86400000;
         out.push({
           g: +k,
           n: v.n,
@@ -1223,7 +1384,8 @@
       var c = {
         id: uid('c_'),
         name: (name || '').trim() || 'تصنيف',
-        color: color || '#0E3B39'
+        color: color || '#0E3B39',
+        updatedAt: now()
       };
       s.cats.push(c);
       saveMarks(s);
@@ -1236,6 +1398,7 @@
         if (s.cats[i].id !== id) continue;
         if (patch.name != null) s.cats[i].name = String(patch.name).trim() || s.cats[i].name;
         if (patch.color != null) s.cats[i].color = patch.color;
+        s.cats[i].updatedAt = now();
         saveMarks(s);
         return s.cats[i];
       }
@@ -1249,13 +1412,22 @@
     removeCat: function (id, moveTo) {
       var s = marksStore();
       if (s.cats.length <= 1) return false;
+      var stamp = now();
       s.cats = s.cats.filter(function (c) { return c.id !== id; });
       if (moveTo) {
-        s.items.forEach(function (m) { if (m.cat === id) m.cat = moveTo; });
+        /* Rehoused, not deleted — but they changed, so they are stamped or a
+           merge would take the other device's older copy with the old category. */
+        s.items.forEach(function (m) {
+          if (m.cat === id) { m.cat = moveTo; m.updatedAt = stamp; }
+        });
       } else {
+        var doomed = s.items.filter(function (m) { return m.cat === id; })
+                            .map(function (m) { return m.id; });
         s.items = s.items.filter(function (m) { return m.cat !== id; });
+        if (doomed.length) Tombs.markAll('mark', doomed, stamp);
       }
       saveMarks(s);
+      Tombs.mark('cat', id, stamp);
       return true;
     },
 
@@ -1299,7 +1471,7 @@
 
       var rec = {
         id: uid('m_'), cat: cat, from: from, to: to,
-        note: spec.note || '', at: Date.now()
+        note: spec.note || '', at: now(), updatedAt: now()
       };
       s.items.push(rec);
       saveMarks(s);
@@ -1317,6 +1489,7 @@
         if (s.items[i].to < s.items[i].from) {
           var t = s.items[i].from; s.items[i].from = s.items[i].to; s.items[i].to = t;
         }
+        s.items[i].updatedAt = now();
         saveMarks(s);
         return s.items[i];
       }
@@ -1327,7 +1500,7 @@
       var s = marksStore();
       var before = s.items.length;
       s.items = s.items.filter(function (m) { return m.id !== id; });
-      if (s.items.length !== before) saveMarks(s);
+      if (s.items.length !== before) { saveMarks(s); Tombs.mark('mark', id); }
       return before - s.items.length;
     },
 
@@ -1488,6 +1661,7 @@
       }
       /* The reader's own keys ride along — a backup that loses your bookmarks
          is not a backup. */
+      out.data.tombs = Tombs.all();
       out.data.bookmarks = read('quran.bookmarks.v1', null);
       out.data.settings = read('quran.settings.v1', null);
       out.data.last = read('quran.last.v1', null);
@@ -1502,6 +1676,11 @@
        is what you want when two devices have both been used. */
     import: function (obj, mode) {
       if (!obj || obj.format !== 'quran-tracker') throw new Error('ملف غير معروف');
+      return silently(function () { return IO._apply(obj, mode); });
+    },
+
+    /* The body of an import, separated so it can run muted. */
+    _apply: function (obj, mode) {
       var d = obj.data || {};
       var replace = mode !== 'merge';
 
@@ -1511,15 +1690,72 @@
           if (d[name] != null) write(K[name], d[name]);
         }
       } else {
-        if (d.sessions) write(K.sessions, mergeById(read(K.sessions, []), d.sessions));
-        if (d.plans)    write(K.plans,    mergeById(read(K.plans, []),    d.plans));
-        if (d.hifz)     write(K.hifz,     Object.assign({}, d.hifz, read(K.hifz, {})));
-        if (d.notes)    write(K.notes,    mergeById(read(K.notes, []),    d.notes));
+        /* Graves first: everything below asks whether a record was deleted,
+           and it has to know about the other device's deletions to answer. */
+        mergeTombs(d.tombs);
+
+        if (d.sessions) {
+          write(K.sessions, mergeAppendOnly(read(K.sessions, []), d.sessions, 'session'));
+        }
+        if (d.plans) {
+          write(K.plans, mergeMutable(read(K.plans, []), d.plans, 'plan',
+                                      function (p) { return p.id; }));
+        }
+        if (d.notes) {
+          write(K.notes, mergeAppendOnly(read(K.notes, []), d.notes, 'note'));
+        }
+
+        if (d.hifz) {
+          var hMine = hifzStore();
+          var hTheirs = d.hifz && typeof d.hifz === 'object' ? d.hifz : {};
+          /* Their store may still hold the old counter shape; fold it through
+             the same reader that migrates ours. */
+          var theirSlips = normalizeSlips(hTheirs.slips);
+          var pages = mergeMutable(objValues(hMine.pages),
+                                   objValues(hTheirs.pages || {}),
+                                   'hifz', function (p) { return p.p; });
+          var asMap = {};
+          pages.forEach(function (p) { asMap[String(p.p)] = p; });
+          write(K.hifz, {
+            pages: asMap,
+            slips: mergeAppendOnly(hMine.slips, theirSlips, 'slip'),
+            migrated: hMine.migrated || hTheirs.migrated
+          });
+        }
+
+        if (d.marks) {
+          var mMine = marksStore();
+          var mTheirs = d.marks && typeof d.marks === 'object' ? d.marks : {};
+          write(K.marks, {
+            cats: mergeMutable(mMine.cats, mTheirs.cats || [], 'cat',
+                               function (c) { return c.id; }),
+            items: mergeMutable(mMine.items, mTheirs.items || [], 'mark',
+                                function (m) { return m.id; }),
+            migrated: mMine.migrated || mTheirs.migrated
+          });
+        }
+
+        if (d.prefs) {
+          var pMine = read(K.prefs, {});
+          if ((d.prefs.updatedAt || 0) > (pMine.updatedAt || 0)) write(K.prefs, d.prefs);
+        }
       }
 
       if (d.bookmarks) write('quran.bookmarks.v1', d.bookmarks);
+
+      /* Settings stay on the device that holds them. Font size, theme and
+         whether pages flip are answers to "what is this screen like", not to
+         "who am I" — a phone and a laptop want different ones. */
       if (d.settings && replace) write('quran.settings.v1', d.settings);
-      if (d.last) write('quran.last.v1', d.last);
+
+      /* Where you stopped reading, on the other hand, is exactly what should
+         follow you between devices. Newest wins. */
+      if (d.last) {
+        var lastMine = read('quran.last.v1', null);
+        if (!lastMine || (d.last.at || 0) > (lastMine.at || 0)) {
+          write('quran.last.v1', d.last);
+        }
+      }
       return true;
     },
 
@@ -1543,12 +1779,77 @@
     }
   };
 
-  function mergeById(mine, theirs) {
-    var seen = {};
+  /* ---------------- merging two divergent copies ----------------
+     Written here, against the local store, because this is the whole of the
+     hard part. A sync layer on top of it only has to move bytes.
+
+     The store falls into two kinds, and they merge differently:
+
+       append-only   sessions, slip events. Immutable once written and keyed by
+                     a unique id, so the union of both sides is the answer and
+                     there is no conflict to resolve. Ever.
+
+       mutable       plans, memorised pages, marks, categories. Resolved one
+                     record at a time by whichever was touched last. Resolving
+                     per *document* instead — taking whichever store was saved
+                     last — is the mistake that quietly discards a whole
+                     device's work.
+
+     Deletes are consulted throughout. A record buried after its last edit
+     stays buried; a record edited after it was buried comes back, because that
+     edit is the newer statement of intent. */
+
+  function mergeAppendOnly(mine, theirs, kind) {
+    var seen = {}, out = [];
+    function push(x) {
+      if (!x || !x.id || seen[x.id]) return;
+      if (Tombs.has(kind, x.id)) return;
+      seen[x.id] = 1;
+      out.push(x);
+    }
+    (mine || []).forEach(push);
+    (theirs || []).forEach(push);
+    return out;
+  }
+
+  function mergeMutable(mine, theirs, kind, keyOf) {
+    var best = {}, order = [];
+    function take(x) {
+      if (!x) return;
+      var id = String(keyOf(x));
+      if (!(id in best)) { best[id] = x; order.push(id); return; }
+      if ((x.updatedAt || 0) > (best[id].updatedAt || 0)) best[id] = x;
+    }
+    (mine || []).forEach(take);
+    (theirs || []).forEach(take);
+
     var out = [];
-    var push = function (x) { if (x && x.id && !seen[x.id]) { seen[x.id] = 1; out.push(x); } };
-    mine.forEach(push);
-    theirs.forEach(push);
+    for (var i = 0; i < order.length; i++) {
+      var rec = best[order[i]];
+      if (Tombs.buries(kind, keyOf(rec), rec.updatedAt || 0)) continue;
+      out.push(rec);
+    }
+    return out;
+  }
+
+  /* Graves are unioned, keeping the earliest known death — a thing deleted at
+     noon on one device and edited at one o'clock on another should come back,
+     and that only works if the death is remembered at its true time. */
+  function mergeTombs(theirs) {
+    if (!theirs || typeof theirs !== 'object') return 0;
+    var mine = Tombs.all(), added = 0;
+    for (var k in theirs) {
+      if (!Object.prototype.hasOwnProperty.call(theirs, k)) continue;
+      var t = theirs[k];
+      if (!mine[k] || t < mine[k]) { mine[k] = t; added++; }
+    }
+    if (added) write(K.tombs, mine);
+    return added;
+  }
+
+  function objValues(o) {
+    var out = [];
+    for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) out.push(o[k]);
     return out;
   }
 
@@ -1614,6 +1915,19 @@
 
   root.QuranTracker = {
     init: init,
+
+    /* Told whenever the store changes, so a sync layer never has to poll.
+       Returns an unsubscribe. */
+    onChange: function (cb) {
+      if (typeof cb !== 'function') return function () {};
+      watchers.push(cb);
+      return function () {
+        var i = watchers.indexOf(cb);
+        if (i !== -1) watchers.splice(i, 1);
+      };
+    },
+    silently: silently,
+
     ready: function () { return !!IDX; },
     keys: K,
     index: Index,
@@ -1622,12 +1936,15 @@
     plans: Plans,
     hifz: Hifz,
     marks: Marks,
+    tombs: Tombs,
     stats: Stats,
     io: IO,
     fmt: Fmt,
     date: { today: today, dayKey: dayKey, addDays: addDays, daysBetween: daysBetween },
     /* exposed for the test harness */
     _internal: { normalize: normalize, clipTo: clipTo, measure: measure, firstGap: firstGap,
+                 mergeAppendOnly: mergeAppendOnly, mergeMutable: mergeMutable,
+                 mergeTombs: mergeTombs, normalizeSlips: normalizeSlips, slipTally: slipTally,
                  scopeRange: scopeRange, scopeLabel: scopeLabel,
                  queueOf: queueOf, isDue: isDue, reschedule: reschedule,
                  blankPage: blankPage, DEFAULT_PREFS: DEFAULT_PREFS }

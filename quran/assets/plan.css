@@ -218,3 +218,20 @@ html[data-theme="night"] .warnbar svg{stroke:#F0918A}
 @media (prefers-reduced-motion:reduce){
   .plan__bar,.today__ring .val{transition:none}
 }
+
+/* ---------- sync ---------- */
+.synccard{
+  display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:.9rem 1.05rem;
+}
+.synccard__who{flex:1 1 12rem;min-width:0}
+.synccard__who b{display:block;font-size:.92rem;color:var(--ink);font-weight:600}
+.synccard__who small{display:block;font-size:.76rem;color:var(--ink-3);margin-top:.1rem}
+.synccard__dot{
+  flex:0 0 auto;width:9px;height:9px;border-radius:50%;background:var(--ink-3);
+}
+.synccard[data-status="signed-in"] .synccard__dot{background:var(--done)}
+.synccard[data-status="syncing"] .synccard__dot{background:var(--gold)}
+.synccard[data-status="error"] .synccard__dot{background:#B4413B}
+.synccard__actions{display:flex;gap:.4rem;margin-inline-start:auto;flex-wrap:wrap}

@@ -48,6 +48,8 @@ function eq(name, got, want) {
   ok(name, got === want, 'got ' + JSON.stringify(got) + ', want ' + JSON.stringify(want));
 }
 function reset() { store.clear(); }
+function store2Get(k) { return store.get(k); }
+function store2Set(k, v) { store.set(k, v); }
 
 /* ===================== index ===================== */
 
@@ -972,6 +974,154 @@ reset();
 const clamped = MK.add({ cat: 'hifz', from: 0, to: 99999 });
 eq('range start clamped', clamped.from, 1);
 eq('range end clamped', clamped.to, 6236);
+
+/* ===================== two devices =====================
+   The store has to survive being used in two places at once. These stand a
+   phone and a laptop up in the same sandbox by snapshotting one, editing the
+   other, and merging — which is exactly what the sync layer will do, minus the
+   network. */
+
+function snapshot() { return JSON.parse(JSON.stringify(QT.io.export())); }
+function mergeIn(snap) { QT.io.import(snap, 'merge'); }
+
+/* ---- append-only collections union without conflict ---- */
+reset();
+QT.sessions.add({ type: 'read', from: 1, to: 7, seconds: 100 });
+const phoneA = snapshot();
+QT.sessions.add({ type: 'read', from: 8, to: 20, seconds: 200 });   /* phone reads on */
+const phoneB = snapshot();
+
+reset();                                    /* the laptop, from the earlier copy */
+mergeIn(phoneA);
+QT.sessions.add({ type: 'read', from: 21, to: 30, seconds: 300 });  /* laptop reads too */
+mergeIn(phoneB);
+eq('both devices’ sessions survive', QT.sessions.list().length, 3);
+eq('and the coverage is the union', JSON.stringify(QT.sessions.coverage('read')), '[[1,30]]');
+
+/* merging the same thing twice must change nothing */
+const countBeforeReMerge = QT.sessions.list().length;
+mergeIn(phoneB);
+eq('merging again is a no-op', QT.sessions.list().length, countBeforeReMerge);
+
+/* ---- a delete must not come back ---- */
+reset();
+const keepMark = MK.add({ cat: 'hifz', from: 10 });
+const killMark = MK.add({ cat: 'dua', from: 20 });
+const withBoth = snapshot();
+
+MK.remove(killMark.id);                      /* deleted on this device */
+eq('deleted here', MK.list().length, 1);
+ok('and a grave was dug', QT.tombs.has('mark', killMark.id));
+
+mergeIn(withBoth);                           /* the other device still has it */
+eq('a deleted mark does not come back', MK.list().length, 1);
+eq('and it is the right one that remains', MK.list()[0].id, keepMark.id);
+
+/* ---- but an edit after the delete does bring it back ---- */
+reset();
+const m2 = MK.add({ cat: 'hifz', from: 30 });
+QT.tombs.mark('mark', m2.id, Date.now() - 5000);   /* buried five seconds ago */
+const edited = JSON.parse(JSON.stringify(MK.list()[0]));
+edited.updatedAt = Date.now();                      /* …then edited, just now */
+mergeIn({ format: 'quran-tracker', version: 1, data: { marks: { cats: MK.cats(), items: [edited] } } });
+eq('an edit newer than the grave revives it', MK.list().length, 1);
+
+/* ---- mutable records resolve per record, not per store ---- */
+reset();
+const pA = QT.plans.create({ name: 'alpha', unit: 'page', amount: 3 });
+const pB = QT.plans.create({ name: 'beta', unit: 'page', amount: 5 });
+const twoPlans = snapshot();
+
+QT.plans.update(pA.id, { name: 'alpha renamed here' });
+const localSnap = snapshot();
+
+/* the other device renamed the *other* plan, slightly later */
+const remote = JSON.parse(JSON.stringify(twoPlans));
+remote.data.plans.forEach(p => {
+  if (p.id === pB.id) { p.name = 'beta renamed there'; p.updatedAt = Date.now() + 1000; }
+});
+mergeIn(remote);
+
+const names = QT.plans.list().map(p => p.name).sort();
+eq('both edits survive', QT.plans.list().length, 2);
+ok('the local rename held', names.some(n => /alpha renamed here/.test(n)), names.join(' | '));
+ok('and so did the remote one', names.some(n => /beta renamed there/.test(n)), names.join(' | '));
+
+/* the newer edit of the SAME record wins */
+reset();
+const pc = QT.plans.create({ name: 'first', unit: 'page', amount: 2 });
+const early = snapshot();
+QT.plans.update(pc.id, { name: 'edited locally' });
+const stale = JSON.parse(JSON.stringify(early));
+stale.data.plans[0].name = 'edited earlier elsewhere';
+stale.data.plans[0].updatedAt = Date.now() - 10000;
+mergeIn(stale);
+eq('the newer edit of a record wins', QT.plans.get(pc.id).name, 'edited locally');
+
+/* ---- slips: the case a counter could not survive ---- */
+reset();
+const slipG = QT.index.toGlobal(2, 255);
+H.slip(slipG);
+const oneSlip = snapshot();
+
+H.slip(slipG);                              /* phone flags it a second time */
+const phoneSlips = snapshot();
+
+reset();
+mergeIn(oneSlip);
+H.slip(slipG);                              /* laptop independently flags it */
+mergeIn(phoneSlips);
+eq('every stumble is kept', H.weakest()[0].n, 3);
+
+/* the old counter shape would have lost one; prove the events are distinct */
+const hifzRaw = JSON.parse(store2Get(QT.keys.hifz));
+eq('and each is its own event', hifzRaw.slips.filter(e => e.k === 's').length, 3);
+
+/* clearing is an event too, so it merges rather than clobbering */
+reset();
+H.slip(slipG); H.slip(slipG);
+const twoSlips = snapshot();
+H.clearSlip(slipG);
+eq('cleared here', H.weakest().length, 0);
+mergeIn(twoSlips);
+eq('and the clear survives the merge', H.weakest().length, 0);
+
+/* ---- a memorised page edited on both sides ---- */
+reset();
+H.add(50); H.promote(50);
+const pageSnap = snapshot();
+H.rate(50, 'clean');
+const localInterval = H.get(50).interval;
+mergeIn(pageSnap);                          /* older copy arrives */
+eq('the newer review of a page wins', H.get(50).interval, localInterval);
+
+/* ---- where you stopped reading follows you ---- */
+reset();
+store2Set('quran.last.v1', JSON.stringify({ surah: 2, ayah: 100, at: 1000 }));
+mergeIn({ format: 'quran-tracker', version: 1,
+          data: { last: { surah: 5, ayah: 20, at: 2000 } } });
+eq('a newer resume position is taken',
+   JSON.parse(store2Get('quran.last.v1')).surah, 5);
+mergeIn({ format: 'quran-tracker', version: 1,
+          data: { last: { surah: 9, ayah: 1, at: 500 } } });
+eq('an older one is ignored',
+   JSON.parse(store2Get('quran.last.v1')).surah, 5);
+
+/* ---- settings stay on their device ---- */
+reset();
+store2Set('quran.settings.v1', JSON.stringify({ size: 4, theme: 'night' }));
+mergeIn({ format: 'quran-tracker', version: 1,
+          data: { settings: { size: 0, theme: 'paper' } } });
+eq('font size is not dragged across devices',
+   JSON.parse(store2Get('quran.settings.v1')).size, 4);
+
+/* ---- graves are swept eventually ---- */
+reset();
+QT.tombs.mark('mark', 'ancient', Date.now() - 400 * 86400000);
+QT.tombs.mark('mark', 'recent', Date.now());
+eq('two graves', QT.tombs.count(), 2);
+eq('one is old enough to sweep', QT.tombs.prune(180), 1);
+eq('and the recent one stays', QT.tombs.count(), 1);
 
 /* ===================== report ===================== */
 

@@ -387,6 +387,82 @@
       : '';
   }
 
+  /* ---------------- sync ----------------
+     Entirely optional. With no Firebase project configured the section says so
+     and nothing is loaded; the app behaves exactly as it did before any of
+     this existed. */
+
+  function drawSync(st) {
+    var sec = $('#sync-sec');
+    var card = $('#sync-card');
+    var note = $('#sync-note');
+    var badge = $('#sync-status');
+    sec.hidden = false;
+
+    if (!st.configured) {
+      card.setAttribute('data-status', 'off');
+      card.innerHTML =
+        '<span class="synccard__dot"></span>' +
+        '<span class="synccard__who"><b>المزامنة غير مُهيّأة</b>' +
+        '<small>تعمل بياناتك محليًا على هذا الجهاز وحده.</small></span>';
+      badge.textContent = '';
+      note.textContent = 'لتشغيل المزامنة بين أجهزتك، املأ إعدادات المشروع في ' +
+                         'assets/sync-config.js. حتى ذلك الحين لا يغادر شيءٌ هذا الجهاز.';
+      return;
+    }
+
+    card.setAttribute('data-status', st.status);
+    badge.textContent = st.lastSyncAt
+      ? 'آخر مزامنة ' + new Date(st.lastSyncAt).toLocaleTimeString('ar-EG',
+          { hour: '2-digit', minute: '2-digit' })
+      : '';
+
+    if (st.user) {
+      card.innerHTML =
+        '<span class="synccard__dot"></span>' +
+        '<span class="synccard__who"><b>' + (st.user.name || st.user.email) + '</b>' +
+        '<small>' + (st.status === 'syncing' ? 'تجري المزامنة…'
+                   : st.status === 'error' ? ('تعذّرت المزامنة: ' + (st.error || ''))
+                   : 'تُزامَن قراءتك وحفظك وعلاماتك بين أجهزتك.') + '</small></span>';
+      var out = el('button', 'btn btn--sm btn--quiet', 'خروج');
+      out.type = 'button';
+      out.addEventListener('click', function () { QuranSync.signOut(); });
+      var now = el('button', 'btn btn--sm', 'زامِن الآن');
+      now.type = 'button';
+      now.addEventListener('click', function () { QuranSync.sync(); });
+      var acts = el('span', 'synccard__actions');
+      acts.appendChild(now);
+      acts.appendChild(out);
+      card.appendChild(acts);
+      note.textContent = 'الإعدادات كحجم الخط والسمة تبقى خاصةً بكل جهاز؛ ' +
+                         'أمّا موضع القراءة والخطط والحفظ والعلامات فتتبعك.';
+    } else {
+      card.innerHTML =
+        '<span class="synccard__dot"></span>' +
+        '<span class="synccard__who"><b>غير مسجَّل الدخول</b>' +
+        '<small>' + (st.status === 'error' ? (st.error || '') :
+          'سجّل الدخول لتتبعك بياناتك بين أجهزتك.') + '</small></span>';
+      var inBtn = el('button', 'btn btn--sm btn--go', 'الدخول بحساب Google');
+      inBtn.type = 'button';
+      inBtn.addEventListener('click', function () { QuranSync.signIn(); });
+      var wrap = el('span', 'synccard__actions');
+      wrap.appendChild(inBtn);
+      card.appendChild(wrap);
+      note.textContent = 'التطبيق يعمل كاملًا بدون تسجيل دخول. ' +
+                         'المزامنة إضافةٌ اختيارية، لا شرط.';
+    }
+  }
+
+  if (window.QuranSync) {
+    QuranSync.onState(function (st) { drawSync(st); drawAll(); });
+    var fs = window.QuranSyncFirestore;
+    if (fs && fs.available()) {
+      QuranSync.configure(fs).catch(function () { /* drawSync shows the reason */ });
+    } else {
+      drawSync(QuranSync.state());
+    }
+  }
+
   $('#export').addEventListener('click', function () {
     var blob = new Blob([JSON.stringify(QT.io.export(), null, 2)], { type: 'application/json' });
     var url = URL.createObjectURL(blob);

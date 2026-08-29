@@ -1,0 +1,31 @@
+rules_version = '2';
+
+/*  Paste into Firebase console -> Firestore Database -> Rules.
+ *
+ *  One sentence, said twice: a reader may touch their own records and nothing
+ *  else. The config in assets/sync-config.js is public and authorises nothing;
+ *  this file is what actually protects the data, which is why it denies by
+ *  default and grants only the one path.
+ *
+ *  Nothing here is shared yet. When the group page arrives it will need its
+ *  own collection with its own rules — do not loosen these to make that work.
+ */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* Everything a reader owns hangs off their own uid. Signed in, and it is
+       your uid, or you get nothing — read included, so one reader cannot
+       enumerate another's. */
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    /* Anything not named above is denied. Firestore already defaults to this;
+       it is written down so that adding a collection later is a deliberate act
+       rather than something that quietly inherits access. */
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
