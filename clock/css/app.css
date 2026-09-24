@@ -20,12 +20,9 @@
   --date-size: 16px;
   --date-gap: 36px;
   --section-gap: 0px;
-  --card-w: 240px;
-  --card-pad: 16px;
-  --timer-h: 64px;
+  --tier-gap: 0px;
   --gap-x: 28px;
   --gap-y: 20px;
-  --timers-w: 0px;
 
   color-scheme: dark;
   background: #000;
@@ -159,12 +156,25 @@ button:disabled { cursor: default; }
 
 /* ── Timers ────────────────────────────────────────────────────────────── */
 
+/* Two rows: priority timers large and right under the clock, normal ones smaller below.
+   Card sizes come from layout.js as custom properties on each row. */
+.timer-area { display: flex; flex-direction: column; align-items: center; gap: var(--tier-gap); }
+
 .timers {
+  --card-w: 240px;
+  --card-pad: 16px;
+  --timer-h: 64px;
+  --row-w: 100%;
+  --head: 16px;
+  --label: 12px;
+  --above: 12px;
+  --below: 14px;
+  --bar: 2px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--gap-y) var(--gap-x);
-  max-width: var(--timers-w);
+  max-width: var(--row-w);
 }
 .timers:empty { display: none; }
 
@@ -183,20 +193,20 @@ button:disabled { cursor: default; }
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  height: 16px;
-  font: 500 12px/1 var(--font-ui);
+  height: var(--head);
+  font: 500 var(--label)/1 var(--font-ui);
   letter-spacing: .2em;
   text-transform: uppercase;
   color: rgb(var(--ink-rgb) / var(--dim-a));
 }
 .tc-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tc-status { display: flex; flex: none; }
-.tc-status svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
-.tc-digits { display: flex; margin: 14px 0 16px; }
+.tc-status svg { width: calc(var(--label) + 4px); height: calc(var(--label) + 4px); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.tc-digits { display: flex; margin: var(--above) 0 var(--below); }
 .tc-bar {
   display: block;
-  height: 2px;
-  border-radius: 1px;
+  height: var(--bar);
+  border-radius: calc(var(--bar) / 2);
   overflow: hidden;
   background: rgb(var(--ink-rgb) / var(--faint-a));
 }
@@ -207,8 +217,14 @@ button:disabled { cursor: default; }
   transform-origin: 0 50%;
 }
 
-.tcard[data-state="idle"] { --lit-a: .32; }
-.tcard[data-state="paused"] { --lit-a: .55; }
+/* Brightness backs up size: priority timers in full ink, normal ones a step back.
+   Paused and ready timers dim further; a ringing timer is always full strength. */
+.timers.high .tc-head { color: rgb(var(--ink-rgb) / .56); }
+.timers.high .tcard[data-state="paused"] { --lit-a: .55; }
+.timers.high .tcard[data-state="idle"] { --lit-a: .32; }
+.timers.normal .tcard[data-state="running"] { --lit-a: .74; }
+.timers.normal .tcard[data-state="paused"] { --lit-a: .42; }
+.timers.normal .tcard[data-state="idle"] { --lit-a: .26; }
 
 /* Ringing: the card inverts every other second, like a watch alarm. */
 .tcard.flash .tc-main { background: rgb(var(--ink-rgb)); color: #000; }
@@ -220,7 +236,7 @@ button:disabled { cursor: default; }
 /* Reset / remove appear with the other controls. */
 .tc-tools {
   position: absolute;
-  top: calc(var(--card-pad) - 16px);
+  top: calc(var(--card-pad) + var(--head) / 2 - 22px);
   right: calc(var(--card-pad) - 14px);
   display: flex;
   opacity: 0;
@@ -423,6 +439,12 @@ button:disabled { cursor: default; }
   color: rgb(var(--ink-rgb) / .5);
 }
 .seg-ctl button[aria-pressed="true"] { background: rgb(var(--ink-rgb) / .16); color: rgb(var(--ink-rgb)); }
+
+/* Normal / Priority, above Start in the new-timer panel. */
+.seg-ctl.wide { margin-top: 16px; }
+.seg-ctl.wide button { flex: 1; height: 40px; border-radius: 20px; }
+.seg-ctl.wide + .primary { margin-top: 12px; }
+.chip.hi { border-color: rgb(var(--ink-rgb) / .5); color: rgb(var(--ink-rgb)); }
 
 .swatches { display: flex; gap: 14px; padding-right: 4px; }
 .swatch {

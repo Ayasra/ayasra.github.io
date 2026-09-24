@@ -11,15 +11,17 @@
 // CPU once per second no matter how many timers are running.
 
 export const MAX_TIMERS = 6;
+// How prominently a timer is shown. Chosen when it's created; the screen shows it by size alone.
+export const PRIORITIES = ['normal', 'high'];
 const SECOND = 1000;
 
 const floorToSecond = (t) => Math.floor(t / SECOND) * SECOND;
 
 let counter = 0;
 
-export function createTimer({ label = '', duration }, now) {
+export function createTimer({ label = '', duration, priority = 'normal' }, now) {
   const id = now.toString(36) + (counter++).toString(36);
-  return start({ id, label, duration, state: 'idle', remaining: duration, endAt: 0 }, now);
+  return start({ id, label, duration, priority, state: 'idle', remaining: duration, endAt: 0 }, now);
 }
 
 function start(t, now) {
@@ -68,7 +70,7 @@ export function progress(t, now) {
 
 export const needsTicks = (t) => t.state === 'running' || t.state === 'ringing';
 
-/** Most-recent-first list of timers the user has started, without duplicates. */
+/** Most-recent-first list of timers the user has started, without duplicates; a repeat keeps its newest priority. */
 export function remember(recents, entry, limit = 4) {
   const same = (r) => r.label === entry.label && r.duration === entry.duration;
   return [entry, ...recents.filter((r) => !same(r))].slice(0, limit);

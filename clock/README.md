@@ -27,7 +27,8 @@ Settings, timers and recent timers are saved on the device (localStorage under `
 - **Tap anywhere** to show or hide the controls: ＋ new timer, full screen (in Safari only), and settings. They hide themselves after a few seconds.
 - **Tap a timer** to start, pause or resume it. While the controls are showing, each timer also has ↺ reset and × remove.
 - **When a timer finishes** it chimes for two minutes and flashes, counting the time since it ended. Tap anywhere to silence it; it resets, ready to run again.
-- **New timer**: type the duration microwave-style (1 3 0 = 1 min 30 s) or pick a preset. The label is optional. Recent timers come back as one-tap chips.
+- **New timer**: type the duration microwave-style (1 3 0 = 1 min 30 s) or pick a preset. The label is optional. Recent timers come back as one-tap chips, with their label and priority.
+- **Normal or Priority**: chosen when you create a timer. Nothing on the clock says which is which — priority timers get their own row right under the clock, with large, full-brightness digits, while normal timers sit smaller and a step dimmer below them. However many there are, the clock stays clearly the largest, and priority timers clearly larger than normal ones.
 - **Settings**: segment or type face, 12/24 h, seconds, five colours, night mode (off, on, or automatic between set hours), and three alert sounds (each plays when you pick it).
 
 ## Why it uses so little power

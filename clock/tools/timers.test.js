@@ -78,3 +78,18 @@ test('recents are most-recent-first, de-duplicated and capped', () => {
   assert.equal(r.length, 4);
   assert.equal(r[0].label, 'T5');
 });
+
+test('priority is set at creation, defaults to normal, and survives every transition', () => {
+  assert.equal(T.createTimer({ duration: 5000 }, t0).priority, 'normal');
+  let t = T.createTimer({ label: 'Oven', duration: 5000, priority: 'high' }, t0);
+  for (const step of [(x) => T.toggle(x, t0 + 1000), (x) => T.toggle(x, t0 + 2000), (x) => T.settle(x, x.endAt), (x) => T.reset(x)]) {
+    t = step(t);
+    assert.equal(t.priority, 'high');
+  }
+});
+
+test('a repeated recent keeps the priority it was last started with', () => {
+  let r = T.remember([], { label: 'Tea', duration: 180_000, priority: 'normal' });
+  r = T.remember(r, { label: 'Tea', duration: 180_000, priority: 'high' });
+  assert.deepEqual(r, [{ label: 'Tea', duration: 180_000, priority: 'high' }]);
+});

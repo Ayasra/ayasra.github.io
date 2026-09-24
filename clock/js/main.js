@@ -38,7 +38,7 @@ let chromeTimer = 0;
 let alarmKey = '';
 
 const clock = new ClockView({ root: $('clock'), time: $('time'), ampm: $('ampm'), secs: $('secs'), date: $('date') });
-const timers = new TimersView($('timers'));
+const timers = new TimersView({ high: $('timers-high'), normal: $('timers-normal') });
 const addSheet = createAddSheet($('add-sheet'), { onStart: addTimer });
 const settingsSheet = createSettingsSheet($('settings-sheet'), {
   get: () => state.settings,
@@ -112,15 +112,17 @@ function drift(step) {
 }
 
 function relayout() {
+  const high = state.timers.filter((t) => t.priority === 'high').length;
   const sizes = computeLayout({
     width: window.innerWidth,
     height: window.innerHeight,
-    count: state.timers.length,
+    high,
+    normal: state.timers.length - high,
     clockWidth: clock.widthFactor(),
-    timerWidth: timers.widthFactor(),
+    timerWidth: { high: timers.widthFactor('high'), normal: timers.widthFactor('normal') },
   });
   applyLayout(root, sizes);
-  timers.setSize(sizes.timerH, sizes.cardW - sizes.cardPad * 2);
+  timers.setSize(sizes);
 }
 
 function setChrome(on, ms = CHROME_MS) {
@@ -146,10 +148,10 @@ function update(id, change) {
   commit();
 }
 
-function addTimer({ label, duration }) {
+function addTimer({ label, duration, priority }) {
   if (state.timers.length >= T.MAX_TIMERS) return;
-  state.timers = [...state.timers, T.createTimer({ label, duration }, Date.now())];
-  state.recents = T.remember(state.recents, { label, duration });
+  state.timers = [...state.timers, T.createTimer({ label, duration, priority }, Date.now())];
+  state.recents = T.remember(state.recents, { label, duration, priority });
   commit(true);
 }
 

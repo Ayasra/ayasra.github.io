@@ -41,7 +41,10 @@
         </div>
         <p class="date" id="date"></p>
       </section>
-      <section class="timers" id="timers" aria-label="Timers"></section>
+      <div class="timer-area" aria-label="Timers">
+        <div class="timers high" id="timers-high"></div>
+        <div class="timers normal" id="timers-normal"></div>
+      </div>
     </main>
 
     <nav class="chrome" aria-label="Controls">
@@ -93,6 +96,10 @@
               <button class="key" data-digit="00">00</button>
               <button class="key" data-digit="0">0</button>
               <button class="key" data-digit="back" data-icon="back" aria-label="Delete"></button>
+            </div>
+            <div class="seg-ctl wide" role="group" aria-label="Priority">
+              <button data-set-priority="normal" aria-pressed="true">Normal</button>
+              <button data-set-priority="high" aria-pressed="false">Priority</button>
             </div>
             <button class="primary" id="add-start" disabled>Start</button>
           </div>

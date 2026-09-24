@@ -56,14 +56,20 @@ export class ClockView {
 }
 
 const STATE_WORDS = { idle: 'ready', running: 'running', paused: 'paused', ringing: 'finished' };
+const TIERS = ['high', 'normal'];
+const WEIGHT = { high: 'light', normal: 'regular' };
+const tierOf = (t) => (t.priority === 'high' ? 'high' : 'normal');
 
+/**
+ * Timer cards in two rows: priority timers large, just under the clock; normal ones
+ * smaller, below them. Which row a card sits in is the only sign of its priority.
+ */
 export class TimersView {
-  constructor(container) {
-    this.container = container;
+  constructor(rows) {
+    this.rows = rows; // { high, normal } container elements
     this.cards = new Map();
     this.face = 'segment';
-    this.digitH = 60;
-    this.innerW = 200;
+    this.fits = { high: { digitH: 100, innerW: 300 }, normal: { digitH: 60, innerW: 200 } };
   }
 
   setFace(face) {
@@ -72,40 +78,57 @@ export class TimersView {
     this.cards.clear();
   }
 
-  /** Digit height and usable card width from the layout; cards re-fit on the next render. */
-  setSize(digitH, innerW) {
-    this.digitH = digitH;
-    this.innerW = innerW;
+  /** Card metrics from the layout, published per row; cards re-fit on the next render. */
+  setSize(sizes) {
+    for (const tier of TIERS) {
+      const s = sizes[tier];
+      const px = {
+        '--card-w': s.cardW,
+        '--card-pad': s.cardPad,
+        '--timer-h': s.digitH,
+        '--row-w': s.rowW,
+        '--head': s.head,
+        '--label': s.label,
+        '--above': s.above,
+        '--below': s.below,
+        '--bar': s.bar,
+      };
+      for (const [key, value] of Object.entries(px)) this.rows[tier].style.setProperty(key, `${value}px`);
+      this.fits[tier] = { digitH: s.digitH, innerW: s.cardW - s.cardPad * 2 };
+    }
     for (const card of this.cards.values()) card.fitFor = null;
   }
 
-  widthFactor() {
-    return widthFactor(this.face, '00:00', 'regular');
+  widthFactor(tier) {
+    return widthFactor(this.face, '00:00', WEIGHT[tier]);
   }
 
   /** Match the cards on screen to the list of timers: add, remove, reorder, relabel. */
   sync(timers) {
-    const ids = new Set(timers.map((t) => t.id));
+    const wanted = new Map(timers.map((t) => [t.id, tierOf(t)]));
     for (const [id, card] of this.cards) {
-      if (!ids.has(id)) {
+      if (wanted.get(id) !== card.tier) {
         card.el.remove();
         this.cards.delete(id);
       }
     }
-    timers.forEach((t, i) => {
-      let card = this.cards.get(t.id);
-      if (!card) {
-        card = this.makeCard(t);
-        this.cards.set(t.id, card);
-      }
-      const at = this.container.children[i];
-      if (at !== card.el) this.container.insertBefore(card.el, at || null);
-      const label = t.label || durationLabel(t.duration / 1000);
-      if (card.label.textContent !== label) card.label.textContent = label;
-    });
+    for (const tier of TIERS) {
+      const row = this.rows[tier];
+      timers.filter((t) => tierOf(t) === tier).forEach((t, i) => {
+        let card = this.cards.get(t.id);
+        if (!card) {
+          card = this.makeCard(t, tier);
+          this.cards.set(t.id, card);
+        }
+        const at = row.children[i];
+        if (at !== card.el) row.insertBefore(card.el, at || null);
+        const label = t.label || durationLabel(t.duration / 1000);
+        if (card.label.textContent !== label) card.label.textContent = label;
+      });
+    }
   }
 
-  makeCard(t) {
+  makeCard(t, tier) {
     const el = document.createElement('div');
     el.className = 'tcard';
     el.innerHTML = `
@@ -119,10 +142,11 @@ export class TimersView {
         <button class="icon-btn" data-action="remove" aria-label="Remove timer">${ICONS.close}</button>
       </span>`;
     for (const button of el.querySelectorAll('[data-action]')) button.dataset.id = t.id;
-    const readout = createReadout(this.face, 'regular');
+    const readout = createReadout(this.face, WEIGHT[tier]);
     el.querySelector('.tc-digits').append(readout.el);
     return {
       el,
+      tier,
       readout,
       main: el.querySelector('.tc-main'),
       label: el.querySelector('.tc-label'),
@@ -170,12 +194,13 @@ export class TimersView {
     const shape = text.replace(/\d/g, '0');
     if (card.fitFor === shape) return;
     card.fitFor = shape;
-    const h = Math.min(this.digitH, Math.floor(this.innerW / widthFactor(this.face, text, 'regular')));
+    const { digitH, innerW } = this.fits[card.tier];
+    const h = Math.min(digitH, Math.floor(innerW / widthFactor(this.face, text, WEIGHT[card.tier])));
     card.el.style.setProperty('--h', `${h}px`);
   }
 }
 
-/** Publish layout sizes as CSS custom properties. */
+/** Publish the clock's layout sizes as CSS custom properties (timer rows get theirs in TimersView). */
 export function applyLayout(root, sizes) {
   const px = {
     '--pad': sizes.pad,
@@ -186,12 +211,9 @@ export function applyLayout(root, sizes) {
     '--date-size': sizes.dateSize,
     '--date-gap': sizes.dateGap,
     '--section-gap': sizes.sectionGap,
-    '--card-w': sizes.cardW,
-    '--card-pad': sizes.cardPad,
-    '--timer-h': sizes.timerH,
+    '--tier-gap': sizes.tierGap,
     '--gap-x': sizes.gapX,
     '--gap-y': sizes.gapY,
-    '--timers-w': sizes.timersW,
   };
   for (const [key, value] of Object.entries(px)) root.style.setProperty(key, `${value}px`);
 }

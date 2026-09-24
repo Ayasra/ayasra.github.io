@@ -2,7 +2,7 @@
 // is validated, so a corrupt or outdated entry can never stop the clock from starting.
 // The key follows the site's "<app>.<what>.v1" pattern, as other apps share this origin.
 
-import { MAX_TIMERS } from './timers.js';
+import { MAX_TIMERS, PRIORITIES } from './timers.js';
 
 export const KEY = 'clock.state.v1';
 
@@ -53,6 +53,9 @@ const validTimer = (t) =>
 
 const validRecent = (r) => r && typeof r.label === 'string' && isNum(r.duration) && r.duration > 0;
 
+// Timers saved before priorities existed have none; they are normal.
+const withPriority = (t) => ({ ...t, priority: PRIORITIES.includes(t.priority) ? t.priority : 'normal' });
+
 export function load(storage = globalThis.localStorage) {
   let raw = {};
   try {
@@ -63,8 +66,8 @@ export function load(storage = globalThis.localStorage) {
   const list = (v, ok, max) => (Array.isArray(v) ? v.filter(ok).slice(0, max) : []);
   return {
     settings: cleanSettings(raw.settings),
-    timers: list(raw.timers, validTimer, MAX_TIMERS),
-    recents: list(raw.recents, validRecent, 4),
+    timers: list(raw.timers, validTimer, MAX_TIMERS).map(withPriority),
+    recents: list(raw.recents, validRecent, 4).map(withPriority),
     hinted: raw.hinted === true,
   };
 }

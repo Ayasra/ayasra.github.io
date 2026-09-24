@@ -18,7 +18,7 @@ test('round-trips state', () => {
   const store = memory();
   const state = load(store);
   state.settings.face = 'type';
-  state.timers.push({ id: 'a', label: 'Tea', duration: 180000, state: 'paused', remaining: 90000, endAt: 0 });
+  state.timers.push({ id: 'a', label: 'Tea', duration: 180000, state: 'paused', remaining: 90000, endAt: 0, priority: 'high' });
   save(state, store);
   const again = load(store);
   assert.equal(again.settings.face, 'type');
@@ -44,4 +44,14 @@ test('corrupt or hostile data never breaks start-up', () => {
 test('a full or blocked storage is tolerated', () => {
   const broken = { getItem: () => { throw new Error('denied'); }, setItem: () => { throw new Error('full'); } };
   assert.doesNotThrow(() => save(load(broken), broken));
+});
+
+test('priority: saved values are kept, missing or unknown ones become normal', () => {
+  const timer = (id, priority) => ({ id, label: '', duration: 60000, state: 'idle', remaining: 60000, endAt: 0, priority });
+  const s = load(memory(JSON.stringify({
+    timers: [timer('a', 'high'), timer('b', undefined), timer('c', 'urgent')],
+    recents: [{ label: 'Tea', duration: 180000 }, { label: 'Oven', duration: 60000, priority: 'high' }],
+  })));
+  assert.deepEqual(s.timers.map((t) => t.priority), ['high', 'normal', 'normal']);
+  assert.deepEqual(s.recents.map((r) => r.priority), ['normal', 'high']);
 });

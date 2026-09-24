@@ -30,7 +30,9 @@ export function createAddSheet(wrap, { onStart }) {
   const startButton = wrap.querySelector('#add-start');
   const recentList = wrap.querySelector('#add-recents');
   const slots = [...wrap.querySelectorAll('.entry-digits')];
+  const priorityButtons = [...wrap.querySelectorAll('[data-set-priority]')];
   let digits = '';
+  let priority = 'normal';
   let readouts = [];
 
   function refresh() {
@@ -46,11 +48,16 @@ export function createAddSheet(wrap, { onStart }) {
     refresh();
   }
 
+  function setPriority(value) {
+    priority = value === 'high' ? 'high' : 'normal';
+    for (const b of priorityButtons) b.setAttribute('aria-pressed', String(b.dataset.setPriority === priority));
+  }
+
   function start() {
     const { seconds } = parseEntry(digits);
     if (!seconds) return;
     hide(wrap);
-    onStart({ label: label.value.trim(), duration: seconds * 1000 });
+    onStart({ label: label.value.trim(), duration: seconds * 1000, priority });
   }
 
   function recentChip(r) {
@@ -59,18 +66,24 @@ export function createAddSheet(wrap, { onStart }) {
     chip.className = 'chip';
     chip.dataset.seconds = seconds;
     chip.dataset.label = r.label;
+    chip.dataset.priority = r.priority;
+    chip.classList.toggle('hi', r.priority === 'high');
     chip.textContent = r.label ? `${r.label} · ${durationText(seconds)}` : durationLabel(seconds);
     return chip;
   }
 
   closable(wrap);
   wrap.addEventListener('click', (e) => {
+    const choice = e.target.closest('[data-set-priority]');
+    if (choice) return setPriority(choice.dataset.setPriority);
     const key = e.target.closest('[data-digit]');
     if (key) return press(key.dataset.digit);
     const chip = e.target.closest('[data-seconds]');
     if (chip) {
+      // Presets set only the duration; a recent timer brings back its label and priority too.
       digits = toEntry(Number(chip.dataset.seconds));
       if (chip.dataset.label !== undefined) label.value = chip.dataset.label;
+      if (chip.dataset.priority) setPriority(chip.dataset.priority);
       return refresh();
     }
     if (e.target.closest('#add-start')) start();
@@ -99,6 +112,7 @@ export function createAddSheet(wrap, { onStart }) {
     open(recents) {
       digits = '';
       label.value = '';
+      setPriority('normal');
       recentList.replaceChildren(...recents.map(recentChip));
       recentList.hidden = recents.length === 0;
       refresh();
