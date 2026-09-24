@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" fill="#000"/>
+  <g transform="translate(176.6 360.0) scale(1.2609)" fill="none" stroke-linecap="round" stroke-width="18">
+    <g transform="translate(0 0)"><path d="M25.26 9L74.74 9M91 25.26L91 75.74M91 108.26L91 158.74M25.26 175L74.74 175M9 108.26L9 158.74M9 25.26L9 75.74M25.26 92L74.74 92" stroke="#ECE6DC" stroke-opacity=".09"/><path d="M91 25.26L91 75.74M91 108.26L91 158.74" stroke="#ECE6DC"/></g>
+    <g transform="translate(126 0)"><path d="M25.26 9L74.74 9M91 25.26L91 75.74M91 108.26L91 158.74M25.26 175L74.74 175M9 108.26L9 158.74M9 25.26L9 75.74M25.26 92L74.74 92" stroke="#ECE6DC" stroke-opacity=".09"/><path d="M25.26 9L74.74 9M91 25.26L91 75.74M91 108.26L91 158.74M25.26 175L74.74 175M9 108.26L9 158.74M9 25.26L9 75.74" stroke="#ECE6DC"/></g>
+    <g transform="translate(252 0)"><circle cx="14" cy="50.5" r="11.16" fill="#ECE6DC"/><circle cx="14" cy="133.5" r="11.16" fill="#ECE6DC"/></g>
+    <g transform="translate(306 0)"><path d="M25.26 9L74.74 9M91 25.26L91 75.74M91 108.26L91 158.74M25.26 175L74.74 175M9 108.26L9 158.74M9 25.26L9 75.74M25.26 92L74.74 92" stroke="#ECE6DC" stroke-opacity=".09"/><path d="M25.26 9L74.74 9M91 25.26L91 75.74M91 108.26L91 158.74M25.26 175L74.74 175M9 108.26L9 158.74M9 25.26L9 75.74" stroke="#ECE6DC"/></g>
+    <g transform="translate(432 0)"><path d="M25.26 9L74.74 9M91 25.26L91 75.74M91 108.26L91 158.74M25.26 175L74.74 175M9 108.26L9 158.74M9 25.26L9 75.74M25.26 92L74.74 92" stroke="#ECE6DC" stroke-opacity=".09"/><path d="M25.26 9L74.74 9M91 25.26L91 75.74M91 108.26L91 158.74M25.26 175L74.74 175M9 108.26L9 158.74M9 25.26L9 75.74M25.26 92L74.74 92" stroke="#ECE6DC"/></g>
+  </g>
+  <rect x="176.6" y="676.0" width="670.8" height="9" rx="4.5" fill="#ECE6DC" fill-opacity=".16"/>
+  <rect x="176.6" y="676.0" width="415.9" height="9" rx="4.5" fill="#ECE6DC" fill-opacity=".75"/>
+</svg>

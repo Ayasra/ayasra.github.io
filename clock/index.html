@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en" data-face="segment">
+<head>
+  <meta charset="utf-8">
+  <script>
+    // Offline support and the screen wake lock only work over HTTPS, and the site doesn't
+    // force it. Local development (localhost, a LAN address, *.local) stays on HTTP.
+    (function (h) {
+      if (location.protocol === 'http:' && h !== 'localhost' && h.charAt(0) !== '[' &&
+          !/^[\d.]+$/.test(h) && !/\.local$/.test(h)) {
+        location.replace('https:' + location.href.slice(5));
+      }
+    })(location.hostname);
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Clock">
+  <meta name="theme-color" content="#000000">
+  <meta name="color-scheme" content="dark">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="robots" content="noindex">
+  <title>Desk Clock</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/app.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <div class="app" id="app">
+    <main class="stage" id="stage">
+      <section class="clock" id="clock" aria-label="Time">
+        <div class="time-row">
+          <div class="time" id="time"></div>
+          <div class="side">
+            <span class="ampm" id="ampm"></span>
+            <div class="secs" id="secs"></div>
+          </div>
+        </div>
+        <p class="date" id="date"></p>
+      </section>
+      <section class="timers" id="timers" aria-label="Timers"></section>
+    </main>
+
+    <nav class="chrome" aria-label="Controls">
+      <button class="icon-btn" data-action="add" data-icon="plus" aria-label="New timer"></button>
+      <button class="icon-btn" data-action="fullscreen" data-icon="expand" aria-label="Full screen" hidden></button>
+      <button class="icon-btn" data-action="settings" data-icon="sliders" aria-label="Settings"></button>
+    </nav>
+
+    <p class="hint" id="hint" aria-live="polite">Tap anywhere for controls</p>
+
+    <div class="sheet-wrap" id="add-sheet" role="dialog" aria-modal="true" aria-labelledby="add-title" aria-hidden="true">
+      <div class="sheet add">
+        <header class="sheet-head">
+          <h2 id="add-title">New timer</h2>
+          <button class="icon-btn" data-close data-icon="close" aria-label="Close"></button>
+        </header>
+        <div class="add-body">
+          <div class="add-main">
+            <input class="label-input" id="add-label" type="text" maxlength="18" placeholder="Label (optional)"
+                   autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Label">
+            <div class="entry" aria-label="Duration">
+              <span class="entry-group"><span class="entry-digits"></span><span class="entry-unit">h</span></span>
+              <span class="entry-group"><span class="entry-digits"></span><span class="entry-unit">m</span></span>
+              <span class="entry-group"><span class="entry-digits"></span><span class="entry-unit">s</span></span>
+            </div>
+            <div class="chips" aria-label="Presets">
+              <button class="chip" data-seconds="60">1 min</button>
+              <button class="chip" data-seconds="180">3 min</button>
+              <button class="chip" data-seconds="300">5 min</button>
+              <button class="chip" data-seconds="600">10 min</button>
+              <button class="chip" data-seconds="900">15 min</button>
+              <button class="chip" data-seconds="1500">25 min</button>
+              <button class="chip" data-seconds="1800">30 min</button>
+              <button class="chip" data-seconds="3600">1 h</button>
+            </div>
+            <div class="chips recents" id="add-recents" aria-label="Recent timers" hidden></div>
+          </div>
+          <div class="add-side">
+            <div class="keypad">
+              <button class="key" data-digit="1">1</button>
+              <button class="key" data-digit="2">2</button>
+              <button class="key" data-digit="3">3</button>
+              <button class="key" data-digit="4">4</button>
+              <button class="key" data-digit="5">5</button>
+              <button class="key" data-digit="6">6</button>
+              <button class="key" data-digit="7">7</button>
+              <button class="key" data-digit="8">8</button>
+              <button class="key" data-digit="9">9</button>
+              <button class="key" data-digit="00">00</button>
+              <button class="key" data-digit="0">0</button>
+              <button class="key" data-digit="back" data-icon="back" aria-label="Delete"></button>
+            </div>
+            <button class="primary" id="add-start" disabled>Start</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet-wrap" id="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title" aria-hidden="true">
+      <div class="sheet settings">
+        <header class="sheet-head">
+          <h2 id="settings-title">Settings</h2>
+          <button class="icon-btn" data-close data-icon="close" aria-label="Close"></button>
+        </header>
+        <div class="rows">
+          <div class="row">
+            <span class="row-label">Face</span>
+            <div class="seg-ctl" data-setting="face">
+              <button data-value='"segment"'>Segment</button>
+              <button data-value='"type"'>Type</button>
+            </div>
+          </div>
+          <div class="row">
+            <span class="row-label">Hours</span>
+            <div class="seg-ctl" data-setting="hour12">
+              <button data-value="true">12 h</button>
+              <button data-value="false">24 h</button>
+            </div>
+          </div>
+          <div class="row">
+            <span class="row-label">Seconds</span>
+            <div class="seg-ctl" data-setting="seconds">
+              <button data-value="false">Off</button>
+              <button data-value="true">On</button>
+            </div>
+          </div>
+          <div class="row">
+            <span class="row-label">Colour</span>
+            <div class="swatches" data-setting="color"></div>
+          </div>
+          <div class="row">
+            <span class="row-label">Night mode</span>
+            <div class="seg-ctl" data-setting="night">
+              <button data-value='"off"'>Off</button>
+              <button data-value='"auto"'>Auto</button>
+              <button data-value='"on"'>On</button>
+            </div>
+          </div>
+          <div class="row night-hours">
+            <span class="row-label">Night hours</span>
+            <div class="times">
+              <input type="time" id="night-from" aria-label="Night starts">
+              <span class="to">to</span>
+              <input type="time" id="night-to" aria-label="Night ends">
+            </div>
+          </div>
+          <div class="row">
+            <span class="row-label">Alert</span>
+            <div class="seg-ctl" data-setting="sound">
+              <button data-value='"chime"'>Chime</button>
+              <button data-value='"digital"'>Digital</button>
+              <button data-value='"soft"'>Soft</button>
+            </div>
+          </div>
+          <div class="row" id="fs-row" hidden>
+            <span class="row-label">Screen</span>
+            <button class="chip" id="fs-btn">Full screen</button>
+          </div>
+        </div>
+        <p class="note">
+          Lowest power: keep seconds off and Auto-Brightness on.
+          To keep the screen awake, set iPad Settings → Display &amp; Brightness → Auto-Lock → Never.
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
