@@ -16,7 +16,7 @@ test('every precached file exists', () => {
 });
 
 test('every script, style and icon the app loads is precached', () => {
-  const needed = new Set(['index.html', 'manifest.webmanifest']);
+  const needed = new Set(['./', 'manifest.webmanifest']); // './' is the page itself
   for (const file of readdirSync(root + 'js')) needed.add(`js/${file}`);
   for (const m of read('index.html').matchAll(/(?:href|src)="([^"]+)"/g)) needed.add(m[1]);
   for (const icon of JSON.parse(read('manifest.webmanifest')).icons) needed.add(icon.src);

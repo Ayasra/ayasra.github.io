@@ -14,7 +14,7 @@ import { measureType } from './readout.js';
 import { ClockView, TimersView, applyLayout } from './view.js';
 import { createAddSheet, createSettingsSheet } from './sheets.js';
 import { applyTheme } from './theme.js';
-import { paintIcons } from './icons.js';
+import { ICONS, paintIcons } from './icons.js';
 
 const ALARM_MS = 2 * 60 * 1000; // ring for two minutes, then keep flashing silently
 const CHROME_MS = 7000; // on-screen controls hide themselves after this
@@ -28,6 +28,7 @@ const app = $('app');
 const stage = $('stage');
 const hint = $('hint');
 const addButton = app.querySelector('[data-action="add"]');
+const fullscreenButton = app.querySelector('[data-action="fullscreen"]');
 const locale = navigator.language;
 
 const state = load();
@@ -43,8 +44,9 @@ const addSheet = createAddSheet($('add-sheet'), { onStart: addTimer });
 const settingsSheet = createSettingsSheet($('settings-sheet'), {
   get: () => state.settings,
   set: changeSetting,
-  onFullscreen: device.toggleFullscreen,
+  onFullscreen: () => setFullscreen(!device.isFullscreen()),
   canFullscreen: device.canFullscreen,
+  isFullscreen: device.isFullscreen,
 });
 
 // ── Heartbeat ───────────────────────────────────────────────────────────────
@@ -174,6 +176,20 @@ function applyFace() {
   addSheet.setFace(face);
 }
 
+// Full screen hides the status bar. A page may only enter it from a tap, so the choice is
+// remembered: after a relaunch, the first tap anywhere puts the clock back in full screen.
+function setFullscreen(on) {
+  state.settings = { ...state.settings, fullscreen: on };
+  save(state);
+  device.setFullscreen(on);
+}
+
+function showFullscreenState() {
+  const on = device.isFullscreen();
+  fullscreenButton.innerHTML = ICONS[on ? 'shrink' : 'expand'];
+  fullscreenButton.setAttribute('aria-label', on ? 'Exit full screen' : 'Full screen');
+}
+
 function changeSetting(key, value) {
   state.settings = { ...state.settings, [key]: value };
   save(state);
@@ -198,6 +214,8 @@ function changeSetting(key, value) {
 app.addEventListener('click', (e) => {
   sound.unlock();
   device.keepAwake();
+  const fullscreenControl = e.target.closest('[data-action="fullscreen"], #fs-btn');
+  if (state.settings.fullscreen && !device.isFullscreen() && !fullscreenControl) device.setFullscreen(true);
   hint.classList.remove('show');
   if (e.target.closest('.sheet-wrap')) return; // panels handle their own taps
 
@@ -212,7 +230,7 @@ app.addEventListener('click', (e) => {
   if (action === 'toggle') update(id, T.toggle);
   else if (action === 'reset') update(id, T.reset);
   else if (action === 'remove') removeTimer(id);
-  else if (action === 'fullscreen') device.toggleFullscreen();
+  else if (action === 'fullscreen') setFullscreen(!device.isFullscreen());
   else if (action === 'add' || action === 'settings') {
     setChrome(false);
     if (action === 'add') addSheet.open(state.recents);
@@ -236,6 +254,15 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 window.addEventListener('pageshow', (e) => e.persisted && tick());
+device.onFullscreenChange(() => {
+  showFullscreenState();
+  // Leaving through iPadOS's own ✕ turns full screen off; a reload or the page being
+  // hidden doesn't, so it comes back with the next tap.
+  if (!device.isFullscreen() && !document.hidden && state.settings.fullscreen) {
+    state.settings = { ...state.settings, fullscreen: false };
+    save(state);
+  }
+});
 window.addEventListener('resize', () => {
   relayout();
   tick();
@@ -248,7 +275,7 @@ document.addEventListener('gesturestart', (e) => e.preventDefault()); // no pinc
 
 paintIcons(document);
 measureType();
-app.querySelector('[data-action="fullscreen"]').hidden = !device.canFullscreen();
+fullscreenButton.hidden = !device.canFullscreen();
 applyFace();
 clock.setOptions(state.settings);
 updateNight(new Date());
@@ -278,6 +305,10 @@ else window.addEventListener('load', remeasure, { once: true });
 
 device.keepAwake();
 
-if ('serviceWorker' in navigator && window.isSecureContext) {
-  navigator.serviceWorker.register('sw.js', { scope: './' }).catch(() => {});
+// Tells the safety net in index.html that the clock started, and re-arms it for next time.
+window.clockStarted = true;
+try {
+  sessionStorage.removeItem('clock.retried');
+} catch {
+  // Storage blocked: the safety net simply won't retry.
 }

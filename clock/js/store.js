@@ -35,6 +35,7 @@ export function defaultSettings() {
     nightFrom: '22:00',
     nightTo: '07:00',
     sound: 'chime',
+    fullscreen: false,
   };
 }
 
@@ -42,7 +43,7 @@ function cleanSettings(raw) {
   const s = defaultSettings();
   if (!raw || typeof raw !== 'object') return s;
   for (const [key, allowed] of Object.entries(CHOICES)) if (allowed.includes(raw[key])) s[key] = raw[key];
-  for (const key of ['hour12', 'seconds']) if (typeof raw[key] === 'boolean') s[key] = raw[key];
+  for (const key of ['hour12', 'seconds', 'fullscreen']) if (typeof raw[key] === 'boolean') s[key] = raw[key];
   for (const key of ['nightFrom', 'nightTo']) if (HM.test(raw[key])) s[key] = raw[key];
   return s;
 }

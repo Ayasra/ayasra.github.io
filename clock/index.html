@@ -12,6 +12,29 @@
       }
     })(location.hostname);
   </script>
+  <script>
+    // Offline support: the worker keeps one consistent copy of the clock (see sw.js). It is
+    // registered here rather than by the app's scripts, so it still arrives if they fail.
+    if ('serviceWorker' in navigator && window.isSecureContext) {
+      navigator.serviceWorker.register('sw.js', { scope: './' }).catch(function () {});
+    }
+    // Safety net: if the clock hasn't started five seconds after loading (say a CDN served
+    // a mix of old and new files just after a deploy), reload once, through the worker,
+    // which fetches every file fresh.
+    setTimeout(function () {
+      if (window.clockStarted) return;
+      try {
+        if (sessionStorage.getItem('clock.retried')) return;
+        sessionStorage.setItem('clock.retried', '1');
+      } catch (e) {
+        return;
+      }
+      var ready = navigator.serviceWorker ? navigator.serviceWorker.ready : Promise.resolve();
+      Promise.race([ready, new Promise(function (r) { setTimeout(r, 5000); })]).then(function () {
+        location.reload();
+      });
+    }, 5000);
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">

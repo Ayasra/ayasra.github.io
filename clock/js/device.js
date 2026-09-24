@@ -1,8 +1,5 @@
 // Screen wake lock and full-screen, feature-detected for Safari on iPad.
 
-export const isStandalone = () =>
-  navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
-
 let lock = null;
 
 /**
@@ -23,18 +20,29 @@ export async function keepAwake() {
 
 const root = document.documentElement;
 
-export const canFullscreen = () =>
-  !isStandalone() && Boolean(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+/**
+ * Full screen is the only way a web page can hide the iPad's status bar (time, battery):
+ * Home Screen web apps always show it. Safari allows full screen in a tab; where the Home
+ * Screen app allows it too, this reports true there as well.
+ */
+export const canFullscreen = () => Boolean(document.fullscreenEnabled || document.webkitFullscreenEnabled);
 
-const isFullscreen = () => Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+export const isFullscreen = () => Boolean(document.fullscreenElement || document.webkitFullscreenElement);
 
-export function toggleFullscreen() {
+/** Enter or leave full screen. Entering only works from a tap. */
+export function setFullscreen(on) {
+  if (on === isFullscreen()) return;
   try {
-    const result = isFullscreen()
-      ? (document.exitFullscreen || document.webkitExitFullscreen).call(document)
-      : (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+    const result = on
+      ? (root.requestFullscreen || root.webkitRequestFullscreen).call(root)
+      : (document.exitFullscreen || document.webkitExitFullscreen).call(document);
     if (result && result.catch) result.catch(() => {});
   } catch {
-    // Not allowed here; the button simply does nothing.
+    // Not allowed here; nothing changes.
   }
+}
+
+export function onFullscreenChange(handler) {
+  document.addEventListener('fullscreenchange', handler);
+  document.addEventListener('webkitfullscreenchange', handler);
 }

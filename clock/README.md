@@ -9,7 +9,7 @@ No build step and no dependencies: plain HTML, CSS and JavaScript modules.
 ## Put it on the iPad
 
 1. In Safari, open **ayasra.com/clock**. The page moves itself to HTTPS, which offline support needs (the site itself doesn't force it — Cloudflare's "Always Use HTTPS" would fix that everywhere).
-2. Share → **Add to Home Screen**. The Home Screen copy opens full screen and keeps its own settings, separate from Safari.
+2. Share → **Add to Home Screen**. The Home Screen copy opens without Safari's toolbars and keeps its own settings, separate from Safari.
 3. From then on it starts without a network.
 
 Settings, timers and recent timers are saved on the device (localStorage under `clock.state.v1`), so each device keeps its own. Nothing is sent anywhere, and no cookies are used.
@@ -18,13 +18,14 @@ Settings, timers and recent timers are saved on the device (localStorage under `
 
 - **Settings → Display & Brightness → Auto-Lock → Never.** Required. Home Screen web apps on iPadOS 16 can't keep the screen on by themselves, and a sleeping iPad can't ring a timer.
 - **Settings → Accessibility → Display & Text Size → Auto-Brightness → On.** The backlight is by far the biggest power draw; this dims it when the room is dark.
+- **Hiding the status bar** (time, battery): tap ⤢. Full screen is the only way a web page can hide it — Home Screen web apps always show it otherwise. The clock remembers the choice: after a relaunch, the first tap anywhere puts it back in full screen (pages may only enter full screen from a tap). If ⤢ doesn't appear when you open the clock from the Home Screen, iPadOS doesn't allow full screen there; open ayasra.com/clock in Safari instead, where full screen works and the screen stays on by itself (iPadOS 16.4+).
 - Optional: **Guided Access** (Settings → Accessibility) locks the iPad to the clock — triple-click the Home button to start it, and set its Display Auto-Lock to Never as well.
 - Optional: once installed, Wi-Fi off or Airplane Mode saves a little more. The clock keeps time without a network (expect a few seconds of drift a week).
 - Battery: an old iPad left on the charger sits at 100% around the clock, which ages the battery. If you can, charge it a few hours a day with a plug timer, and watch for any swelling.
 
 ## Using it
 
-- **Tap anywhere** to show or hide the controls: ＋ new timer, full screen (in Safari only), and settings. They hide themselves after a few seconds.
+- **Tap anywhere** to show or hide the controls: ＋ new timer, ⤢ full screen, and settings. They hide themselves after a few seconds.
 - **Tap a timer** to start, pause or resume it. While the controls are showing, each timer also has ↺ reset and × remove.
 - **When a timer finishes** it chimes for two minutes and flashes, counting the time since it ended. Tap anywhere to silence it; it resets, ready to run again.
 - **New timer**: type the duration microwave-style (1 3 0 = 1 min 30 s) or pick a preset. The label is optional. Recent timers come back as one-tap chips, with their label and priority.
@@ -50,7 +51,7 @@ node --test                 # unit tests (Node 22.12+; no package.json needed)
 node tools/make-icons.mjs   # redraw the icons (needs rsvg-convert: brew install librsvg)
 ```
 
-**Deploying** is the same as the rest of the site: commit and push to `main`, and GitHub Pages publishes it. Unlike the Quran and Thekr workers, `sw.js` revalidates files with the server on every online launch, so there's no cache version to bump — an open clock picks up changes the next time it's reloaded. Only when adding a new file: list it in `ASSETS` in `sw.js` (a test checks this).
+**Deploying** is the same as the rest of the site: commit and push to `main`, and GitHub Pages publishes it. There's no cache version to bump. For about ten minutes after a deploy Cloudflare keeps serving some old files, so a device loading the clock then could get half of each version — a page with no script behind its new button, or a clock that won't start. The service worker prevents that: each time the clock opens with a network, it downloads every file fresh (past Cloudflare's cache) and switches over only if all of them arrive, so a device picks up a deploy whole, the next time the clock is opened. If the clock ever fails to start, it reloads itself once after five seconds. When adding a new file, list it in `ASSETS` in `sw.js` (a test checks this).
 
 The origin is shared with the other apps, so the clock keeps to its own names: caches start with `clock-` (and the worker only ever deletes those), and the storage key is `clock.state.v1`.
 
@@ -65,5 +66,5 @@ The origin is shared with the other apps, so the clock keeps to its own names: c
 | `js/sound.js` | Web Audio alert sounds. |
 | `js/store.js` | Validated localStorage persistence. |
 | `js/theme.js`, `js/device.js`, `js/icons.js` | Colours, wake lock and full screen, line icons. |
-| `sw.js`, `manifest.webmanifest` | Offline cache and Home Screen install, scoped to `/clock/`. |
+| `sw.js`, `manifest.webmanifest` | Offline copy (always one whole version) and Home Screen install, scoped to `/clock/`. |
 | `tools/` | Local server, icon generator, and the tests. |

@@ -55,3 +55,9 @@ test('priority: saved values are kept, missing or unknown ones become normal', (
   assert.deepEqual(s.timers.map((t) => t.priority), ['high', 'normal', 'normal']);
   assert.deepEqual(s.recents.map((r) => r.priority), ['normal', 'high']);
 });
+
+test('full screen is remembered as a plain on/off setting', () => {
+  assert.equal(load(memory()).settings.fullscreen, false);
+  assert.equal(load(memory(JSON.stringify({ settings: { fullscreen: true } }))).settings.fullscreen, true);
+  assert.equal(load(memory(JSON.stringify({ settings: { fullscreen: 'yes' } }))).settings.fullscreen, false);
+});

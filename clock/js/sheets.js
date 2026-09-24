@@ -129,7 +129,7 @@ export function createAddSheet(wrap, { onStart }) {
   };
 }
 
-export function createSettingsSheet(wrap, { get, set, onFullscreen, canFullscreen }) {
+export function createSettingsSheet(wrap, { get, set, onFullscreen, canFullscreen, isFullscreen }) {
   const from = wrap.querySelector('#night-from');
   const to = wrap.querySelector('#night-to');
 
@@ -156,11 +156,15 @@ export function createSettingsSheet(wrap, { get, set, onFullscreen, canFullscree
     to.value = s.nightTo;
     wrap.querySelector('.night-hours').classList.toggle('off', s.night !== 'auto');
     wrap.querySelector('#fs-row').hidden = !canFullscreen();
+    wrap.querySelector('#fs-btn').textContent = isFullscreen() ? 'Exit full screen' : 'Full screen';
   }
 
   closable(wrap);
   wrap.addEventListener('click', (e) => {
-    if (e.target.closest('#fs-btn')) return onFullscreen();
+    if (e.target.closest('#fs-btn')) {
+      onFullscreen();
+      return hide(wrap); // show the result straight away
+    }
     const b = e.target.closest('[data-value]');
     if (!b) return;
     set(b.closest('[data-setting]').dataset.setting, JSON.parse(b.dataset.value));
